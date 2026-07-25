@@ -1,3 +1,11 @@
+> **Status: reference only, not part of the running app.** This is a standalone
+> prototype (vanilla TypeScript, no Next.js/React/Express/Supabase) originally
+> committed at the repo root as `System/`. It's kept here to inform the real
+> `client/` frontend build (screen list, data shapes, UX flow) and will be
+> deleted once that build absorbs what's useful from it — do not wire this
+> code into `client/` or `server/` directly, and do not treat it as a source
+> of truth for the live app's architecture.
+
 # 👑 Royal Bakery — Artisanal Bakery & Confectionery UI System
 
 An enterprise-grade, interactive web interface and reactive state management system built for **Royal Bakery**.
