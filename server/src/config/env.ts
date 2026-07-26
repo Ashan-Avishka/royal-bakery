@@ -13,6 +13,7 @@ const envSchema = z.object({
   PAYHERE_MERCHANT_ID: z.string().default(""),
   PAYHERE_MERCHANT_SECRET: z.string().default(""),
   PAYHERE_MODE: z.enum(["sandbox", "live"]).default("sandbox"),
+  API_PUBLIC_URL: z.string().default("http://localhost:4000"),
   SMTP_HOST: z.string().default(""),
   SMTP_PORT: z.coerce.number().default(587),
   SMTP_USER: z.string().default(""),

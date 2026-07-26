@@ -7,7 +7,8 @@ import { createOrderSchema } from "../validation/orderSchemas.js";
 
 export const ordersRouter = Router();
 
-ordersRouter.use(requireAuth);
+// Path-scoped for the same reason as cartRouter -- see its comment.
+ordersRouter.use("/orders", requireAuth);
 
 ordersRouter.post("/orders", async (req, res, next) => {
   const parsed = createOrderSchema.safeParse(req.body ?? {});
