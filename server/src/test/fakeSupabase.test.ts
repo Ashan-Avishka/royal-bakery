@@ -201,6 +201,23 @@ describe("createFakeSupabaseClient — .rpc() mock", () => {
   });
 });
 
+describe("createFakeSupabaseClient — payments table", () => {
+  it("supports insert/select on a payments table", async () => {
+    const client = createFakeSupabaseClient({ usersByToken: {}, profiles: [], payments: [] });
+
+    const { data: created, error } = await client
+      .from("payments")
+      .insert({ order_id: "order-1", payment_method: "payhere", status: "pending", amount: "760.00" })
+      .select("*")
+      .single();
+    expect(error).toBeNull();
+    expect(created.status).toBe("pending");
+
+    const { data } = await client.from("payments").select("*").eq("order_id", "order-1");
+    expect(data).toHaveLength(1);
+  });
+});
+
 describe("createFakeSupabaseClient — storage mock", () => {
   it("uploads a file and returns a public URL containing the bucket and path", async () => {
     const client = createFakeSupabaseClient({ usersByToken: {}, profiles: [] });

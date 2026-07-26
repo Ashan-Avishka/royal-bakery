@@ -44,7 +44,12 @@ function respondValidationError(res: Response, error: ZodError) {
   res.status(400).json({ error: { message: error.issues[0]?.message ?? "Invalid request" } });
 }
 
-adminCatalogRouter.use(requireAuth, requireRole("admin"));
+// Path-scoped for the same reason as cartRouter/ordersRouter/adminOrdersRouter
+// -- this was the original unscoped router.use() that caused that whole
+// class of mount-order bugs in the first place (Module 3's adminOrdersRouter
+// and this module's paymentsRouter both had to work around it via mount
+// order before this was fixed at the source).
+adminCatalogRouter.use(["/admin/categories", "/admin/products"], requireAuth, requireRole("admin"));
 
 // ---- Categories ----
 

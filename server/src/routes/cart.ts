@@ -15,7 +15,10 @@ import {
 
 export const cartRouter = Router();
 
-cartRouter.use(requireAuth);
+// Path-scoped so this only gates /cart* -- a path-less .use(requireAuth)
+// would intercept every request that reaches this router, including ones
+// meant for a later-mounted router with no route of its own here.
+cartRouter.use("/cart", requireAuth);
 
 cartRouter.get("/cart", async (req, res, next) => {
   try {

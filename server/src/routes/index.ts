@@ -6,9 +6,16 @@ import { cartRouter } from "./cart.js";
 import { categoriesRouter } from "./categories.js";
 import { healthRouter } from "./health.js";
 import { ordersRouter } from "./orders.js";
+import { paymentsRouter } from "./payments.js";
 import { productsRouter } from "./products.js";
 import { usersRouter } from "./users.js";
 
+// Every router below scopes its own auth middleware to its own path prefix
+// (or applies it per-route), so mount order here is not load-bearing --
+// unlike earlier, when adminCatalogRouter's path-less router.use() would
+// intercept any request reaching it regardless of a matching route of its
+// own, making mount order silently load-bearing until that was fixed at
+// the source (see adminCatalog.ts/cart.ts/orders.ts/adminOrders.ts).
 export const apiRouter = Router();
 
 apiRouter.use(healthRouter);
@@ -16,14 +23,8 @@ apiRouter.use(usersRouter);
 apiRouter.use(adminRouter);
 apiRouter.use(categoriesRouter);
 apiRouter.use(productsRouter);
-// cartRouter/ordersRouter must be mounted before adminCatalogRouter:
-// adminCatalogRouter applies requireAuth/requireRole via a path-less
-// router.use(), which intercepts every request that reaches it -- including
-// ones meant for a later-mounted router -- regardless of whether it has a
-// matching route of its own. Mounting the self-service routers first means
-// their own matching routes handle the request before it ever reaches that
-// blanket admin gate.
 apiRouter.use(cartRouter);
 apiRouter.use(ordersRouter);
+apiRouter.use(paymentsRouter);
 apiRouter.use(adminCatalogRouter);
 apiRouter.use(adminOrdersRouter);
