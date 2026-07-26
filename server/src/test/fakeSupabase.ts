@@ -64,6 +64,18 @@ export interface FakeOrderItemRow {
   subtotal: string;
 }
 
+export interface FakePaymentRow {
+  id: string;
+  order_id: string;
+  payment_method: string;
+  status: string;
+  amount: string;
+  transaction_id: string | null;
+  payhere_payment_id: string | null;
+  paid_at: string | null;
+  created_at: string;
+}
+
 type Row = Record<string, any>;
 
 interface FakeSupabaseOptions {
@@ -74,6 +86,7 @@ interface FakeSupabaseOptions {
   cartItems?: FakeCartItemRow[];
   orders?: FakeOrderRow[];
   orderItems?: FakeOrderItemRow[];
+  payments?: FakePaymentRow[];
   rpc?: Record<
     string,
     (params: Record<string, unknown>) => {
@@ -230,6 +243,7 @@ export function createFakeSupabaseClient(options: FakeSupabaseOptions) {
     cart_items: options.cartItems ?? [],
     orders: options.orders ?? [],
     order_items: options.orderItems ?? [],
+    payments: options.payments ?? [],
   };
 
   function from(tableName: string) {
