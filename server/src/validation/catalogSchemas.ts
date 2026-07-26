@@ -6,7 +6,7 @@ import { z } from "zod";
 // that aren't RFC 4122-compliant but are still valid Postgres `uuid` values.
 const uuidPattern =
   /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/;
-const uuidSchema = z.string().regex(uuidPattern, "Invalid uuid");
+export const uuidSchema = z.string().regex(uuidPattern, "Invalid uuid");
 
 export const idParamSchema = z.object({
   id: uuidSchema,

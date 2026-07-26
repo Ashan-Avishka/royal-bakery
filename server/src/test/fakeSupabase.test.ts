@@ -163,6 +163,44 @@ describe("createFakeSupabaseClient — generic multi-table support", () => {
   });
 });
 
+describe("createFakeSupabaseClient — .in() filter", () => {
+  it("matches any row whose column value is in the given list", async () => {
+    const client = createFakeSupabaseClient({
+      usersByToken: {},
+      profiles: [],
+      products: [
+        { id: "1", category_id: null, name: "A", description: null, price: "1", image_url: null, stock_quantity: 1, is_available: true, created_at: "t", updated_at: "t" },
+        { id: "2", category_id: null, name: "B", description: null, price: "1", image_url: null, stock_quantity: 1, is_available: true, created_at: "t", updated_at: "t" },
+        { id: "3", category_id: null, name: "C", description: null, price: "1", image_url: null, stock_quantity: 1, is_available: true, created_at: "t", updated_at: "t" },
+      ],
+    });
+
+    const { data } = await client.from("products").select("*").in("id", ["1", "3"]);
+    expect((data as any[]).map((p) => p.id).sort()).toEqual(["1", "3"]);
+  });
+});
+
+describe("createFakeSupabaseClient — .rpc() mock", () => {
+  it("calls the configured handler with the given params", async () => {
+    const client = createFakeSupabaseClient({
+      usersByToken: {},
+      profiles: [],
+      rpc: {
+        do_thing: (params) => ({ data: { received: params }, error: null }),
+      },
+    });
+
+    const { data, error } = await client.rpc("do_thing", { foo: "bar" });
+    expect(error).toBeNull();
+    expect(data).toEqual({ received: { foo: "bar" } });
+  });
+
+  it("throws if no handler is configured for the given name", async () => {
+    const client = createFakeSupabaseClient({ usersByToken: {}, profiles: [] });
+    await expect(client.rpc("unconfigured", {})).rejects.toThrow(/no rpc handler/);
+  });
+});
+
 describe("createFakeSupabaseClient — storage mock", () => {
   it("uploads a file and returns a public URL containing the bucket and path", async () => {
     const client = createFakeSupabaseClient({ usersByToken: {}, profiles: [] });

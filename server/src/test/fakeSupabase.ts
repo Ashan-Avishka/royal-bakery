@@ -36,6 +36,34 @@ export interface FakeProductRow {
   updated_at: string;
 }
 
+export interface FakeCartItemRow {
+  id: string;
+  user_id: string;
+  product_id: string;
+  quantity: number;
+  created_at: string;
+}
+
+export interface FakeOrderRow {
+  id: string;
+  user_id: string;
+  status: string;
+  payment_status: string;
+  total_amount: string;
+  delivery_address: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface FakeOrderItemRow {
+  id: string;
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  unit_price: string;
+  subtotal: string;
+}
+
 type Row = Record<string, any>;
 
 interface FakeSupabaseOptions {
@@ -43,6 +71,16 @@ interface FakeSupabaseOptions {
   profiles: FakeProfileRow[];
   categories?: FakeCategoryRow[];
   products?: FakeProductRow[];
+  cartItems?: FakeCartItemRow[];
+  orders?: FakeOrderRow[];
+  orderItems?: FakeOrderItemRow[];
+  rpc?: Record<
+    string,
+    (params: Record<string, unknown>) => {
+      data: unknown;
+      error: { code?: string; message: string } | null;
+    }
+  >;
 }
 
 interface FakeResult<T> {
@@ -75,6 +113,11 @@ class FakeQueryBuilder implements PromiseLike<FakeResult<any>> {
   ilike(column: string, pattern: string) {
     const term = pattern.replace(/^%+|%+$/g, "").toLowerCase();
     this.filters.push((row) => String(row[column] ?? "").toLowerCase().includes(term));
+    return this;
+  }
+
+  in(column: string, values: unknown[]) {
+    this.filters.push((row) => values.includes(row[column]));
     return this;
   }
 
@@ -184,6 +227,9 @@ export function createFakeSupabaseClient(options: FakeSupabaseOptions) {
     profiles: options.profiles,
     categories: options.categories ?? [],
     products: options.products ?? [],
+    cart_items: options.cartItems ?? [],
+    orders: options.orders ?? [],
+    order_items: options.orderItems ?? [],
   };
 
   function from(tableName: string) {
@@ -201,6 +247,13 @@ export function createFakeSupabaseClient(options: FakeSupabaseOptions) {
 
   return {
     from,
+    async rpc(name: string, params: Record<string, unknown>) {
+      const handler = (options.rpc ?? {})[name];
+      if (!handler) {
+        throw new Error(`FakeSupabaseClient: no rpc handler configured for "${name}"`);
+      }
+      return handler(params);
+    },
     storage: {
       from(bucket: string) {
         return {
