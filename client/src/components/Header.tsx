@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
-import { createClient } from "@/lib/supabase/server";
 import { Button } from "@/components/ui/Button";
+import { getCart } from "@/lib/cart";
+import { createClient } from "@/lib/supabase/server";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -14,6 +15,21 @@ export async function Header() {
   const {
     data: { user },
   } = await supabase.auth.getUser();
+
+  let cartItemCount = 0;
+  if (user) {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (session) {
+      try {
+        const cart = await getCart(session.access_token);
+        cartItemCount = cart.items.reduce((sum, item) => sum + item.quantity, 0);
+      } catch {
+        // Non-fatal — header still renders without a cart count.
+      }
+    }
+  }
 
   return (
     <header className="sticky top-0 z-10 border-b border-border-warm bg-cream-alt/90 backdrop-blur">
@@ -37,9 +53,26 @@ export async function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           {user ? (
             <>
+              <Link
+                href="/orders"
+                className="text-sm font-medium text-cocoa transition-colors hover:text-caramel"
+              >
+                My Orders
+              </Link>
+              <Link
+                href="/cart"
+                className="relative text-sm font-medium text-cocoa transition-colors hover:text-caramel"
+              >
+                Cart
+                {cartItemCount > 0 && (
+                  <span className="absolute -right-3 -top-2 flex h-5 w-5 items-center justify-center rounded-full bg-caramel text-xs font-semibold text-cream-alt">
+                    {cartItemCount}
+                  </span>
+                )}
+              </Link>
               <Link
                 href="/account"
                 className="text-sm font-medium text-cocoa transition-colors hover:text-caramel"
