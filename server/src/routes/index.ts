@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { adminRouter } from "./admin.js";
+import { adminAnalyticsRouter } from "./adminAnalytics.js";
 import { adminCatalogRouter } from "./adminCatalog.js";
 import { adminOrdersRouter } from "./adminOrders.js";
 import { cartRouter } from "./cart.js";
@@ -21,6 +22,7 @@ export const apiRouter = Router();
 apiRouter.use(healthRouter);
 apiRouter.use(usersRouter);
 apiRouter.use(adminRouter);
+apiRouter.use(adminAnalyticsRouter);
 apiRouter.use(categoriesRouter);
 apiRouter.use(productsRouter);
 apiRouter.use(cartRouter);

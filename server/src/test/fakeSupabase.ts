@@ -134,6 +134,16 @@ class FakeQueryBuilder implements PromiseLike<FakeResult<any>> {
     return this;
   }
 
+  gte(column: string, value: unknown) {
+    this.filters.push((row) => row[column] >= value);
+    return this;
+  }
+
+  lte(column: string, value: unknown) {
+    this.filters.push((row) => row[column] <= value);
+    return this;
+  }
+
   order(column: string, opts: { ascending: boolean }) {
     this.orderSpec = { column, ascending: opts.ascending };
     return this;
