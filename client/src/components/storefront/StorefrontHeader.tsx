@@ -20,7 +20,9 @@ export interface StorefrontHeaderProps {
 }
 
 const linkClassName =
-  "text-sm font-medium text-cocoa transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-cocoa transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+const adminLinkClassName =
+  "inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
 const primaryLinkClassName =
   "inline-flex min-h-11 items-center justify-center rounded-lg bg-cocoa px-4 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
 
@@ -58,12 +60,12 @@ export function StorefrontHeader({
       <div className="mx-auto flex min-h-16 max-w-6xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
         <Link
           href="/"
-          className="font-display text-xl font-semibold text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+          className="inline-flex min-h-11 items-center rounded-lg font-display text-xl font-semibold text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
         >
           Royal Bakery
         </Link>
 
-        <nav className="hidden items-center gap-7 sm:flex" aria-label="Primary navigation">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
           {primaryLinks.map((link) => (
             <Link key={link.href} href={link.href} className={linkClassName}>
               {link.label}
@@ -71,18 +73,18 @@ export function StorefrontHeader({
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 sm:flex">
+        <div className="hidden items-center gap-1 lg:flex">
           {signedIn ? (
             <>
               {isAdmin && (
-                <Link href="/admin" className={`${linkClassName} text-caramel-hover hover:text-cocoa`}>
+                <Link href="/admin" className={adminLinkClassName}>
                   Admin
                 </Link>
               )}
               <Link href="/orders" className={linkClassName}>
                 My Orders
               </Link>
-              <Link href="/cart" aria-label={cartLabel} className={`${linkClassName} inline-flex min-h-11 items-center gap-2`}>
+              <Link href="/cart" aria-label={cartLabel} className={`${linkClassName} min-w-11 gap-2`}>
                 <ShoppingBag aria-hidden="true" size={18} />
                 <span className="sr-only">{cartLabel}</span>
                 {cartItemCount > 0 && (
@@ -91,7 +93,11 @@ export function StorefrontHeader({
                   </span>
                 )}
               </Link>
-              <Link href="/account" aria-label="Account" className={`${linkClassName} inline-flex min-h-11 items-center gap-2`}>
+              <Link
+                href="/account"
+                aria-label="Account"
+                className={`${linkClassName} min-w-11 justify-center`}
+              >
                 <UserRound aria-hidden="true" size={18} />
                 <span className="sr-only">Account</span>
               </Link>
@@ -115,7 +121,7 @@ export function StorefrontHeader({
 
         <button
           type="button"
-          className="inline-flex min-h-11 min-w-11 items-center justify-center text-cocoa transition-colors hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 sm:hidden"
+          className="inline-flex min-h-11 min-w-11 items-center justify-center text-cocoa transition-colors hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 lg:hidden"
           aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
           aria-controls="storefront-mobile-navigation"
           aria-expanded={mobileMenuOpen}
@@ -131,7 +137,7 @@ export function StorefrontHeader({
             <motion.nav
               id="storefront-mobile-navigation"
               aria-label="Mobile navigation"
-              className="border-t border-border-warm bg-cream-alt px-4 py-4 sm:hidden"
+              className="border-t border-border-warm bg-cream-alt px-4 py-4 lg:hidden"
               initial={{ opacity: 0, y: mobileMenuOffset }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: mobileMenuOffset }}
@@ -142,7 +148,7 @@ export function StorefrontHeader({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`${linkClassName} flex min-h-11 items-center px-2`}
+                    className={`${linkClassName} w-full`}
                     onClick={closeMobileMenu}
                   >
                     {link.label}
@@ -153,7 +159,7 @@ export function StorefrontHeader({
                   <Link
                     key={link.href}
                     href={link.href}
-                    className={`${linkClassName} flex min-h-11 items-center px-2`}
+                    className={`${linkClassName} w-full`}
                     onClick={closeMobileMenu}
                   >
                     {link.label}
@@ -164,7 +170,7 @@ export function StorefrontHeader({
                     <Link
                       href="/cart"
                       aria-label={cartLabel}
-                      className={`${linkClassName} flex min-h-11 items-center gap-2 px-2`}
+                      className={`${linkClassName} w-full gap-2`}
                       onClick={closeMobileMenu}
                     >
                       <ShoppingBag aria-hidden="true" size={18} />

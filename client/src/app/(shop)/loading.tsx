@@ -7,8 +7,6 @@ export default function ShopLoading() {
       aria-busy="true"
       className="min-h-screen bg-cream"
     >
-      <div className="h-10 border-b border-border-warm bg-honey-light/60" />
-      <div className="h-16 border-b border-border-warm bg-cream-alt" />
       <div className="mx-auto max-w-6xl space-y-8 px-4 py-12 sm:px-6">
         <div className="h-8 w-48 bg-honey-light" />
         <div className="h-5 max-w-xl bg-honey-light/70" />

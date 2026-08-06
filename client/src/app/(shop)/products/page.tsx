@@ -26,6 +26,7 @@ export default async function ProductsPage({
   searchParams: Promise<{ categoryId?: string; search?: string }>;
 }) {
   const { categoryId, search } = await searchParams;
+  const hasActiveFilters = Boolean(categoryId || search);
 
   const [categories, products] = await Promise.all([
     listCategories(),
@@ -62,10 +63,14 @@ export default async function ProductsPage({
         <div className="mx-auto max-w-6xl px-6 py-10 sm:py-12">
           {products.length === 0 ? (
             <EmptyState
-              title="No products found"
-              description={getEmptyDescription(categoryId, search)}
-              actionHref="/products"
-              actionLabel="Clear filters"
+              title={hasActiveFilters ? "No products found" : "The menu is currently unavailable"}
+              description={
+                hasActiveFilters
+                  ? getEmptyDescription(categoryId, search)
+                  : "There are no products available in the menu right now."
+              }
+              actionHref={hasActiveFilters ? "/products" : "/"}
+              actionLabel={hasActiveFilters ? "Clear filters" : "Back to home"}
             />
           ) : (
             <StaggerGrid className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5 lg:grid-cols-4 lg:gap-6">

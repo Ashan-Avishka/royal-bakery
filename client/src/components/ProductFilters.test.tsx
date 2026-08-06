@@ -76,7 +76,7 @@ it("labels search and debounces query updates while preserving categoryId", () =
   expect(push).toHaveBeenCalledWith("/products?categoryId=cakes&search=vanilla");
 });
 
-it("cancels a pending search when selecting another category", () => {
+it("applies the latest typed search when selecting another category before the debounce", () => {
   vi.useFakeTimers();
   render(
     <ProductFilters
@@ -93,10 +93,37 @@ it("cancels a pending search when selecting another category", () => {
   fireEvent.click(screen.getByRole("button", { name: "Cookies" }));
 
   expect(push).toHaveBeenLastCalledWith(
-    "/products?categoryId=cookies&search=chocolate"
+    "/products?categoryId=cookies&search=vanilla"
   );
   vi.advanceTimersByTime(350);
   expect(push).toHaveBeenCalledTimes(1);
+});
+
+it("keeps a newly selected category when search changes before navigation commits", () => {
+  vi.useFakeTimers();
+  render(
+    <ProductFilters
+      categories={categories}
+      activeCategoryId="cakes"
+      activeSearch="chocolate"
+      resultCount={1}
+    />
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "Cookies" }));
+  fireEvent.change(screen.getByRole("searchbox", { name: /search products/i }), {
+    target: { value: "vanilla" },
+  });
+  vi.advanceTimersByTime(350);
+
+  expect(push).toHaveBeenNthCalledWith(
+    1,
+    "/products?categoryId=cookies&search=chocolate"
+  );
+  expect(push).toHaveBeenNthCalledWith(
+    2,
+    "/products?categoryId=cookies&search=vanilla"
+  );
 });
 
 it("cancels a pending search when activating the reset link", () => {

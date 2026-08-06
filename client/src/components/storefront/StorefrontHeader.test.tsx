@@ -32,14 +32,35 @@ describe("StorefrontHeader", () => {
   it("shows signed-in account, order, cart, and admin navigation", () => {
     render(<StorefrontHeader signedIn isAdmin cartItemCount={3} />);
 
-    expect(screen.getByRole("link", { name: "Admin" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Admin" })).toHaveClass(
-      "text-caramel-hover"
+    const adminLink = screen.getByRole("link", { name: "Admin" });
+    expect(adminLink).toBeVisible();
+    expect(adminLink).toHaveClass("min-h-11", "text-caramel-hover", "hover:text-cocoa");
+    expect(adminLink).not.toHaveClass("text-cocoa", "hover:text-caramel-hover");
+    expect(screen.getByRole("link", { name: "My Orders" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("link", { name: "Account" })).toHaveClass(
+      "min-h-11",
+      "min-w-11"
     );
-    expect(screen.getByRole("link", { name: "My Orders" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "Account" })).toBeVisible();
     expect(screen.getByRole("link", { name: /cart, 3 items/i })).toBeVisible();
     expect(screen.getByText("3")).toHaveClass("bg-cocoa", "text-cream-alt");
+  });
+
+  it("keeps the mobile disclosure active through tablet widths", () => {
+    render(<StorefrontHeader signedIn isAdmin cartItemCount={3} />);
+
+    expect(screen.getByRole("navigation", { name: "Primary navigation" })).toHaveClass(
+      "hidden",
+      "lg:flex"
+    );
+    expect(screen.getByRole("button", { name: "Open navigation" })).toHaveClass(
+      "lg:hidden"
+    );
+
+    for (const link of within(
+      screen.getByRole("navigation", { name: "Primary navigation" })
+    ).getAllByRole("link")) {
+      expect(link).toHaveClass("min-h-11", "px-3");
+    }
   });
 
   it("exposes the mobile menu as a disclosure and closes it after navigation", () => {

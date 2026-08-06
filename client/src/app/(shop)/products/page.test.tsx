@@ -108,6 +108,28 @@ describe("ProductsPage", () => {
     );
   });
 
+  it("offers a useful home route when the complete menu is empty", async () => {
+    catalogMocks.listProducts.mockResolvedValue([]);
+
+    render(
+      await ProductsPage({
+        searchParams: Promise.resolve({}),
+      })
+    );
+
+    expect(
+      screen.getByRole("heading", { name: "The menu is currently unavailable" })
+    ).toBeVisible();
+    expect(
+      screen.getByText("There are no products available in the menu right now.")
+    ).toBeVisible();
+    expect(screen.getByRole("link", { name: "Back to home" })).toHaveAttribute(
+      "href",
+      "/"
+    );
+    expect(screen.queryByRole("link", { name: "Clear filters" })).not.toBeInTheDocument();
+  });
+
   it("lets catalog API failures reach the route error boundary", async () => {
     catalogMocks.listProducts.mockRejectedValue(new Error("Catalog unavailable"));
 

@@ -5,9 +5,8 @@ import ShopLoading from "./loading";
 it("announces storefront loading without adding a nested main landmark", () => {
   const { container } = render(<ShopLoading />);
 
-  expect(screen.getByRole("status", { name: "Loading storefront" })).toHaveAttribute(
-    "aria-live",
-    "polite"
-  );
+  const status = screen.getByRole("status", { name: "Loading storefront" });
+  expect(status).toHaveAttribute("aria-live", "polite");
+  expect(status.children).toHaveLength(1);
   expect(container.querySelector("main")).not.toBeInTheDocument();
 });

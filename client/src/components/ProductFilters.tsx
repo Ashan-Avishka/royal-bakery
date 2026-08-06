@@ -21,8 +21,18 @@ export function ProductFilters({
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const currentQuery = searchParams.toString();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const latestParamsRef = useRef(currentQuery);
+  const hasLocalIntentRef = useRef(false);
   const searchRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!hasLocalIntentRef.current || latestParamsRef.current === currentQuery) {
+      latestParamsRef.current = currentQuery;
+      hasLocalIntentRef.current = false;
+    }
+  }, [currentQuery]);
 
   useEffect(() => {
     return () => {
@@ -35,9 +45,8 @@ export function ProductFilters({
     debounceRef.current = null;
   }
 
-  function updateParams(next: Record<string, string | undefined>) {
-    cancelPendingSearch();
-    const params = new URLSearchParams(searchParams.toString());
+  function buildIntendedQuery(next: Record<string, string | undefined>) {
+    const params = new URLSearchParams(latestParamsRef.current);
     Object.entries(next).forEach(([key, value]) => {
       if (value) {
         params.set(key, value);
@@ -46,19 +55,37 @@ export function ProductFilters({
       }
     });
     const query = params.toString();
+    latestParamsRef.current = query;
+    hasLocalIntentRef.current = true;
+    return query;
+  }
+
+  function navigateToQuery(query: string) {
     router.push(query ? `${pathname}?${query}` : pathname);
+  }
+
+  function updateParams(next: Record<string, string | undefined>) {
+    cancelPendingSearch();
+    navigateToQuery(buildIntendedQuery(next));
   }
 
   function handleSearchChange(value: string) {
     cancelPendingSearch();
+    const query = buildIntendedQuery({ search: value || undefined });
     debounceRef.current = setTimeout(() => {
-      updateParams({ search: value || undefined });
+      navigateToQuery(query);
     }, 350);
   }
 
   function clearSearch() {
     if (searchRef.current) searchRef.current.value = "";
     updateParams({ search: undefined });
+  }
+
+  function resetFilters() {
+    cancelPendingSearch();
+    latestParamsRef.current = "";
+    hasLocalIntentRef.current = true;
   }
 
   const hasActiveFilters = Boolean(activeCategoryId || activeSearch);
@@ -133,7 +160,7 @@ export function ProductFilters({
         {hasActiveFilters && (
           <Link
             href="/products"
-            onClick={cancelPendingSearch}
+            onClick={resetFilters}
             className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-cocoa underline decoration-border-warm underline-offset-4 transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
           >
             Browse all products
