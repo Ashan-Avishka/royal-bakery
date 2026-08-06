@@ -19,3 +19,20 @@ it("renders a recovery link with the supplied heading and description", () => {
     "/products"
   );
 });
+
+it("uses the accessible dark primary-action token pairing", () => {
+  render(
+    <EmptyState
+      title="No products found"
+      description="Clear the filters to browse the full menu."
+      actionHref="/products"
+      actionLabel="Clear filters"
+    />
+  );
+
+  expect(screen.getByRole("link", { name: "Clear filters" })).toHaveClass(
+    "bg-cocoa",
+    "text-cream-alt",
+    "hover:bg-cocoa-dark"
+  );
+});

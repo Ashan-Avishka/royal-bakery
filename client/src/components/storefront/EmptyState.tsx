@@ -19,7 +19,7 @@ export function EmptyState({
       <p className="mx-auto mt-3 max-w-xl text-text-muted">{description}</p>
       <Link
         href={actionHref}
-        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+        className="mt-6 inline-flex min-h-11 items-center justify-center rounded-lg bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
       >
         {actionLabel}
       </Link>
