@@ -1,0 +1,82 @@
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, expect, it, vi } from "vitest";
+import { ProductFilters } from "./ProductFilters";
+
+const push = vi.fn();
+const replace = vi.fn();
+
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/products",
+  useRouter: () => ({ push, replace }),
+  useSearchParams: () => new URLSearchParams("categoryId=cakes&search=chocolate"),
+}));
+
+afterEach(() => {
+  cleanup();
+  push.mockClear();
+  replace.mockClear();
+  vi.useRealTimers();
+});
+
+const categories = [
+  {
+    id: "cakes",
+    name: "Cakes",
+    description: null,
+    isActive: true,
+    createdAt: "2026-08-06T00:00:00.000Z",
+  },
+];
+
+it("exposes the selected category with aria-pressed and a polite result summary", () => {
+  render(
+    <ProductFilters
+      categories={categories}
+      activeCategoryId="cakes"
+      activeSearch="chocolate"
+      resultCount={2}
+    />
+  );
+
+  expect(screen.getByRole("button", { name: "Cakes" })).toHaveAttribute(
+    "aria-pressed",
+    "true"
+  );
+  expect(screen.getByText("2 products")).toHaveAttribute("aria-live", "polite");
+});
+
+it("labels search and debounces query updates while preserving categoryId", () => {
+  vi.useFakeTimers();
+  render(
+    <ProductFilters
+      categories={categories}
+      activeCategoryId="cakes"
+      resultCount={1}
+    />
+  );
+
+  fireEvent.change(screen.getByRole("searchbox", { name: /search products/i }), {
+    target: { value: "vanilla" },
+  });
+  vi.advanceTimersByTime(349);
+  expect(push).not.toHaveBeenCalled();
+
+  vi.advanceTimersByTime(1);
+  expect(push).toHaveBeenCalledWith("/products?categoryId=cakes&search=vanilla");
+});
+
+it("provides a reset control when filters are active", () => {
+  render(
+    <ProductFilters
+      categories={categories}
+      activeCategoryId="cakes"
+      activeSearch="chocolate"
+      resultCount={1}
+    />
+  );
+
+  expect(screen.getByRole("link", { name: /browse all products/i })).toHaveAttribute(
+    "href",
+    "/products"
+  );
+});

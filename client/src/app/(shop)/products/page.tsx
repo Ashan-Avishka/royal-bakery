@@ -23,6 +23,7 @@ export default async function ProductsPage({
           categories={categories}
           activeCategoryId={categoryId}
           activeSearch={search}
+          resultCount={products.length}
         />
       </div>
 
