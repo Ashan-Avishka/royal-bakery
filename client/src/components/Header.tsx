@@ -56,6 +56,14 @@ export async function Header() {
         <div className="flex items-center gap-4">
           {user ? (
             <>
+              {user.app_metadata?.role === "admin" && (
+                <Link
+                  href="/admin"
+                  className="text-sm font-medium text-caramel transition-colors hover:text-caramel-hover"
+                >
+                  Admin
+                </Link>
+              )}
               <Link
                 href="/orders"
                 className="text-sm font-medium text-cocoa transition-colors hover:text-caramel"
