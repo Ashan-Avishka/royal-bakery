@@ -91,6 +91,24 @@ describe("HomePage", () => {
     ).toHaveAttribute("src", products[1].imageUrl);
   });
 
+  it("uses accessible existing color tokens for small text and primary actions", async () => {
+    render(await HomePage());
+
+    expect(screen.getByText("Colombo bakery")).toHaveClass("text-cocoa");
+    expect(screen.getByRole("link", { name: "Shop the menu" })).toHaveClass(
+      "bg-cocoa",
+      "text-cream-alt",
+      "hover:bg-cocoa-dark"
+    );
+    expect(screen.getByRole("link", { name: "View the menu" })).toHaveClass(
+      "text-caramel-hover",
+      "hover:text-cocoa"
+    );
+    expect(screen.getByRole("link", { name: "Cakes" })).toHaveClass(
+      "hover:text-caramel-hover"
+    );
+  });
+
   it("composes category, value, story, and featured-product discovery in visual order", async () => {
     render(await HomePage());
 
@@ -151,6 +169,10 @@ describe("HomePage", () => {
       "href",
       "/products"
     );
+    expect(
+      screen.queryByRole("heading", { name: "Choose something for today" })
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("link", { name: "Shop all bakes" })).not.toBeInTheDocument();
     expect(screen.queryByRole("img")).not.toBeInTheDocument();
   });
 });

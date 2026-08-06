@@ -32,7 +32,7 @@ const valueItems = [
 ];
 
 const primaryLinkClasses =
-  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-caramel px-5 py-2.5 text-sm font-semibold text-cream-alt transition-colors hover:bg-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-cocoa px-5 py-2.5 text-sm font-semibold text-cream-alt transition-colors hover:bg-cocoa-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
 
 const secondaryLinkClasses =
   "inline-flex min-h-11 items-center justify-center rounded-lg border border-border-warm bg-cream-alt px-5 py-2.5 text-sm font-semibold text-cocoa transition-colors hover:border-caramel hover:bg-honey-light focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
@@ -52,7 +52,7 @@ export default async function HomePage() {
         <div className="mx-auto grid max-w-6xl items-center gap-9 px-6 py-10 sm:py-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(24rem,1.1fr)] lg:gap-14 lg:py-14">
           <Reveal>
             <div className="max-w-xl">
-              <p className="text-sm font-semibold text-caramel">Colombo bakery</p>
+              <p className="text-sm font-semibold text-cocoa">Colombo bakery</p>
               <h1 className="mt-3 text-balance font-display text-5xl font-semibold leading-tight text-cocoa sm:text-6xl">
                 Royal Bakery
               </h1>
@@ -114,7 +114,7 @@ export default async function HomePage() {
                 <Link
                   key={category.id}
                   href={`/products?categoryId=${category.id}`}
-                  className="inline-flex min-h-11 items-center rounded-full border border-border-warm bg-cream px-4 py-2 text-sm font-semibold text-cocoa transition-colors hover:border-caramel hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center rounded-full border border-border-warm bg-cream px-4 py-2 text-sm font-semibold text-cocoa transition-colors hover:border-caramel hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
                 >
                   {category.name}
                 </Link>
@@ -133,7 +133,7 @@ export default async function HomePage() {
               action={
                 <Link
                   href="/products"
-                  className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-caramel transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 items-center gap-2 rounded-lg px-2 text-sm font-semibold text-caramel-hover transition-colors hover:text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
                 >
                   View the menu
                   <ArrowRight aria-hidden="true" className="size-4" />
@@ -208,20 +208,22 @@ export default async function HomePage() {
         </Reveal>
       </section>
 
-      <section className="bg-honey-light">
-        <Reveal className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-12 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="font-display text-2xl text-cocoa sm:text-3xl">
-              Choose something for today
-            </h2>
-            <p className="mt-2 text-text-muted">Explore the current Royal Bakery menu.</p>
-          </div>
-          <Link href="/products" className={primaryLinkClasses}>
-            Shop all bakes
-            <ArrowRight aria-hidden="true" className="size-4" />
-          </Link>
-        </Reveal>
-      </section>
+      {featured.length > 0 && (
+        <section className="bg-honey-light">
+          <Reveal className="mx-auto flex max-w-6xl flex-col gap-6 px-6 py-12 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-display text-2xl text-cocoa sm:text-3xl">
+                Choose something for today
+              </h2>
+              <p className="mt-2 text-text-muted">Explore the current Royal Bakery menu.</p>
+            </div>
+            <Link href="/products" className={primaryLinkClasses}>
+              Shop all bakes
+              <ArrowRight aria-hidden="true" className="size-4" />
+            </Link>
+          </Reveal>
+        </section>
+      )}
     </>
   );
 }
