@@ -49,6 +49,10 @@ it("exposes the selected category with aria-pressed and a polite result summary"
     "aria-pressed",
     "true"
   );
+  expect(screen.getByRole("button", { name: "Cakes" })).toHaveClass(
+    "bg-cocoa",
+    "text-cream-alt"
+  );
   expect(screen.getByText("2 products")).toHaveAttribute("aria-live", "polite");
 });
 
@@ -130,5 +134,8 @@ it("provides a reset control when filters are active", () => {
   expect(screen.getByRole("link", { name: /browse all products/i })).toHaveAttribute(
     "href",
     "/products"
+  );
+  expect(screen.getByRole("link", { name: /browse all products/i })).toHaveClass(
+    "hover:text-caramel-hover"
   );
 });

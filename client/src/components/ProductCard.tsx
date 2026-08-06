@@ -62,7 +62,9 @@ export function ProductCard({
             </div>
             <div className="flex min-h-24 flex-col justify-between gap-2 p-4">
               <h3 className="font-display text-lg leading-snug text-cocoa">{product.name}</h3>
-              <p className="text-sm font-semibold text-caramel">{formatPrice(product.price)}</p>
+              <p className="text-sm font-semibold text-caramel-hover">
+                {formatPrice(product.price)}
+              </p>
             </div>
           </Card>
         </motion.div>

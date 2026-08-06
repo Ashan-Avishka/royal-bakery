@@ -4,12 +4,18 @@ import { afterEach, expect, it, vi } from "vitest";
 import { ProductCard } from "./ProductCard";
 
 vi.mock("next/image", () => ({
-  default: ({ priority, alt, ...props }: ComponentProps<"img"> & { priority?: boolean }) =>
-    createElement("img", {
+  default: ({ priority, fill, alt, ...props }: ComponentProps<"img"> & {
+    priority?: boolean;
+    fill?: boolean;
+  }) => {
+    void fill;
+
+    return createElement("img", {
       ...props,
       alt: alt ?? "",
       "data-priority": priority ? "true" : undefined,
-    }),
+    });
+  },
 }));
 
 const product = {
@@ -33,7 +39,7 @@ it("renders the product image, formatted price, and a full-card product link", (
   expect(
     screen.getByRole("img", { name: "Chocolate Celebration Cake" })
   ).toHaveAttribute("src", product.imageUrl);
-  expect(screen.getByText("LKR 3,250")).toBeVisible();
+  expect(screen.getByText("LKR 3,250")).toHaveClass("text-caramel-hover");
   expect(
     screen.getByRole("link", { name: /chocolate celebration cake/i })
   ).toHaveAttribute("href", "/products/baked-001");

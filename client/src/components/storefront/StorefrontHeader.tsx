@@ -20,9 +20,9 @@ export interface StorefrontHeaderProps {
 }
 
 const linkClassName =
-  "text-sm font-medium text-cocoa transition-colors hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+  "text-sm font-medium text-cocoa transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
 const primaryLinkClassName =
-  "inline-flex min-h-11 items-center justify-center rounded-lg bg-caramel px-4 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+  "inline-flex min-h-11 items-center justify-center rounded-lg bg-cocoa px-4 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
 
 export function StorefrontHeader({
   signedIn,
@@ -73,7 +73,7 @@ export function StorefrontHeader({
           {signedIn ? (
             <>
               {isAdmin && (
-                <Link href="/admin" className={`${linkClassName} text-caramel hover:text-caramel-hover`}>
+                <Link href="/admin" className={`${linkClassName} text-caramel-hover hover:text-cocoa`}>
                   Admin
                 </Link>
               )}
@@ -84,7 +84,7 @@ export function StorefrontHeader({
                 <ShoppingBag aria-hidden="true" size={18} />
                 <span className="sr-only">{cartLabel}</span>
                 {cartItemCount > 0 && (
-                  <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-caramel px-1 text-xs font-semibold text-cream-alt">
+                  <span className="flex min-h-5 min-w-5 items-center justify-center rounded-full bg-cocoa px-1 text-xs font-semibold text-cream-alt">
                     {cartItemCount}
                   </span>
                 )}

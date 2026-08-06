@@ -8,7 +8,9 @@ describe("StorefrontHeader", () => {
   it("shows the public navigation and authentication links to signed-out visitors", () => {
     render(<StorefrontHeader signedIn={false} isAdmin={false} cartItemCount={0} />);
 
-    expect(screen.getByRole("link", { name: "Home" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Home" })).toHaveClass(
+      "hover:text-caramel-hover"
+    );
     expect(screen.getByRole("link", { name: "Products" })).toBeVisible();
     expect(screen.getByRole("link", { name: "About" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Sign In" })).toBeVisible();
@@ -18,18 +20,26 @@ describe("StorefrontHeader", () => {
   it("renders the desktop sign-up call to action as a link without a nested button", () => {
     render(<StorefrontHeader signedIn={false} isAdmin={false} cartItemCount={0} />);
 
-    expect(
-      within(screen.getByRole("link", { name: "Sign Up" })).queryByRole("button")
-    ).not.toBeInTheDocument();
+    const signUpLink = screen.getByRole("link", { name: "Sign Up" });
+    expect(within(signUpLink).queryByRole("button")).not.toBeInTheDocument();
+    expect(signUpLink).toHaveClass(
+      "bg-cocoa",
+      "text-cream-alt",
+      "hover:bg-cocoa-dark"
+    );
   });
 
   it("shows signed-in account, order, cart, and admin navigation", () => {
     render(<StorefrontHeader signedIn isAdmin cartItemCount={3} />);
 
     expect(screen.getByRole("link", { name: "Admin" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Admin" })).toHaveClass(
+      "text-caramel-hover"
+    );
     expect(screen.getByRole("link", { name: "My Orders" })).toBeVisible();
     expect(screen.getByRole("link", { name: "Account" })).toBeVisible();
     expect(screen.getByRole("link", { name: /cart, 3 items/i })).toBeVisible();
+    expect(screen.getByText("3")).toHaveClass("bg-cocoa", "text-cream-alt");
   });
 
   it("exposes the mobile menu as a disclosure and closes it after navigation", () => {

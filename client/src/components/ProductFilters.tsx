@@ -74,7 +74,7 @@ export function ProductFilters({
             onClick={() => updateParams({ categoryId: undefined })}
             className={`min-h-11 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
               !activeCategoryId
-                ? "border-caramel bg-caramel text-cream-alt"
+                ? "border-cocoa bg-cocoa text-cream-alt"
                 : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel"
             }`}
           >
@@ -88,7 +88,7 @@ export function ProductFilters({
               onClick={() => updateParams({ categoryId: category.id })}
               className={`min-h-11 rounded-full border px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
                 activeCategoryId === category.id
-                  ? "border-caramel bg-caramel text-cream-alt"
+                  ? "border-cocoa bg-cocoa text-cream-alt"
                   : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel"
               }`}
             >
@@ -134,7 +134,7 @@ export function ProductFilters({
           <Link
             href="/products"
             onClick={cancelPendingSearch}
-            className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-cocoa underline decoration-border-warm underline-offset-4 transition-colors hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-cocoa underline decoration-border-warm underline-offset-4 transition-colors hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
           >
             Browse all products
           </Link>
