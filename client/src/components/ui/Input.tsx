@@ -35,7 +35,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           id={inputId}
           aria-describedby={describedBy}
           aria-invalid={error ? true : ariaInvalid}
-          className={`rounded-lg border bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
+          className={`min-h-11 rounded-lg border bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
             error ? "border-red-400" : "border-border-warm"
           } ${className}`}
           {...props}
