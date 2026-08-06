@@ -50,7 +50,8 @@ export async function updateCartItemQuantity(formData: FormData) {
     });
   } catch (err) {
     const message = err instanceof ApiError ? err.message : "Failed to update quantity.";
-    redirect(`/cart?error=${encodeURIComponent(message)}`);
+    const query = new URLSearchParams({ error: message, errorProductId: productId });
+    redirect(`/cart?${query.toString()}`);
   }
 
   revalidatePath("/cart");
@@ -72,7 +73,8 @@ export async function removeCartItem(formData: FormData) {
     });
   } catch (err) {
     const message = err instanceof ApiError ? err.message : "Failed to remove item.";
-    redirect(`/cart?error=${encodeURIComponent(message)}`);
+    const query = new URLSearchParams({ error: message, errorProductId: productId });
+    redirect(`/cart?${query.toString()}`);
   }
 
   revalidatePath("/cart");
