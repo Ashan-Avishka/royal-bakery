@@ -19,3 +19,6 @@ next-env.d.ts
 
 # Claude Code agent state (worktrees, local session data)
 .claude/
+
+# Isolated implementation worktrees
+.worktrees/
