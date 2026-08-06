@@ -26,11 +26,17 @@ export function ProductFilters({
 
   useEffect(() => {
     return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
+      cancelPendingSearch();
     };
   }, []);
 
+  function cancelPendingSearch() {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = null;
+  }
+
   function updateParams(next: Record<string, string | undefined>) {
+    cancelPendingSearch();
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(next).forEach(([key, value]) => {
       if (value) {
@@ -44,14 +50,13 @@ export function ProductFilters({
   }
 
   function handleSearchChange(value: string) {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    cancelPendingSearch();
     debounceRef.current = setTimeout(() => {
       updateParams({ search: value || undefined });
     }, 350);
   }
 
   function clearSearch() {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
     if (searchRef.current) searchRef.current.value = "";
     updateParams({ search: undefined });
   }
@@ -128,6 +133,7 @@ export function ProductFilters({
         {hasActiveFilters && (
           <Link
             href="/products"
+            onClick={cancelPendingSearch}
             className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-cocoa underline decoration-border-warm underline-offset-4 transition-colors hover:text-caramel focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
           >
             Browse all products
