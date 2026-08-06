@@ -15,6 +15,14 @@ describe("StorefrontHeader", () => {
     expect(screen.getByRole("link", { name: "Sign Up" })).toBeVisible();
   });
 
+  it("renders the desktop sign-up call to action as a link without a nested button", () => {
+    render(<StorefrontHeader signedIn={false} isAdmin={false} cartItemCount={0} />);
+
+    expect(
+      within(screen.getByRole("link", { name: "Sign Up" })).queryByRole("button")
+    ).not.toBeInTheDocument();
+  });
+
   it("shows signed-in account, order, cart, and admin navigation", () => {
     render(<StorefrontHeader signedIn isAdmin cartItemCount={3} />);
 
@@ -47,5 +55,10 @@ describe("StorefrontHeader", () => {
     fireEvent.click(productsLink);
 
     expect(menuButton).toHaveAttribute("aria-expanded", "false");
+    expect(mobileNavigation.parentElement).toHaveAttribute("aria-hidden", "true");
+    expect(mobileNavigation.parentElement).toHaveAttribute("inert");
+    expect(
+      screen.queryByRole("navigation", { name: "Mobile navigation" })
+    ).not.toBeInTheDocument();
   });
 });
