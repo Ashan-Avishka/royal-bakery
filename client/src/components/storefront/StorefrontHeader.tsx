@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, ShoppingBag, UserRound, X } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "@/app/actions/auth";
@@ -30,6 +30,8 @@ export function StorefrontHeader({
   cartItemCount,
 }: StorefrontHeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const mobileMenuOffset = reducedMotion ? 0 : -8;
   const closeMobileMenu = () => setMobileMenuOpen(false);
   const cartLabel = `Cart, ${cartItemCount} ${cartItemCount === 1 ? "item" : "items"}`;
 
@@ -130,9 +132,9 @@ export function StorefrontHeader({
               id="storefront-mobile-navigation"
               aria-label="Mobile navigation"
               className="border-t border-border-warm bg-cream-alt px-4 py-4 sm:hidden"
-              initial={{ opacity: 0, y: -8 }}
+              initial={{ opacity: 0, y: mobileMenuOffset }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
+              exit={{ opacity: 0, y: mobileMenuOffset }}
               transition={{ duration: 0.2 }}
             >
               <div className="mx-auto flex max-w-6xl flex-col gap-1">
