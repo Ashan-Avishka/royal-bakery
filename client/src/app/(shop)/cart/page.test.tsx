@@ -60,6 +60,9 @@ beforeEach(() => {
     data: { session: { access_token: "access-token" } },
   });
   mocks.getCart.mockResolvedValue(cart);
+  mocks.redirect.mockImplementation((href: string) => {
+    throw new Error(`NEXT_REDIRECT:${href}`);
+  });
 });
 
 afterEach(() => {
@@ -67,7 +70,45 @@ afterEach(() => {
   vi.clearAllMocks();
 });
 
-describe("CartPage mutation errors", () => {
+describe("CartPage", () => {
+  it("redirects unauthenticated visitors before loading the cart", async () => {
+    mocks.getUser.mockResolvedValue({ data: { user: null } });
+
+    await expect(
+      CartPage({ searchParams: Promise.resolve({}) })
+    ).rejects.toThrow("NEXT_REDIRECT:/login");
+    expect(mocks.getCart).not.toHaveBeenCalled();
+  });
+
+  it("renders the empty cart recovery state without an order summary", async () => {
+    mocks.getCart.mockResolvedValue({ items: [], subtotal: 0 });
+
+    render(await CartPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("heading", { name: "Your cart is empty" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "Browse the menu" })).toHaveAttribute(
+      "href",
+      "/products"
+    );
+    expect(screen.queryByRole("heading", { name: "Order summary" }))
+      .not.toBeInTheDocument();
+  });
+
+  it("composes populated items with an accessible checkout action", async () => {
+    render(await CartPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("heading", { name: "Cart items" })).toBeVisible();
+    expect(screen.getAllByRole("article")).toHaveLength(2);
+    expect(screen.getByRole("heading", { name: "Order summary" })).toBeVisible();
+    expect(screen.getByText("Chocolate Celebration Cake x 2")).toBeVisible();
+    expect(screen.getByRole("link", { name: "Proceed to checkout" }))
+      .toHaveAttribute("href", "/checkout");
+    expect(screen.getByRole("link", { name: "Proceed to checkout" })).toHaveClass(
+      "bg-cocoa",
+      "hover:bg-cocoa-dark"
+    );
+  });
+
   it("renders an error beside the matching product row", async () => {
     render(
       await CartPage({

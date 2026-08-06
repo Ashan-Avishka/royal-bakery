@@ -53,6 +53,10 @@ it("renders the optional edit link and checkout action", () => {
     "href",
     "/cart"
   );
+  expect(screen.getByRole("link", { name: "Edit cart" })).toHaveClass(
+    "text-cocoa",
+    "hover:text-cocoa-dark"
+  );
   expect(screen.getByRole("link", { name: "Proceed to checkout" })).toHaveAttribute(
     "href",
     "/checkout"

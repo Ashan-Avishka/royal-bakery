@@ -73,7 +73,7 @@ export function CartItemRow({ item, error }: CartItemRowProps) {
               min={1}
               max={item.stockQuantity}
               defaultValue={item.quantity}
-              className="min-h-11 w-20 rounded-lg border border-border-warm bg-white px-3 py-2 text-center text-sm tabular-nums text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+              className="min-h-11 w-20 rounded-lg border border-text-muted bg-white px-3 py-2 text-center text-sm tabular-nums text-cocoa focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
             />
           </div>
           <SubmitButton

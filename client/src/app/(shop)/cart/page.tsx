@@ -81,7 +81,7 @@ export default async function CartPage({
               action={
                 <Link
                   href="/checkout"
-                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+                  className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
                 >
                   Proceed to checkout
                 </Link>

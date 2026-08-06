@@ -23,7 +23,7 @@ export function OrderSummary({
         {editHref ? (
           <Link
             href={editHref}
-            className="inline-flex min-h-11 items-center text-sm font-medium text-caramel underline-offset-4 hover:text-caramel-hover hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-cocoa underline-offset-4 hover:text-cocoa-dark hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2"
           >
             Edit cart
           </Link>

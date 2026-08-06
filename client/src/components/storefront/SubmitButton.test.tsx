@@ -33,3 +33,28 @@ it("disables itself and shows pending feedback during submission", () => {
 
   expect(screen.getByRole("button", { name: "Removing..." })).toBeDisabled();
 });
+
+it("preserves caller-provided dimensions when the pending label replaces the idle label", () => {
+  const { rerender } = render(
+    <SubmitButton
+      idleLabel="Update"
+      pendingLabel="Updating..."
+      className="w-28"
+    />
+  );
+
+  expect(screen.getByRole("button", { name: "Update" })).toHaveClass("w-28");
+
+  formStatusMocks.useFormStatus.mockReturnValue({ pending: true });
+  rerender(
+    <SubmitButton
+      idleLabel="Update"
+      pendingLabel="Updating..."
+      className="w-28"
+    />
+  );
+
+  expect(screen.getByRole("button", { name: "Updating..." })).toHaveClass(
+    "w-28"
+  );
+});
