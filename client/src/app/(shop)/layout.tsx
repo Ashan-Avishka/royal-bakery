@@ -1,5 +1,6 @@
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { MainShell } from "@/components/MainShell";
 
 export default function ShopLayout({
   children,
@@ -7,9 +8,9 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col overflow-x-hidden">
       <Header />
-      <main className="flex-1">{children}</main>
+      <MainShell>{children}</MainShell>
       <Footer />
     </div>
   );

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { AccountForm } from "@/components/AccountForm";
+import { PageHeader } from "@/components/PageHeader";
 import { api } from "@/lib/api";
 import { createClient } from "@/lib/supabase/server";
 
@@ -31,9 +32,23 @@ export default async function AccountPage() {
   });
 
   return (
-    <div className="mx-auto max-w-2xl px-6 py-12">
-      <h1 className="mb-8 font-display text-3xl text-cocoa">Your account</h1>
-      <AccountForm profile={profile} />
-    </div>
+    <section className="relative overflow-x-hidden">
+      <div
+        className="pointer-events-none absolute -right-16 top-16 h-64 w-64 rounded-full bg-honey/25 blur-3xl"
+        aria-hidden
+      />
+
+      <div className="relative mx-auto max-w-2xl px-6 py-16 sm:py-20">
+        <PageHeader
+          eyebrow="Profile"
+          title="Your account"
+          description="Keep your details up to date for smoother checkout and delivery."
+        />
+
+        <div className="rounded-[1.5rem] border border-border-warm/80 bg-cream-alt p-6 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)] sm:p-8">
+          <AccountForm profile={profile} />
+        </div>
+      </div>
+    </section>
   );
 }

@@ -30,80 +30,120 @@ export default async function ProductDetailPage({
   } = await supabase.auth.getUser();
 
   return (
-    <div className="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-2">
-      <div className="relative aspect-square overflow-hidden rounded-2xl bg-honey-light">
-        {product.imageUrl ? (
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            sizes="(min-width: 640px) 50vw, 100vw"
-            className="object-cover"
-            priority
-          />
-        ) : (
-          <div className="flex h-full items-center justify-center text-text-muted">
-            No photo yet
-          </div>
-        )}
-      </div>
+    <section className="relative overflow-x-hidden">
+      <div
+        className="pointer-events-none absolute -right-20 top-24 h-72 w-72 rounded-full bg-honey/25 blur-3xl"
+        aria-hidden
+      />
 
-      <div className="flex flex-col gap-4">
-        <h1 className="font-display text-3xl text-cocoa">{product.name}</h1>
-        <p className="text-xl font-medium text-caramel">
-          {formatPrice(product.price)}
-        </p>
-
-        <div className="flex gap-2">
-          {outOfStock ? (
-            <Badge tone="warning">Out of stock</Badge>
-          ) : (
-            <Badge tone="success">In stock</Badge>
-          )}
-        </div>
-
-        {product.description && (
-          <p className="leading-relaxed text-text-muted">
-            {product.description}
-          </p>
-        )}
-
-        {error && (
-          <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
-            {error}
-          </p>
-        )}
-
-        {user ? (
-          outOfStock ? (
-            <Button disabled className="w-fit px-6 py-3">
-              Out of stock
-            </Button>
-          ) : (
-            <form action={addToCart} className="flex items-center gap-3">
-              <input type="hidden" name="productId" value={product.id} />
-              <input
-                type="number"
-                name="quantity"
-                min={1}
-                max={product.stockQuantity}
-                defaultValue={1}
-                className="w-20 rounded-lg border border-border-warm bg-white px-3 py-2.5 text-center text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel"
-              />
-              <Button type="submit" className="px-6 py-3">
-                Add to cart
-              </Button>
-            </form>
-          )
-        ) : (
-          <Link
-            href="/login"
-            className="w-fit font-medium text-caramel hover:text-caramel-hover"
+      <div className="relative mx-auto max-w-6xl px-6 py-12 sm:py-16">
+        <Link
+          href="/products"
+          className="group inline-flex items-center gap-2 text-[12px] tracking-[0.08em] text-caramel transition-colors hover:text-caramel-hover"
+        >
+          <span
+            aria-hidden
+            className="transition-transform duration-300 group-hover:-translate-x-0.5"
           >
-            Sign in to add to cart
-          </Link>
-        )}
+            ←
+          </span>
+          Back to menu
+        </Link>
+
+        <div className="mt-8 grid items-start gap-10 lg:grid-cols-12 lg:gap-14">
+          <div className="relative aspect-square overflow-hidden rounded-[1.5rem] bg-honey-light/60 shadow-[0_24px_50px_-28px_rgba(58,26,19,0.35)] ring-1 ring-border-warm/70 lg:col-span-6">
+            {product.imageUrl ? (
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                sizes="(min-width: 1024px) 40vw, 100vw"
+                className="object-cover"
+                priority
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-text-muted">
+                Photo coming soon
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-col lg:col-span-6 lg:pt-4">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="h-px w-8 bg-caramel/60" aria-hidden />
+              <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+                From the bakery
+              </p>
+            </div>
+
+            <h1 className="font-display text-[2rem] font-medium leading-[1.15] tracking-tight text-cocoa sm:text-4xl">
+              {product.name}
+            </h1>
+
+            <p className="mt-4 font-display text-2xl font-medium text-caramel">
+              {formatPrice(product.price)}
+            </p>
+
+            <div className="mt-5">
+              {outOfStock ? (
+                <Badge tone="warning">Out of stock</Badge>
+              ) : (
+                <Badge tone="success">In stock</Badge>
+              )}
+            </div>
+
+            {product.description && (
+              <p className="mt-6 max-w-md text-[15px] leading-relaxed text-text-muted sm:text-base">
+                {product.description}
+              </p>
+            )}
+
+            {error && (
+              <p className="mt-6 rounded-[1rem] border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                {error}
+              </p>
+            )}
+
+            <div className="mt-8">
+              {user ? (
+                outOfStock ? (
+                  <Button disabled className="px-7 py-3 text-[13px] tracking-[0.06em]">
+                    Out of stock
+                  </Button>
+                ) : (
+                  <form action={addToCart} className="flex flex-wrap items-center gap-3">
+                    <input type="hidden" name="productId" value={product.id} />
+                    <input
+                      type="number"
+                      name="quantity"
+                      min={1}
+                      max={product.stockQuantity}
+                      defaultValue={1}
+                      className="w-20 rounded-full border border-border-warm bg-cream-alt px-3 py-2.5 text-center text-sm text-cocoa focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30"
+                    />
+                    <Button type="submit" className="px-7 py-3 text-[13px] tracking-[0.06em]">
+                      Add to cart
+                    </Button>
+                  </form>
+                )
+              ) : (
+                <Link
+                  href="/login"
+                  className="group inline-flex items-center gap-2 border-b border-caramel/30 pb-0.5 text-sm tracking-wide text-caramel transition-colors hover:border-caramel hover:text-caramel-hover"
+                >
+                  Sign in to add to cart
+                  <span
+                    aria-hidden
+                    className="transition-transform duration-300 group-hover:translate-x-0.5"
+                  >
+                    →
+                  </span>
+                </Link>
+              )}
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }

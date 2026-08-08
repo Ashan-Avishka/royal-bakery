@@ -23,7 +23,7 @@ export function CheckoutForm() {
           name="deliveryAddress"
           rows={3}
           placeholder="Leave blank to pick up in-store"
-          className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel"
+          className="rounded-[1.15rem] border border-border-warm bg-cream-alt px-4 py-2.5 text-sm text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30"
         />
         <p className="text-xs text-text-muted">Leave blank for pickup.</p>
       </div>

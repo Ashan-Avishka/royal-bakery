@@ -39,15 +39,15 @@ export function ProductFilters({
   }
 
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+    <div className="flex flex-col gap-5 border-y border-border-warm/80 bg-cream-alt/60 px-1 py-5 sm:flex-row sm:items-center sm:justify-between sm:py-6">
       <div className="flex flex-wrap gap-2">
         <button
           type="button"
           onClick={() => updateParams({ categoryId: undefined })}
-          className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+          className={`rounded-full border px-4 py-2 text-[12px] font-medium tracking-wide transition-all duration-300 ${
             !activeCategoryId
-              ? "border-caramel bg-caramel text-cream-alt"
-              : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel"
+              ? "border-caramel bg-caramel text-cream-alt shadow-sm"
+              : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel"
           }`}
         >
           All
@@ -57,10 +57,10 @@ export function ProductFilters({
             key={category.id}
             type="button"
             onClick={() => updateParams({ categoryId: category.id })}
-            className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-full border px-4 py-2 text-[12px] font-medium tracking-wide transition-all duration-300 ${
               activeCategoryId === category.id
-                ? "border-caramel bg-caramel text-cream-alt"
-                : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel"
+                ? "border-caramel bg-caramel text-cream-alt shadow-sm"
+                : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel"
             }`}
           >
             {category.name}
@@ -71,9 +71,9 @@ export function ProductFilters({
       <input
         type="search"
         defaultValue={activeSearch}
-        placeholder="Search products…"
+        placeholder="Search the menu…"
         onChange={(event) => handleSearchChange(event.target.value)}
-        className="w-full rounded-lg border border-border-warm bg-white px-3.5 py-2 text-sm text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel sm:w-64"
+        className="w-full rounded-full border border-border-warm bg-cream-alt px-4 py-2.5 text-sm text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 sm:w-72"
       />
     </div>
   );

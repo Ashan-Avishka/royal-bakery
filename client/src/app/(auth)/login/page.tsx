@@ -12,11 +12,19 @@ export default function LoginPage() {
   });
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-7">
       <div>
-        <h1 className="font-display text-2xl text-cocoa">Sign in</h1>
-        <p className="mt-1 text-sm text-text-muted">
-          Welcome back — sign in to view your account and orders.
+        <div className="mb-4 flex items-center gap-3">
+          <span className="h-px w-8 bg-caramel/60" aria-hidden />
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+            Welcome back
+          </p>
+        </div>
+        <h1 className="font-display text-[1.75rem] font-medium tracking-tight text-cocoa">
+          Sign in
+        </h1>
+        <p className="mt-2 text-sm leading-relaxed text-text-muted">
+          Sign in to view your account, cart, and orders.
         </p>
       </div>
 
@@ -36,9 +44,17 @@ export default function LoginPage() {
           autoComplete="current-password"
         />
 
-        {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+        {state.error && (
+          <p className="rounded-[0.85rem] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+            {state.error}
+          </p>
+        )}
 
-        <Button type="submit" disabled={pending} className="mt-2 w-full py-3">
+        <Button
+          type="submit"
+          disabled={pending}
+          className="mt-2 w-full py-3 text-[13px] tracking-[0.06em]"
+        >
           {pending ? "Signing in…" : "Sign in"}
         </Button>
       </form>
@@ -47,7 +63,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-medium text-caramel hover:text-caramel-hover"
+          className="font-medium text-caramel transition-colors hover:text-caramel-hover"
         >
           Sign up
         </Link>
