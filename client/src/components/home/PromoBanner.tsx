@@ -26,7 +26,7 @@ export function PromoBanner() {
   return (
     <section className="bg-cocoa-dark">
       <div className="grid lg:grid-cols-2">
-        {promos.map((promo) => (
+        {promos.map((promo, index) => (
           <Link
             key={promo.title}
             href={promo.href}
@@ -43,7 +43,13 @@ export function PromoBanner() {
               className="absolute inset-0 bg-gradient-to-t from-cocoa-dark/92 via-cocoa-dark/45 to-cocoa-dark/15"
               aria-hidden
             />
-            <div className="relative z-10 flex h-full flex-col justify-end p-8 sm:p-11">
+            <div
+              className={`relative z-10 flex h-full flex-col justify-end p-8 sm:p-11 ${
+                index === 0
+                  ? "lg:pl-[max(2.75rem,calc((100vw-72rem)/2+1.5rem))]"
+                  : ""
+              }`}
+            >
               <p className="font-display text-[10px] uppercase tracking-[0.28em] text-honey/70">
                 Featured
               </p>
