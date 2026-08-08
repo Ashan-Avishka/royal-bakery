@@ -1,6 +1,6 @@
-import { StorefrontHeader } from "@/components/storefront/StorefrontHeader";
 import { getCart } from "@/lib/cart";
 import { createClient } from "@/lib/supabase/server";
+import { SiteNav } from "@/components/SiteNav";
 
 export async function Header() {
   const supabase = await createClient();
@@ -24,10 +24,6 @@ export async function Header() {
   }
 
   return (
-    <StorefrontHeader
-      signedIn={Boolean(user)}
-      isAdmin={user?.app_metadata?.role === "admin"}
-      cartItemCount={cartItemCount}
-    />
+    <SiteNav isSignedIn={Boolean(user)} cartItemCount={cartItemCount} />
   );
 }

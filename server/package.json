@@ -8,7 +8,9 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
-    "set-admin": "tsx scripts/setAdminRole.ts"
+    "set-admin": "tsx scripts/setAdminRole.ts",
+    "seed:categories": "tsx scripts/seedCategories.ts",
+    "seed:catalog": "tsx scripts/seedCatalog.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.2",
@@ -16,7 +18,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "multer": "^2.0.1",
-    "ws": "^8.21.1",
+    "ws": "^8.21.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {
