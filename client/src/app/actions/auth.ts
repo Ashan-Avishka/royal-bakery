@@ -20,7 +20,7 @@ export async function signIn(
   }
 
   const supabase = await createClient();
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -29,7 +29,8 @@ export async function signIn(
     return { error: error.message };
   }
 
-  redirect("/account");
+  const role = (data.user?.app_metadata?.role as string | undefined) ?? "customer";
+  redirect(role === "admin" ? "/admin" : "/account");
 }
 
 export async function signUp(

@@ -15,10 +15,11 @@ const navLinks = [
 
 interface SiteNavProps {
   isSignedIn: boolean;
+  isAdmin?: boolean;
   cartItemCount: number;
 }
 
-export function SiteNav({ isSignedIn, cartItemCount }: SiteNavProps) {
+export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavProps) {
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
 
@@ -73,47 +74,62 @@ export function SiteNav({ isSignedIn, cartItemCount }: SiteNavProps) {
         <div className="flex items-center gap-5">
           {isSignedIn ? (
             <>
-              <Link
-                href="/orders"
-                className={`hidden text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 sm:inline ${
-                  overHero
-                    ? "text-cream/80 hover:text-honey"
-                    : "text-cocoa/80 hover:text-caramel"
-                }`}
-              >
-                Orders
-              </Link>
-              <Link
-                href="/cart"
-                className={`relative text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 ${
-                  overHero
-                    ? "text-cream/80 hover:text-honey"
-                    : "text-cocoa/80 hover:text-caramel"
-                }`}
-              >
-                Cart
-                {cartItemCount > 0 && (
-                  <span
-                    className={`absolute -right-3.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold ${
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  className={`text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 ${
+                    overHero
+                      ? "text-cream/80 hover:text-honey"
+                      : "text-cocoa/80 hover:text-caramel"
+                  }`}
+                >
+                  Dashboard
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    href="/orders"
+                    className={`hidden text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 sm:inline ${
                       overHero
-                        ? "bg-honey text-cocoa-dark"
-                        : "bg-caramel text-cream-alt"
+                        ? "text-cream/80 hover:text-honey"
+                        : "text-cocoa/80 hover:text-caramel"
                     }`}
                   >
-                    {cartItemCount}
-                  </span>
-                )}
-              </Link>
-              <Link
-                href="/account"
-                className={`hidden text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 sm:inline ${
-                  overHero
-                    ? "text-cream/80 hover:text-honey"
-                    : "text-cocoa/80 hover:text-caramel"
-                }`}
-              >
-                Account
-              </Link>
+                    Orders
+                  </Link>
+                  <Link
+                    href="/cart"
+                    className={`relative text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 ${
+                      overHero
+                        ? "text-cream/80 hover:text-honey"
+                        : "text-cocoa/80 hover:text-caramel"
+                    }`}
+                  >
+                    Cart
+                    {cartItemCount > 0 && (
+                      <span
+                        className={`absolute -right-3.5 -top-2 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-semibold ${
+                          overHero
+                            ? "bg-honey text-cocoa-dark"
+                            : "bg-caramel text-cream-alt"
+                        }`}
+                      >
+                        {cartItemCount}
+                      </span>
+                    )}
+                  </Link>
+                  <Link
+                    href="/account"
+                    className={`hidden text-[13px] font-medium tracking-[0.04em] transition-colors duration-300 sm:inline ${
+                      overHero
+                        ? "text-cream/80 hover:text-honey"
+                        : "text-cocoa/80 hover:text-caramel"
+                    }`}
+                  >
+                    Account
+                  </Link>
+                </>
+              )}
               <form action={signOut}>
                 <Button
                   type="submit"
