@@ -18,9 +18,10 @@ const PLACEHOLDER_CLASSNAME =
 export default async function OrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ selected?: string }>;
+  searchParams: Promise<{ selected?: string | string[] }>;
 }) {
-  const { selected } = await searchParams;
+  const { selected: rawSelected } = await searchParams;
+  const selected = Array.isArray(rawSelected) ? rawSelected[0] : rawSelected;
   const supabase = await createClient();
   const {
     data: { user },

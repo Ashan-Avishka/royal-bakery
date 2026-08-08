@@ -26,7 +26,7 @@ export async function getAdminOrder(
     });
     return order;
   } catch (err) {
-    if (err instanceof ApiError && err.status === 404) {
+    if (err instanceof ApiError && (err.status === 404 || err.status === 400)) {
       return null;
     }
     throw err;

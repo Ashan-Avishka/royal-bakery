@@ -24,9 +24,13 @@ function isOrderStatus(value: string): value is OrderStatus {
 export default async function AdminOrdersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ status?: string; selected?: string }>;
+  searchParams: Promise<{
+    status?: string;
+    selected?: string | string[];
+  }>;
 }) {
-  const { status: statusParam, selected } = await searchParams;
+  const { status: statusParam, selected: rawSelected } = await searchParams;
+  const selected = Array.isArray(rawSelected) ? rawSelected[0] : rawSelected;
   const statusFilter =
     statusParam && isOrderStatus(statusParam) ? statusParam : undefined;
 
