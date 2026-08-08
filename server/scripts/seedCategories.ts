@@ -13,7 +13,7 @@ const categories = [
   { name: "Buns", description: "Sweet and savoury buns fresh from the oven" },
   {
     name: "Cakes",
-    description: "Classic Sri Lankan bakery cakes by the slab or whole",
+    description: "Classic Sri Lankan cakes by slab or whole",
   },
   { name: "Rolls", description: "Crispy rolls filled and fried to order" },
   { name: "Patties", description: "Golden short-eat patties for tea time" },
