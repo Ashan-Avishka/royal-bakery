@@ -2,16 +2,22 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { PageHeader } from "@/components/PageHeader";
+import { PaymentStatusBadge } from "@/components/PaymentStatusBadge";
+import { PaymentStatusPoller } from "@/components/PaymentStatusPoller";
+import { PayNowButton } from "@/components/PayNowButton";
 import { formatPrice } from "@/lib/catalog";
 import { getOrder } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function OrderDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<{ payment?: string }>;
 }) {
   const { id } = await params;
+  const { payment: paymentParam } = await searchParams;
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,6 +35,12 @@ export default async function OrderDetailPage({
   if (!order) {
     notFound();
   }
+
+  const isUnpaid = order.paymentStatus === "unpaid" || order.paymentStatus === "failed";
+  const showConfirming = paymentParam === "success" && isUnpaid;
+  const showConfirmed = paymentParam === "success" && order.paymentStatus === "paid";
+  const showCancelled = paymentParam === "cancelled" && isUnpaid;
+  const canPay = isUnpaid && order.status !== "cancelled";
 
   return (
     <section className="relative overflow-x-hidden">
@@ -49,9 +61,27 @@ export default async function OrderDetailPage({
           action={{ href: "/orders", label: "All orders" }}
         />
 
-        <div className="mb-6 flex justify-end">
+        <div className="mb-6 flex justify-end gap-2">
+          <PaymentStatusBadge status={order.paymentStatus} />
           <OrderStatusBadge status={order.status} />
         </div>
+
+        {showConfirmed && (
+          <div className="mb-6 rounded-[1.15rem] border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
+            Payment received — thank you!
+          </div>
+        )}
+        {showConfirming && (
+          <div className="mb-6 rounded-[1.15rem] border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+            Confirming your payment… this can take a few seconds.
+          </div>
+        )}
+        {showCancelled && (
+          <div className="mb-6 rounded-[1.15rem] border border-border-warm bg-cream-alt px-4 py-3 text-sm text-text-muted">
+            Payment was not completed. You can try again below.
+          </div>
+        )}
+        <PaymentStatusPoller active={showConfirming} />
 
         <div className="rounded-[1.5rem] border border-border-warm/80 bg-cream-alt p-6 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)] sm:p-8">
           <dl className="mb-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
@@ -96,6 +126,12 @@ export default async function OrderDetailPage({
             <span>Total</span>
             <span>{formatPrice(order.totalAmount)}</span>
           </div>
+
+          {canPay && (
+            <div className="mt-6">
+              <PayNowButton orderId={order.id} />
+            </div>
+          )}
         </div>
 
         <Link

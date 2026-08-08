@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useActionState } from "react";
 import { signUp } from "@/app/actions/auth";
 import { Button } from "@/components/ui/Button";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { Input } from "@/components/ui/Input";
 
 export default function SignupPage() {
@@ -50,6 +51,16 @@ export default function SignupPage() {
         <p className="mt-2 text-sm leading-relaxed text-text-muted">
           Sign up to place orders and track them from your account.
         </p>
+      </div>
+
+      <GoogleSignInButton />
+
+      <div className="flex items-center gap-3">
+        <span className="h-px flex-1 bg-border-warm/70" aria-hidden />
+        <span className="text-[11px] uppercase tracking-[0.18em] text-text-muted">
+          or
+        </span>
+        <span className="h-px flex-1 bg-border-warm/70" aria-hidden />
       </div>
 
       <form action={formAction} className="flex flex-col gap-4">

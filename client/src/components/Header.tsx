@@ -8,8 +8,10 @@ export async function Header() {
     data: { user },
   } = await supabase.auth.getUser();
 
+  const isAdmin = (user?.app_metadata?.role as string | undefined) === "admin";
+
   let cartItemCount = 0;
-  if (user) {
+  if (user && !isAdmin) {
     const {
       data: { session },
     } = await supabase.auth.getSession();
@@ -24,6 +26,10 @@ export async function Header() {
   }
 
   return (
-    <SiteNav isSignedIn={Boolean(user)} cartItemCount={cartItemCount} />
+    <SiteNav
+      isSignedIn={Boolean(user)}
+      isAdmin={isAdmin}
+      cartItemCount={cartItemCount}
+    />
   );
 }

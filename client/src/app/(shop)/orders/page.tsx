@@ -2,6 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { OrderStatusBadge } from "@/components/OrderStatusBadge";
 import { PageHeader } from "@/components/PageHeader";
+import { PaymentStatusBadge } from "@/components/PaymentStatusBadge";
 import { formatPrice } from "@/lib/catalog";
 import { listOrders } from "@/lib/orders";
 import { createClient } from "@/lib/supabase/server";
@@ -71,7 +72,10 @@ export default async function OrdersPage() {
                     {formatPrice(order.totalAmount)}
                   </p>
                 </div>
-                <OrderStatusBadge status={order.status} />
+                <div className="flex flex-col items-end gap-2">
+                  <OrderStatusBadge status={order.status} />
+                  <PaymentStatusBadge status={order.paymentStatus} />
+                </div>
               </Link>
             ))}
           </div>
