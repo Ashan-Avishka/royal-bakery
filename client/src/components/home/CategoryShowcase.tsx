@@ -59,34 +59,44 @@ const categoryImagery = [
 /** Extra collections shown when the database has fewer categories. */
 const curatedCollections = [
   {
-    name: "Pastries",
-    description: "Croissants, danishes, and flaky layers",
-    search: "pastry",
-  },
-  {
     name: "Breads",
-    description: "Fresh loaves and rolls baked daily",
+    description: "Soft sandwich loaves and everyday breads",
     search: "bread",
   },
   {
-    name: "Cookies",
-    description: "Crisp, chewy, and chocolate-packed favourites",
-    search: "cookie",
+    name: "Buns",
+    description: "Sweet and savoury buns fresh from the oven",
+    search: "bun",
+  },
+  {
+    name: "Cakes",
+    description: "Classic Sri Lankan bakery cakes",
+    search: "cake",
+  },
+  {
+    name: "Rolls",
+    description: "Crispy rolls filled and fried to order",
+    search: "roll",
+  },
+  {
+    name: "Patties",
+    description: "Golden short-eat patties for tea time",
+    search: "pattie",
+  },
+  {
+    name: "Rotti",
+    description: "Soft bakery rotti with classic fillings",
+    search: "rotti",
+  },
+  {
+    name: "Pastries",
+    description: "Flaky pastries and bakery short eats",
+    search: "pastry",
   },
   {
     name: "Sweets",
-    description: "Donuts, muffins, and everyday treats",
+    description: "Tea-time sweets and soft bakery treats",
     search: "sweet",
-  },
-  {
-    name: "Cupcakes",
-    description: "Individual cakes finished with care",
-    search: "cupcake",
-  },
-  {
-    name: "Savouries",
-    description: "Savoury bakes for any time of day",
-    search: "savoury",
   },
 ];
 
@@ -100,19 +110,16 @@ type ShowcaseItem = {
 function pickImage(name: string, index: number) {
   const n = name.toLowerCase();
   if (n.includes("cake") || n.includes("gateau")) return categoryImagery[0]!;
-  if (n.includes("bread") || n.includes("loaf") || n.includes("bun"))
-    return categoryImagery[1]!;
+  if (n.includes("bread") || n.includes("loaf")) return categoryImagery[1]!;
   if (n.includes("pastr") || n.includes("croissant") || n.includes("danish"))
     return categoryImagery[2]!;
-  if (n.includes("cupcake") || n.includes("muffin")) return categoryImagery[3]!;
-  if (n.includes("wedding") || n.includes("celebration"))
-    return categoryImagery[4]!;
-  if (n.includes("savory") || n.includes("savoury") || n.includes("sandwich"))
-    return categoryImagery[5]!;
-  if (n.includes("cookie") || n.includes("biscuit") || n.includes("slice"))
-    return categoryImagery[7]!;
-  if (n.includes("donut") || n.includes("doughnut") || n.includes("sweet"))
+  if (n.includes("bun")) return categoryImagery[6]!;
+  if (n.includes("roll")) return categoryImagery[5]!;
+  if (n.includes("pattie") || n.includes("patty")) return categoryImagery[7]!;
+  if (n.includes("rotti") || n.includes("roti")) return categoryImagery[1]!;
+  if (n.includes("sweet") || n.includes("donut") || n.includes("doughnut") || n.includes("muffin") || n.includes("tart"))
     return categoryImagery[9]!;
+  if (n.includes("cupcake")) return categoryImagery[3]!;
   return categoryImagery[index % categoryImagery.length]!;
 }
 
@@ -137,8 +144,7 @@ function buildShowcaseItems(categories: Category[]): ShowcaseItem[] {
       href: `/products?search=${encodeURIComponent(item.search)}`,
     }));
 
-  // Featured + 3 side cards + 4 bottom cards = one clean bottom row.
-  return [...fromDb, ...extras].slice(0, 8);
+  return [...fromDb, ...extras];
 }
 
 interface CategoryShowcaseProps {

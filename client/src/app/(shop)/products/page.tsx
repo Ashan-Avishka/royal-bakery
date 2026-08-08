@@ -11,8 +11,8 @@ export default async function ProductsPage({
   const { categoryId, search } = await searchParams;
 
   const [categories, products] = await Promise.all([
-    listCategories(),
-    listProducts({ categoryId, search }),
+    listCategories().catch(() => []),
+    listProducts({ categoryId, search }).catch(() => []),
   ]);
 
   const activeCategory = categories.find((c) => c.id === categoryId);

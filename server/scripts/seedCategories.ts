@@ -1,5 +1,6 @@
 /**
  * Seed bakery categories for the storefront showcase.
+ * Prefer `npm run seed:catalog` for the full menu.
  * Safe to re-run — skips names that already exist.
  *
  * Usage: npx tsx scripts/seedCategories.ts
@@ -8,14 +9,17 @@ import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
 
 const categories = [
-  { name: "Pastries", description: "Croissants, danishes, and flaky layers" },
-  { name: "Breads", description: "Fresh loaves and rolls baked daily" },
-  { name: "Cookies", description: "Crisp, chewy, and chocolate-packed favourites" },
-  { name: "Sweets", description: "Donuts, muffins, and everyday treats" },
-  { name: "Savouries", description: "Savoury bakes for any time of day" },
-  { name: "Cupcakes", description: "Individual cakes finished with care" },
-  { name: "Celebration", description: "Special-occasion centrepieces made to order" },
-  { name: "Slices", description: "Tea-time slices and traybakes" },
+  { name: "Breads", description: "Soft sandwich loaves and everyday breads" },
+  { name: "Buns", description: "Sweet and savoury buns fresh from the oven" },
+  {
+    name: "Cakes",
+    description: "Classic Sri Lankan bakery cakes by the slab or whole",
+  },
+  { name: "Rolls", description: "Crispy rolls filled and fried to order" },
+  { name: "Patties", description: "Golden short-eat patties for tea time" },
+  { name: "Rotti", description: "Soft bakery rotti with classic fillings" },
+  { name: "Pastries", description: "Flaky pastries and bakery short eats" },
+  { name: "Sweets", description: "Tea-time sweets and soft bakery treats" },
 ];
 
 async function main() {
