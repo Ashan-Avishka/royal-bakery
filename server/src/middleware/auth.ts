@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { getSupabaseAdmin } from "../lib/supabase.js";
+import { verifySupabaseToken } from "../lib/jwt.js";
 
 export interface AuthUser {
   id: string;
@@ -30,18 +30,18 @@ export async function requireAuth(
   const token = header.slice("Bearer ".length);
 
   try {
-    const { data, error } = await getSupabaseAdmin().auth.getUser(token);
-    if (error || !data.user) {
+    const payload = await verifySupabaseToken(token);
+    if (!payload.sub) {
       res.status(401).json({ error: { message: "Invalid or expired token" } });
       return;
     }
     req.user = {
-      id: data.user.id,
-      email: data.user.email ?? undefined,
-      role: (data.user.app_metadata?.role as string | undefined) ?? "customer",
+      id: payload.sub,
+      email: payload.email,
+      role: payload.app_metadata?.role ?? "customer",
     };
     next();
-  } catch (err) {
-    next(err);
+  } catch {
+    res.status(401).json({ error: { message: "Invalid or expired token" } });
   }
 }

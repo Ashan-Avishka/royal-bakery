@@ -4,12 +4,22 @@ import request from "supertest";
 vi.mock("../lib/supabase.js", () => ({
   getSupabaseAdmin: vi.fn(),
 }));
+vi.mock("../lib/jwt.js", () => ({ verifySupabaseToken: vi.fn() }));
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
-import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
+import { verifySupabaseToken } from "../lib/jwt.js";
+import { createFakeSupabaseClient, createFakeJwtVerifier } from "../test/fakeSupabase.js";
 import { createApp } from "../app.js";
 
 const USER_ID = "11111111-1111-1111-1111-111111111111";
+
+const USERS_BY_TOKEN = {
+  "customer-token": {
+    id: USER_ID,
+    email: "jane@example.com",
+    app_metadata: { role: "customer" },
+  },
+};
 
 let profiles: Parameters<typeof createFakeSupabaseClient>[0]["profiles"];
 
@@ -25,16 +35,11 @@ beforeEach(() => {
     },
   ];
   const fakeClient = createFakeSupabaseClient({
-    usersByToken: {
-      "customer-token": {
-        id: USER_ID,
-        email: "jane@example.com",
-        app_metadata: { role: "customer" },
-      },
-    },
+    usersByToken: USERS_BY_TOKEN,
     profiles,
   });
   vi.mocked(getSupabaseAdmin).mockReturnValue(fakeClient as any);
+  vi.mocked(verifySupabaseToken).mockImplementation(createFakeJwtVerifier(USERS_BY_TOKEN));
 });
 
 describe("GET /api/users/me", () => {

@@ -4,28 +4,33 @@ import request from "supertest";
 vi.mock("../lib/supabase.js", () => ({
   getSupabaseAdmin: vi.fn(),
 }));
+vi.mock("../lib/jwt.js", () => ({ verifySupabaseToken: vi.fn() }));
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
-import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
+import { verifySupabaseToken } from "../lib/jwt.js";
+import { createFakeSupabaseClient, createFakeJwtVerifier } from "../test/fakeSupabase.js";
 import { createApp } from "../app.js";
 
 const ADMIN_ID = "11111111-1111-4111-8111-111111111111";
 const CUSTOMER_ID = "22222222-2222-4222-8222-222222222222";
 
+const USERS_BY_TOKEN = {
+  "admin-token": {
+    id: ADMIN_ID,
+    email: "admin@royalbakery.lk",
+    app_metadata: { role: "admin" },
+  },
+  "customer-token": {
+    id: CUSTOMER_ID,
+    email: "cust@example.com",
+    app_metadata: { role: "customer" },
+  },
+};
+
 beforeEach(() => {
+  vi.mocked(verifySupabaseToken).mockImplementation(createFakeJwtVerifier(USERS_BY_TOKEN));
   const fakeClient = createFakeSupabaseClient({
-    usersByToken: {
-      "admin-token": {
-        id: ADMIN_ID,
-        email: "admin@royalbakery.lk",
-        app_metadata: { role: "admin" },
-      },
-      "customer-token": {
-        id: CUSTOMER_ID,
-        email: "cust@example.com",
-        app_metadata: { role: "customer" },
-      },
-    },
+    usersByToken: USERS_BY_TOKEN,
     profiles: [
       {
         id: ADMIN_ID,
