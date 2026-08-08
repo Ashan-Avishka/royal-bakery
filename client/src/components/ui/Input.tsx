@@ -1,4 +1,4 @@
-import { InputHTMLAttributes, forwardRef, useId } from "react";
+import { InputHTMLAttributes, forwardRef } from "react";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -6,23 +6,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export const Input = forwardRef<HTMLInputElement, InputProps>(
-  (
-    {
-      label,
-      error,
-      id,
-      className = "",
-      "aria-describedby": ariaDescribedBy,
-      "aria-invalid": ariaInvalid,
-      ...props
-    },
-    ref
-  ) => {
-    const generatedId = useId();
-    const inputId = id ?? props.name ?? generatedId;
-    const errorId = error ? `${inputId}-error` : undefined;
-    const describedBy = [ariaDescribedBy, errorId].filter(Boolean).join(" ") || undefined;
-
+  ({ label, error, id, className = "", ...props }, ref) => {
+    const inputId = id ?? props.name;
     return (
       <div className="flex flex-col gap-1.5">
         {label && (
@@ -33,18 +18,12 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={inputId}
-          aria-describedby={describedBy}
-          aria-invalid={error ? true : ariaInvalid}
-          className={`min-h-11 rounded-lg border bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 ${
+          className={`rounded-full border bg-cream-alt px-4 py-2.5 text-sm text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 ${
             error ? "border-red-400" : "border-border-warm"
           } ${className}`}
           {...props}
         />
-        {error && (
-          <p id={errorId} className="text-xs text-red-600">
-            {error}
-          </p>
-        )}
+        {error && <p className="text-xs text-red-600">{error}</p>}
       </div>
     );
   }

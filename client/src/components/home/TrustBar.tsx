@@ -1,0 +1,99 @@
+const pillars = [
+  {
+    title: "Baked fresh daily",
+    detail: "Small batches before sunrise",
+    icon: (
+      <>
+        <path d="M12 3c1.2 2.4 1.2 4.2 0 6.2-1.2-2-1.2-3.8 0-6.2z" />
+        <path d="M8.2 9.5c3.2.9 4.6.9 7.6 0-1.1 3.4-2.8 5.7-3.8 7.2-1-1.5-2.7-3.8-3.8-7.2z" />
+        <path d="M12 17v3" />
+      </>
+    ),
+  },
+  {
+    title: "Pickup or delivery",
+    detail: "Harispaththuwa & nearby",
+    icon: (
+      <>
+        <path d="M3 8h11v9H3z" />
+        <path d="M14 11h3.2L20 14v3h-6" />
+        <circle cx="7" cy="18.5" r="1.4" />
+        <circle cx="16.5" cy="18.5" r="1.4" />
+      </>
+    ),
+  },
+  {
+    title: "Made to celebrate",
+    detail: "Custom cakes on request",
+    icon: (
+      <>
+        <path d="M12 3v3.5" />
+        <path d="M8.5 6.5h7l.8 2.5H7.7l.8-2.5z" />
+        <path d="M7 9h10v8.5a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+        <path d="M7 13h10" />
+      </>
+    ),
+  },
+  {
+    title: "Order ahead online",
+    detail: "Skip the queue at the counter",
+    icon: (
+      <>
+        <rect x="6" y="3.5" width="12" height="17" rx="2" />
+        <path d="M9.5 8h5M9.5 12h5M9.5 16h3.2" />
+      </>
+    ),
+  },
+];
+
+export function TrustBar() {
+  return (
+    <section className="relative shrink-0 overflow-hidden border-t border-cream/10">
+      <div
+        className="absolute inset-0 bg-gradient-to-r from-cocoa-dark via-[#4a2818] to-caramel"
+        aria-hidden
+      />
+      <div
+        className="absolute inset-0 opacity-40"
+        style={{
+          backgroundImage:
+            "radial-gradient(ellipse 50% 120% at 15% 50%, rgba(243,195,135,0.35), transparent), radial-gradient(ellipse 40% 100% at 85% 40%, rgba(251,227,180,0.2), transparent)",
+        }}
+        aria-hidden
+      />
+
+      <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-px sm:grid-cols-4">
+        {pillars.map((pillar) => (
+          <div
+            key={pillar.title}
+            className="flex items-start gap-3 px-4 py-4 sm:items-center sm:gap-3.5 sm:px-6 sm:py-5"
+          >
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-cream/10 text-honey ring-1 ring-honey/25 backdrop-blur-sm">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                aria-hidden
+              >
+                {pillar.icon}
+              </svg>
+            </span>
+            <div className="min-w-0">
+              <p className="font-display text-[13px] font-medium leading-snug text-cream sm:text-[14px]">
+                {pillar.title}
+              </p>
+              <p className="mt-0.5 text-[11px] leading-snug text-honey-light/70 sm:text-[12px]">
+                {pillar.detail}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

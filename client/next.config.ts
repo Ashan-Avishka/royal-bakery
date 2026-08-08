@@ -10,6 +10,13 @@ const nextConfig: NextConfig = {
         pathname: "/storage/v1/object/public/**",
         search: "",
       },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        port: "",
+        pathname: "/**",
+        search: "",
+      },
     ],
     // Supabase Storage already serves these from a CDN, and Next's built-in
     // optimizer does a server-side DNS lookup + SSRF check before fetching
