@@ -45,7 +45,7 @@ export default async function AdminOrdersPage({
   const closeHref = `/admin/orders${buildQuery({ status: statusFilter })}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-6 py-10">
       <h1 className="mb-6 font-display text-3xl text-cocoa">Orders</h1>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">

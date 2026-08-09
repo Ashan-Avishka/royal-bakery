@@ -46,7 +46,7 @@ export default async function OrdersPage({
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-5xl px-6 py-16 sm:py-20">
+      <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-20">
         <PageHeader
           eyebrow="Order history"
           title="Your orders"
