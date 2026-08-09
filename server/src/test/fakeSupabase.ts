@@ -243,6 +243,26 @@ class FakeQueryBuilder implements PromiseLike<FakeResult<any>> {
   }
 }
 
+/**
+ * Stands in for lib/jwt.ts's verifySupabaseToken — real auth now verifies
+ * the JWT locally via JWKS instead of calling Supabase, so tests can't rely
+ * on a fake auth.getUser() network response anymore. Looks up the same
+ * usersByToken map and returns a payload shaped like a decoded Supabase JWT.
+ */
+export function createFakeJwtVerifier(usersByToken: Record<string, FakeAuthUser>) {
+  return async (token: string) => {
+    const user = usersByToken[token];
+    if (!user) {
+      throw new Error("Invalid or expired token");
+    }
+    return {
+      sub: user.id,
+      email: user.email,
+      app_metadata: user.app_metadata,
+    };
+  };
+}
+
 export function createFakeSupabaseClient(options: FakeSupabaseOptions) {
   const { usersByToken } = options;
 

@@ -9,7 +9,6 @@ const envSchema = z.object({
   CLIENT_ORIGIN: z.string().default("http://localhost:3000"),
   SUPABASE_URL: z.string().default(""),
   SUPABASE_SERVICE_ROLE_KEY: z.string().default(""),
-  SUPABASE_JWT_SECRET: z.string().default(""),
   PAYHERE_MERCHANT_ID: z.string().default(""),
   PAYHERE_MERCHANT_SECRET: z.string().default(""),
   PAYHERE_MODE: z.enum(["sandbox", "live"]).default("sandbox"),

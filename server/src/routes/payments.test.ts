@@ -2,23 +2,27 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import request from "supertest";
 
 vi.mock("../lib/supabase.js", () => ({ getSupabaseAdmin: vi.fn() }));
+vi.mock("../lib/jwt.js", () => ({ verifySupabaseToken: vi.fn() }));
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
-import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
+import { verifySupabaseToken } from "../lib/jwt.js";
+import { createFakeSupabaseClient, createFakeJwtVerifier } from "../test/fakeSupabase.js";
 import { createApp } from "../app.js";
 
 const CUSTOMER_ID = "11111111-1111-1111-1111-111111111111";
 const ORDER_ID = "22222222-2222-2222-2222-222222222222";
 
+const USERS_BY_TOKEN = {
+  "customer-token": {
+    id: CUSTOMER_ID,
+    email: "cust@example.com",
+    app_metadata: { role: "customer" },
+  },
+};
+
 function makeClient() {
   return createFakeSupabaseClient({
-    usersByToken: {
-      "customer-token": {
-        id: CUSTOMER_ID,
-        email: "cust@example.com",
-        app_metadata: { role: "customer" },
-      },
-    },
+    usersByToken: USERS_BY_TOKEN,
     profiles: [
       {
         id: CUSTOMER_ID,
@@ -48,6 +52,7 @@ function makeClient() {
 
 beforeEach(() => {
   vi.mocked(getSupabaseAdmin).mockReturnValue(makeClient() as any);
+  vi.mocked(verifySupabaseToken).mockImplementation(createFakeJwtVerifier(USERS_BY_TOKEN));
 });
 
 describe("POST /api/payments/initiate", () => {
