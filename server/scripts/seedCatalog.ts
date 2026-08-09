@@ -30,7 +30,7 @@ const ACTIVE_CATEGORIES: SeedCategory[] = [
   },
   {
     name: "Cakes",
-    description: "Classic Sri Lankan bakery cakes by the slab or whole",
+    description: "Classic Sri Lankan cakes by slab or whole",
   },
   {
     name: "Rolls",
