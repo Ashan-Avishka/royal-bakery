@@ -123,13 +123,13 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
             animate={{ opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { opacity: 0, y: -10 }}
             transition={{ duration: 0.65, ease }}
-            className="max-w-2xl"
+            className="max-w-6xl"
           >
             <BrandLogo size={compact ? "md" : "lg"} href={null} />
             <h1
               className={`mt-5 font-display font-medium leading-[1.08] tracking-tight text-cream text-balance ${
                 compact
-                  ? "text-[2.1rem] sm:text-4xl lg:text-5xl"
+                  ? "text-[2.1rem] sm:text-4xl lg:text-7xl"
                   : "text-[2.65rem] sm:text-5xl lg:text-[3.75rem]"
               }`}
             >
