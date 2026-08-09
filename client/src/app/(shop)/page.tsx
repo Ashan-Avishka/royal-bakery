@@ -18,8 +18,7 @@ const heroSlides: HeroSlide[] = [
       "Handcrafted cakes, pastries, and bread — ordered online, finished fresh for pickup or delivery in Harispaththuwa.",
     ctaLabel: "Explore the menu",
     ctaHref: "/products",
-    imageSrc:
-      "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=2000&q=80",
+    imageSrc: "/images/slide-1.jpg",
     imageAlt: "Fresh pastries and baked goods on a bakery counter",
   },
   {
@@ -30,8 +29,7 @@ const heroSlides: HeroSlide[] = [
       "From birthday layers to wedding centrepieces — finished with real butter, real chocolate, and quiet attention.",
     ctaLabel: "Discover cakes",
     ctaHref: "/products",
-    imageSrc:
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=2000&q=80",
+    imageSrc: "/images/slide-2.jpg",
     imageAlt: "Decorated layer cake with frosting",
   },
   {
@@ -42,8 +40,7 @@ const heroSlides: HeroSlide[] = [
       "Reserve ahead, skip the counter, and collect your order at its freshest — or have it delivered.",
     ctaLabel: "Order ahead",
     ctaHref: "/products",
-    imageSrc:
-      "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=2000&q=80",
+    imageSrc: "/images/slide-3.jpg",
     imageAlt: "Artisan bread loaves fresh from the oven",
   },
 ];

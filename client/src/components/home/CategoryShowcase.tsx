@@ -4,56 +4,13 @@ import { SectionHeader } from "@/components/home/SectionHeader";
 import type { Category } from "@/lib/catalog";
 
 const categoryImagery = [
-  {
-    image:
-      "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=1200&q=80",
-    alt: "Layered celebration cake",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80",
-    alt: "Fresh artisan bread",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1555507036-ab1f4038808a?auto=format&fit=crop&w=1200&q=80",
-    alt: "Golden bakery pastries",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?auto=format&fit=crop&w=1200&q=80",
-    alt: "Cupcakes and sweet treats",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?auto=format&fit=crop&w=1200&q=80",
-    alt: "Frosted celebration cake",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1200&q=80",
-    alt: "Baker working with dough",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?auto=format&fit=crop&w=1200&q=80",
-    alt: "Assorted bakery treats",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1587241321921-91a834d6d191?auto=format&fit=crop&w=1200&q=80",
-    alt: "Cookies and biscuits",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1499636136210-6f4ee915583e?auto=format&fit=crop&w=1200&q=80",
-    alt: "Chocolate chip cookies",
-  },
-  {
-    image:
-      "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=1200&q=80",
-    alt: "Donuts and glazed sweets",
-  },
+  { image: "/images/cakes.jpg", alt: "Layered celebration cake" },
+  { image: "/images/bread.jpg", alt: "Fresh artisan bread" },
+  { image: "/images/pastries.jpg", alt: "Golden bakery pastries" },
+  { image: "/images/rolls.jpg", alt: "Crispy bakery rolls" },
+  { image: "/images/patties.jpg", alt: "Golden short-eat patties" },
+  { image: "/images/rotti.jpg", alt: "Soft bakery rotti" },
+  { image: "/images/sweets.jpg", alt: "Tea-time bakery sweets" },
 ];
 
 /** Extra collections shown when the database has fewer categories. */
@@ -109,17 +66,17 @@ type ShowcaseItem = {
 
 function pickImage(name: string, index: number) {
   const n = name.toLowerCase();
-  if (n.includes("cake") || n.includes("gateau")) return categoryImagery[0]!;
+  if (n.includes("cake") || n.includes("gateau") || n.includes("cupcake"))
+    return categoryImagery[0]!;
   if (n.includes("bread") || n.includes("loaf")) return categoryImagery[1]!;
   if (n.includes("pastr") || n.includes("croissant") || n.includes("danish"))
     return categoryImagery[2]!;
-  if (n.includes("bun")) return categoryImagery[6]!;
-  if (n.includes("roll")) return categoryImagery[5]!;
-  if (n.includes("pattie") || n.includes("patty")) return categoryImagery[7]!;
-  if (n.includes("rotti") || n.includes("roti")) return categoryImagery[1]!;
+  if (n.includes("bun")) return categoryImagery[3]!;
+  if (n.includes("roll")) return categoryImagery[3]!;
+  if (n.includes("pattie") || n.includes("patty")) return categoryImagery[4]!;
+  if (n.includes("rotti") || n.includes("roti")) return categoryImagery[5]!;
   if (n.includes("sweet") || n.includes("donut") || n.includes("doughnut") || n.includes("muffin") || n.includes("tart"))
-    return categoryImagery[9]!;
-  if (n.includes("cupcake")) return categoryImagery[3]!;
+    return categoryImagery[6]!;
   return categoryImagery[index % categoryImagery.length]!;
 }
 
