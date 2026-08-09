@@ -45,7 +45,7 @@ export default async function AdminProductsPage({
   const closeHref = `/admin/products${buildQuery(listFilters)}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-6 py-10">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl text-cocoa">Products</h1>
         <Link

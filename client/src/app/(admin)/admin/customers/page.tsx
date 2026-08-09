@@ -27,7 +27,7 @@ export default async function AdminCustomersPage({
   const closeHref = `/admin/customers${buildQuery({ role: roleFilter })}`;
 
   return (
-    <div className="mx-auto max-w-6xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-6 py-10">
       <h1 className="mb-2 font-display text-3xl text-cocoa">Customers</h1>
       <p className="mb-6 text-sm text-text-muted">
         View accounts and promote or demote admin access.
