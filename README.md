@@ -16,11 +16,6 @@ Integrated bakery e-commerce and store management system.
 # 1. Install dependencies
 cd client; npm install; cd ..
 cd server; npm install; cd ..
-
-# 2. Configure environment
-Copy-Item client/.env.example client/.env.local
-Copy-Item server/.env.example server/.env
-# then fill in Supabase / PayHere / SMTP values (optional for first run)
 ```
 
 ## Run (two terminals)
@@ -34,6 +29,12 @@ cd client; npm run dev
 ```
 
 Health check: `Invoke-RestMethod http://localhost:4000/api/health` → `{ status: ok }`
+
+## Test PayHere payments
+
+PayHere's server-to-server payment notification needs a public HTTPS endpoint while the API is running locally.
+
+For the complete Cloudflare Tunnel startup order, sandbox cards, payment walkthrough, and troubleshooting, see [PayHere sandbox payment testing](docs/PAYHERE_TESTING.md).
 
 ## Architecture
 
