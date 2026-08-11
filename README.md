@@ -64,6 +64,22 @@ two targets independently. Add `--verify` to either command to require every
 mapped product URL to end with `/<product-id>/catalog.webp`, return HTTP 200,
 and serve `image/webp`. Each selected target prints its own summary report.
 
+### Product image delivery policy
+
+The client currently keeps Next.js image optimization disabled globally. This is
+the safe fallback until a real imported Supabase product URL has been verified
+through the production `/_next/image` endpoint: the optimizer resolves upstream
+hosts and may reject a Supabase origin that resolves through NAT64/private-address
+space. Remote image sources remain allowlisted to HTTPS Supabase public-storage
+paths (and the separately used Unsplash source).
+
+The image importer supplies the fallback's efficient source assets: square WebP
+files capped at 1000px with quality 82 and long-lived CDN caching. Storefront
+images provide layout-accurate `sizes`; images are lazy by default, and only a
+genuine initial LCP image should receive preload treatment. When a production
+runtime returns HTTP 200 with an image content type for an imported URL, this
+policy can be revisited and the global fallback removed.
+
 ## Test PayHere payments
 
 PayHere's server-to-server payment notification needs a public HTTPS endpoint while the API is running locally.

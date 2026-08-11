@@ -18,12 +18,13 @@ const nextConfig: NextConfig = {
         search: "",
       },
     ],
-    // Supabase Storage already serves these from a CDN, and Next's built-in
-    // optimizer does a server-side DNS lookup + SSRF check before fetching
-    // upstream images — on networks where that hostname resolves via NAT64
-    // (64:ff9b::/96), Next flags it as a private address and refuses to
-    // fetch it at all. Skipping optimization avoids that entirely; the
-    // browser just requests the Supabase URL directly.
+    // Keep the source-delivery fallback until a real imported Supabase URL
+    // has passed a production `/_next/image` request in this environment.
+    // Next's optimizer resolves the upstream hostname and applies SSRF
+    // protections; a NAT64/private-address rejection would otherwise make
+    // product imagery unavailable. Imported assets are already 1000px,
+    // quality-82 WebP files on Supabase's CDN, with responsive `sizes` and
+    // lazy loading supplied by the consuming Image components.
     unoptimized: true,
   },
 };
