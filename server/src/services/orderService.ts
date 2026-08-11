@@ -1,5 +1,12 @@
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { AppError } from "../errors.js";
+import { LOW_STOCK_THRESHOLD } from "./analyticsService.js";
+import {
+  sendAdminLowStockEmail,
+  sendAdminNewOrderEmail,
+  sendOrderConfirmationEmail,
+  sendOrderStatusChangeEmail,
+} from "./notificationService.js";
 import type { Order, OrderItem, OrderStatus, OrderSummary, PaymentStatus } from "../types/order.js";
 
 interface OrderRow {
@@ -81,7 +88,53 @@ export async function createOrderFromCart(
 
   const order = await getOrderById(orderId as string);
   if (!order) throw new AppError(500, "Order was created but could not be loaded");
+
+  await notifyOrderCreated(userId, order);
+
   return order;
+}
+
+async function notifyOrderCreated(userId: string, order: Order): Promise<void> {
+  try {
+    const { data: userData } = await getSupabaseAdmin().auth.admin.getUserById(userId);
+    const customerEmail = userData?.user?.email;
+    if (!customerEmail) {
+      console.warn(`No email found for user ${userId}; skipping order notification emails`);
+      return;
+    }
+
+    void sendOrderConfirmationEmail(order, customerEmail);
+    void sendAdminNewOrderEmail(order, customerEmail);
+    await checkLowStockAndNotify(order.items);
+  } catch (err) {
+    console.error("Failed to send order-created notifications", err);
+  }
+}
+
+async function checkLowStockAndNotify(items: OrderItem[]): Promise<void> {
+  if (items.length === 0) return;
+  const productIds = items.map((i) => i.productId);
+  const { data: products, error } = await getSupabaseAdmin()
+    .from("products")
+    .select("*")
+    .in("id", productIds);
+  if (error || !products) return;
+
+  const stockByProductId = new Map(
+    (products as { id: string; stock_quantity: number }[]).map((p) => [p.id, p.stock_quantity])
+  );
+  const crossed: { name: string; stockQuantity: number }[] = [];
+  for (const item of items) {
+    const stockAfter = stockByProductId.get(item.productId);
+    if (stockAfter === undefined) continue;
+    const stockBefore = stockAfter + item.quantity;
+    if (stockBefore > LOW_STOCK_THRESHOLD && stockAfter <= LOW_STOCK_THRESHOLD) {
+      crossed.push({ name: item.name, stockQuantity: stockAfter });
+    }
+  }
+  if (crossed.length > 0) {
+    void sendAdminLowStockEmail(crossed);
+  }
 }
 
 export async function listOrdersForUser(userId: string): Promise<OrderSummary[]> {
@@ -147,5 +200,37 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
 
   const order = await getOrderById(orderId);
   if (!order) throw new AppError(404, "Order not found");
+
+  if (existing.status !== order.status) {
+    await notifyOrderStatusChanged(orderId, order, existing.status);
+  }
+
   return order;
+}
+
+async function notifyOrderStatusChanged(
+  orderId: string,
+  order: Order,
+  previousStatus: OrderStatus
+): Promise<void> {
+  try {
+    const { data: row, error } = await getSupabaseAdmin()
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (error || !row) return;
+    const userId = (row as { user_id: string }).user_id;
+
+    const { data: userData } = await getSupabaseAdmin().auth.admin.getUserById(userId);
+    const customerEmail = userData?.user?.email;
+    if (!customerEmail) {
+      console.warn(`No email found for user ${userId}; skipping order-status notification`);
+      return;
+    }
+
+    void sendOrderStatusChangeEmail(order, customerEmail, previousStatus, order.status);
+  } catch (err) {
+    console.error("Failed to send order-status-change notification", err);
+  }
 }
