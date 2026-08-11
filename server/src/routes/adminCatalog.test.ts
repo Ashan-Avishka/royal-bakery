@@ -182,4 +182,37 @@ describe("admin products", () => {
 
     expect(res.status).toBe(400);
   });
+
+  it("removes a product image", async () => {
+    const app = createApp();
+    await request(app)
+      .post(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token")
+      .attach("image", Buffer.from("fake-png-bytes"), "photo.png");
+
+    const res = await request(app)
+      .delete(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token");
+
+    expect(res.status).toBe(200);
+    expect(res.body.product.imageUrl).toBeNull();
+  });
+
+  it("returns 400 removing an image from a product that has none", async () => {
+    const app = createApp();
+    const res = await request(app)
+      .delete(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token");
+
+    expect(res.status).toBe(400);
+  });
+
+  it("returns 404 removing an image from an unknown product", async () => {
+    const app = createApp();
+    const res = await request(app)
+      .delete("/api/admin/products/99999999-9999-9999-9999-999999999999/image")
+      .set("Authorization", "Bearer admin-token");
+
+    expect(res.status).toBe(404);
+  });
 });

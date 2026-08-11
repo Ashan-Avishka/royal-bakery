@@ -13,10 +13,11 @@ import {
   listCategories,
   listProducts,
   setProductImage,
+  clearProductImage,
   updateCategory,
   updateProduct,
 } from "../services/catalogService.js";
-import { uploadProductImage } from "../services/uploadService.js";
+import { deleteProductImage, uploadProductImage } from "../services/uploadService.js";
 import {
   createCategorySchema,
   createProductSchema,
@@ -187,12 +188,44 @@ adminCatalogRouter.post(
         next(new AppError(404, "Product not found"));
         return;
       }
-      const imageUrl = await uploadProductImage(paramsParsed.data.id, {
-        buffer: req.file.buffer,
-        mimetype: req.file.mimetype,
-        originalname: req.file.originalname,
-      });
+      const imageUrl = await uploadProductImage(
+        paramsParsed.data.id,
+        {
+          buffer: req.file.buffer,
+          mimetype: req.file.mimetype,
+          originalname: req.file.originalname,
+        },
+        existing.imageUrl
+      );
       const product = await setProductImage(paramsParsed.data.id, imageUrl);
+      res.json({ product });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+adminCatalogRouter.delete(
+  "/admin/products/:id/image",
+  async (req, res, next) => {
+    const paramsParsed = idParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: { message: "Invalid product id" } });
+      return;
+    }
+
+    try {
+      const existing = await getProductById(paramsParsed.data.id);
+      if (!existing) {
+        next(new AppError(404, "Product not found"));
+        return;
+      }
+      if (!existing.imageUrl) {
+        next(new AppError(400, "Product has no image to remove"));
+        return;
+      }
+      await deleteProductImage(existing.imageUrl);
+      const product = await clearProductImage(paramsParsed.data.id);
       res.json({ product });
     } catch (err) {
       next(err);
