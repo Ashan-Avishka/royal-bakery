@@ -9,7 +9,7 @@ export default function AboutPage() {
       <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-honey/30 blur-3xl" aria-hidden />
       <div className="pointer-events-none absolute -right-20 bottom-10 h-80 w-80 rounded-full bg-caramel/10 blur-3xl" aria-hidden />
       <div className="page-container page-section relative grid min-w-0 grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-16">
-        <div className="relative overflow-hidden lg:col-span-6"><div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]"><Image src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1400&q=80" alt="Baker working dough in a bakery kitchen" fill sizes="(min-width: 1024px) 40vw, calc(100vw - 2rem)" className="object-cover" preload /></div></div>
+        <div className="relative overflow-hidden lg:col-span-6"><div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]"><Image src="/images/about.jpeg" alt="Baker working dough in a bakery kitchen" fill sizes="(min-width: 1024px) 40vw, calc(100vw - 2rem)" className="object-cover" preload /></div></div>
         <div className="min-w-0 lg:col-span-6 lg:pl-2">
           <div className="mb-6"><BrandLogo size="md" /></div>
           <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">Our story</p>

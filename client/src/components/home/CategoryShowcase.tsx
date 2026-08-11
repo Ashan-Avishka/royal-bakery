@@ -11,6 +11,7 @@ const categoryImagery = [
   { image: "/images/patties.jpg", alt: "Golden short-eat patties" },
   { image: "/images/rotti.jpg", alt: "Soft bakery rotti" },
   { image: "/images/sweets.jpg", alt: "Tea-time bakery sweets" },
+  { image: "/images/bun.jpeg", alt: "Fresh bakery buns" },
 ];
 
 /** Extra collections shown when the database has fewer categories. */
@@ -71,7 +72,7 @@ function pickImage(name: string, index: number) {
   if (n.includes("bread") || n.includes("loaf")) return categoryImagery[1]!;
   if (n.includes("pastr") || n.includes("croissant") || n.includes("danish"))
     return categoryImagery[2]!;
-  if (n.includes("bun")) return categoryImagery[3]!;
+  if (n.includes("bun")) return categoryImagery[7]!;
   if (n.includes("roll")) return categoryImagery[3]!;
   if (n.includes("pattie") || n.includes("patty")) return categoryImagery[4]!;
   if (n.includes("rotti") || n.includes("roti")) return categoryImagery[5]!;
