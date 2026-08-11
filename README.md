@@ -33,36 +33,36 @@ Health check: `Invoke-RestMethod http://localhost:4000/api/health` → `{ status
 ## Product image import
 
 The product image importer reads the source images already tracked in
-`System/assets/products` and uses a separate ignored configuration file for each
-target. Create `server/.env.local` for local Supabase and
-`server/.env.hosted.local` for the hosted Supabase project. Each file contains:
+`System/assets/products`. For an explicit hosted-only import, keep the hosted
+Supabase credentials in the existing ignored `server/.env` file:
 
 ```dotenv
-SUPABASE_URL=http://127.0.0.1:54321
-SUPABASE_SERVICE_ROLE_KEY=the-service-role-key-for-this-target
+SUPABASE_URL=https://your-hosted-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=the-hosted-service-role-key
 ```
 
-Put the real hosted URL and service-role key only in `server/.env.hosted.local`;
-do not add them to this repository or its documentation.
-
-Run a dry-run first. It validates the 31 source mappings and target catalog rows
+Do not add real credentials to this repository or its documentation. Run the
+hosted dry-run first; it validates the 31 source mappings and target catalog rows
 without uploading files or updating product URLs:
 
 ```powershell
 cd server
-npm run images:dry-run -- --target local
+npm run images:dry-run -- --target hosted
 ```
 
-To make the explicit, write-enabled import, use:
+To make the explicit, write-enabled hosted import and verify every mapped URL:
 
 ```powershell
-npm run images:import -- --target local
+npm run images:import -- --target hosted --verify
 ```
 
-Use `--target hosted` for the hosted configuration, or `--target all` to run the
-two targets independently. Add `--verify` to either command to require every
-mapped product URL to end with `/<product-id>/catalog.webp`, return HTTP 200,
-and serve `image/webp`. Each selected target prints its own summary report.
+Use `--target all` only when you need the two targets to run independently. That
+mode requires `server/.env.local` for local Supabase and
+`server/.env.hosted.local` for hosted Supabase; each ignored file contains the
+same `SUPABASE_URL` and `SUPABASE_SERVICE_ROLE_KEY` variables. Add `--verify` to
+the import command to require every mapped product URL to end with
+`/<product-id>/catalog.webp`, return HTTP 200, and serve `image/webp`. Each
+selected target prints its own summary report.
 
 ### Product image delivery policy
 

@@ -32,7 +32,7 @@ export interface ImageImportArguments {
 
 export interface TargetEnvironmentFile {
   name: Exclude<ImageImportTarget, "all">;
-  fileName: ".env.local" | ".env.hosted.local";
+  fileName: ".env" | ".env.local" | ".env.hosted.local";
 }
 
 interface TargetImportDependencies extends ImportDependencies {
@@ -226,7 +226,7 @@ export function targetEnvironmentFiles(target: ImageImportTarget): readonly Targ
     return [{ name: "local", fileName: ".env.local" }];
   }
   if (target === "hosted") {
-    return [{ name: "hosted", fileName: ".env.hosted.local" }];
+    return [{ name: "hosted", fileName: ".env" }];
   }
   return [
     { name: "local", fileName: ".env.local" },

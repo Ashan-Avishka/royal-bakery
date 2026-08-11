@@ -168,7 +168,10 @@ describe("image import CLI", () => {
     expect(() => parseArguments(["--target", "production"])).toThrow("Target must be local, hosted, or all");
   });
 
-  it("maps all to independent ignored environment files", () => {
+  it("uses the application env for hosted-only imports without weakening all-target isolation", () => {
+    expect(targetEnvironmentFiles("hosted")).toEqual([
+      { name: "hosted", fileName: ".env" },
+    ]);
     expect(targetEnvironmentFiles("all")).toEqual([
       { name: "local", fileName: ".env.local" },
       { name: "hosted", fileName: ".env.hosted.local" },
