@@ -48,36 +48,36 @@ export default async function AdminOrdersPage({
     <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <h1 className="mb-6 font-display text-3xl text-cocoa">Orders</h1>
 
+      <div className={`mb-8 flex flex-wrap gap-2 ${selected ? "hidden lg:flex" : ""}`}>
+        {FILTERS.map((filter) => {
+          const href =
+            filter.value === "all"
+              ? "/admin/orders"
+              : `/admin/orders?status=${filter.value}`;
+          const active =
+            filter.value === "all"
+              ? !statusFilter
+              : statusFilter === filter.value;
+
+          return (
+            <Link
+              key={filter.value}
+              href={href}
+              aria-current={active ? "page" : undefined}
+              className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                active
+                  ? "border-b-2 border-cream-alt bg-cocoa font-semibold text-cream-alt"
+                  : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
+              }`}
+            >
+              {filter.label}
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className={`min-w-0 flex-1 ${selected ? "hidden lg:block" : ""}`}>
-          <div className="mb-8 flex flex-wrap gap-2">
-            {FILTERS.map((filter) => {
-              const href =
-                filter.value === "all"
-                  ? "/admin/orders"
-                  : `/admin/orders?status=${filter.value}`;
-              const active =
-                filter.value === "all"
-                  ? !statusFilter
-                  : statusFilter === filter.value;
-
-              return (
-                <Link
-                  key={filter.value}
-                  href={href}
-                  aria-current={active ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "border-b-2 border-cream-alt bg-cocoa font-semibold text-cream-alt"
-                      : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
-                  }`}
-                >
-                  {filter.label}
-                </Link>
-              );
-            })}
-          </div>
-
           {orders.length === 0 ? (
             <p className="text-sm text-text-muted">
               No orders{statusFilter ? ` with status “${statusFilter}”` : ""}.
@@ -94,8 +94,9 @@ export default async function AdminOrdersPage({
                   <li key={order.id}>
                     <Link
                       href={rowHref}
+                      scroll={false}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex min-w-0 flex-col gap-3 py-5 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
+                      className={`flex min-w-0 flex-col gap-3 px-4 py-5 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
                         isActive ? "bg-honey-light/40" : ""
                       }`}
                     >
@@ -129,7 +130,7 @@ export default async function AdminOrdersPage({
           )}
         </div>
 
-        <aside className={`w-full shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
+        <aside className={`w-full shrink-0 lg:w-96 lg:self-stretch ${selected ? "" : "hidden lg:block"}`}>
           {selected ? (
             <DetailPanel title="Order details" closeHref={closeHref}>
               {selectedOrder ? (

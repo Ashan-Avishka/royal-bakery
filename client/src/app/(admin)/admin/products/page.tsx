@@ -56,54 +56,56 @@ export default async function AdminProductsPage({
         </Link>
       </div>
 
+      <div className={`mb-6 ${selected ? "hidden lg:block" : ""}`}>
+        <form className="flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" method="get">
+          <label htmlFor="admin-product-search" className="sr-only">
+            Search products
+          </label>
+          <input
+            id="admin-product-search"
+            type="search"
+            name="search"
+            placeholder="Search products…"
+            defaultValue={search ?? ""}
+            className="w-full min-w-0 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:flex-1 sm:text-sm"
+          />
+          <label htmlFor="admin-product-category" className="sr-only">
+            Category
+          </label>
+          <select
+            id="admin-product-category"
+            name="categoryId"
+            defaultValue={categoryId ?? ""}
+            className="w-full min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:text-sm"
+          >
+            <option value="">All categories</option>
+            {categories.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+          <label className="flex min-h-11 items-center gap-2 text-sm text-cocoa">
+            <input
+              type="checkbox"
+              name="lowStock"
+              value="1"
+              defaultChecked={lowStock === "1"}
+              className="size-4 rounded border-border-warm text-caramel focus:ring-caramel"
+            />
+            Low stock only
+          </label>
+          <button
+            type="submit"
+            className="min-h-11 w-full rounded-full bg-honey-light px-4 py-2 text-sm font-medium text-cocoa hover:bg-honey sm:w-auto"
+          >
+            Filter
+          </button>
+        </form>
+      </div>
+
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className={`min-w-0 flex-1 ${selected ? "hidden lg:block" : ""}`}>
-          <form className="mb-6 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" method="get">
-            <label htmlFor="admin-product-search" className="sr-only">
-              Search products
-            </label>
-            <input
-              id="admin-product-search"
-              type="search"
-              name="search"
-              placeholder="Search products…"
-              defaultValue={search ?? ""}
-              className="w-full min-w-0 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:flex-1 sm:text-sm"
-            />
-            <label htmlFor="admin-product-category" className="sr-only">
-              Category
-            </label>
-            <select
-              id="admin-product-category"
-              name="categoryId"
-              defaultValue={categoryId ?? ""}
-              className="w-full min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:text-sm"
-            >
-              <option value="">All categories</option>
-              {categories.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-            <label className="flex min-h-11 items-center gap-2 text-sm text-cocoa">
-              <input
-                type="checkbox"
-                name="lowStock"
-                value="1"
-                defaultChecked={lowStock === "1"}
-                className="size-4 rounded border-border-warm text-caramel focus:ring-caramel"
-              />
-              Low stock only
-            </label>
-            <button
-              type="submit"
-              className="min-h-11 w-full rounded-full bg-honey-light px-4 py-2 text-sm font-medium text-cocoa hover:bg-honey sm:w-auto"
-            >
-              Filter
-            </button>
-          </form>
-
           {visible.length === 0 ? (
             <p className="text-sm text-text-muted">No products match.</p>
           ) : (
@@ -119,8 +121,9 @@ export default async function AdminProductsPage({
                   <li key={product.id}>
                     <Link
                       href={rowHref}
+                      scroll={false}
                       aria-current={isActive ? "page" : undefined}
-                      className={`flex min-w-0 flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
+                      className={`flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
                         isActive ? "bg-honey-light/40" : ""
                       }`}
                     >
@@ -148,7 +151,7 @@ export default async function AdminProductsPage({
           )}
         </div>
 
-        <aside className={`w-full shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
+        <aside className={`w-full shrink-0 lg:w-96 lg:self-stretch ${selected ? "" : "hidden lg:block"}`}>
           {selected ? (
             <DetailPanel title="Product details" closeHref={closeHref}>
               {selectedProduct ? (

@@ -33,45 +33,45 @@ export default async function AdminCustomersPage({
         View accounts and promote or demote admin access.
       </p>
 
+      <div className={`mb-8 flex flex-wrap gap-2 ${selected ? "hidden lg:flex" : ""}`}>
+        {(
+          [
+            { value: "all", label: "All", href: "/admin/customers" },
+            {
+              value: "customer",
+              label: "Customers",
+              href: "/admin/customers?role=customer",
+            },
+            {
+              value: "admin",
+              label: "Admins",
+              href: "/admin/customers?role=admin",
+            },
+          ] as const
+        ).map((filter) => {
+          const active =
+            filter.value === "all"
+              ? !roleFilter
+              : roleFilter === filter.value;
+          return (
+            <Link
+              key={filter.value}
+              href={filter.href}
+              aria-current={active ? "page" : undefined}
+              className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                active
+                  ? "border-b-2 border-cream-alt bg-cocoa font-semibold text-cream-alt"
+                  : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
+              }`}
+            >
+              {filter.label}
+            </Link>
+          );
+        })}
+      </div>
+
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className={`min-w-0 flex-1 ${selected ? "hidden lg:block" : ""}`}>
-          <div className="mb-8 flex flex-wrap gap-2">
-            {(
-              [
-                { value: "all", label: "All", href: "/admin/customers" },
-                {
-                  value: "customer",
-                  label: "Customers",
-                  href: "/admin/customers?role=customer",
-                },
-                {
-                  value: "admin",
-                  label: "Admins",
-                  href: "/admin/customers?role=admin",
-                },
-              ] as const
-            ).map((filter) => {
-              const active =
-                filter.value === "all"
-                  ? !roleFilter
-                  : roleFilter === filter.value;
-              return (
-                <Link
-                  key={filter.value}
-                  href={filter.href}
-                  aria-current={active ? "page" : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
-                    active
-                      ? "border-b-2 border-cream-alt bg-cocoa font-semibold text-cream-alt"
-                      : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
-                  }`}
-                >
-                  {filter.label}
-                </Link>
-              );
-            })}
-          </div>
-
           {filtered.length === 0 ? (
             <p className="text-sm text-text-muted">No accounts found.</p>
           ) : (
@@ -86,12 +86,13 @@ export default async function AdminCustomersPage({
                 return (
                   <li
                     key={customer.id}
-                    className={`flex flex-col gap-4 py-5 sm:flex-row sm:items-center sm:justify-between ${
+                    className={`flex flex-col gap-4 px-4 py-5 sm:flex-row sm:items-center sm:justify-between ${
                       isActive ? "bg-honey-light/40" : ""
                     }`}
                   >
                     <Link
                       href={rowHref}
+                      scroll={false}
                       aria-current={isActive ? "page" : undefined}
                       className="min-w-0 flex-1"
                     >
@@ -131,7 +132,7 @@ export default async function AdminCustomersPage({
           )}
         </div>
 
-        <aside className={`w-full shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
+        <aside className={`w-full shrink-0 lg:w-96 lg:self-stretch ${selected ? "" : "hidden lg:block"}`}>
           {selected ? (
             <DetailPanel title="Customer details" closeHref={closeHref}>
               {selectedCustomer ? (

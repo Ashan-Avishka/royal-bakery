@@ -78,6 +78,7 @@ export default async function OrdersPage({
                     <Link
                       key={order.id}
                       href={rowHref}
+                      scroll={false}
                       className={`surface-pad flex min-w-0 flex-col items-start justify-between gap-4 rounded-[1.35rem] border border-border-warm/80 bg-cream-alt shadow-[0_12px_32px_-24px_rgba(58,26,19,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-24px_rgba(58,26,19,0.35)] sm:flex-row sm:items-center ${
                         isActive
                           ? "-translate-y-0.5 shadow-[0_20px_40px_-24px_rgba(58,26,19,0.35)]"
@@ -108,7 +109,7 @@ export default async function OrdersPage({
               </div>
             </div>
 
-            <aside className={`w-full min-w-0 shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
+            <aside className={`w-full min-w-0 shrink-0 lg:w-96 lg:self-stretch ${selected ? "" : "hidden lg:block"}`}>
               {selected ? (
                 <DetailPanel
                   title="Order details"
