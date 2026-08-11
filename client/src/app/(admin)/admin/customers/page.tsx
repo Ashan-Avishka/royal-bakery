@@ -27,7 +27,7 @@ export default async function AdminCustomersPage({
   const closeHref = `/admin/customers${buildQuery({ role: roleFilter })}`;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <h1 className="mb-2 font-display text-3xl text-cocoa">Customers</h1>
       <p className="mb-6 text-sm text-text-muted">
         View accounts and promote or demote admin access.
@@ -59,7 +59,7 @@ export default async function AdminCustomersPage({
                 <Link
                   key={filter.value}
                   href={filter.href}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     active
                       ? "bg-caramel text-cream-alt"
                       : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
@@ -91,7 +91,7 @@ export default async function AdminCustomersPage({
                   >
                     <Link href={rowHref} className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="font-medium text-cocoa">
+                        <p className="break-words font-medium text-cocoa">
                           {customer.fullName?.trim() || "Unnamed user"}
                         </p>
                         <Badge
@@ -101,7 +101,7 @@ export default async function AdminCustomersPage({
                         </Badge>
                         {isSelf && <Badge tone="success">You</Badge>}
                       </div>
-                      <p className="mt-1 text-sm text-text-muted">
+                      <p className="mt-1 break-words text-sm text-text-muted">
                         {customer.phone || "No phone"}
                         {customer.address ? ` · ${customer.address}` : ""}
                       </p>

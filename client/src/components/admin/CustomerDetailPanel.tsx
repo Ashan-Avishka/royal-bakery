@@ -24,11 +24,11 @@ export function CustomerDetailPanel({
       <dl className="grid grid-cols-1 gap-4 text-sm">
         <div>
           <dt className="text-text-muted">Phone</dt>
-          <dd className="font-medium text-cocoa">{customer.phone || "No phone"}</dd>
+          <dd className="break-words font-medium text-cocoa">{customer.phone || "No phone"}</dd>
         </div>
         <div>
           <dt className="text-text-muted">Address</dt>
-          <dd className="font-medium text-cocoa">{customer.address || "No address"}</dd>
+          <dd className="break-words font-medium text-cocoa">{customer.address || "No address"}</dd>
         </div>
         <div>
           <dt className="text-text-muted">Joined</dt>

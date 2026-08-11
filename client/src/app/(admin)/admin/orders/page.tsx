@@ -45,7 +45,7 @@ export default async function AdminOrdersPage({
   const closeHref = `/admin/orders${buildQuery({ status: statusFilter })}`;
 
   return (
-    <div className="mx-auto max-w-7xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <h1 className="mb-6 font-display text-3xl text-cocoa">Orders</h1>
 
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
@@ -65,7 +65,7 @@ export default async function AdminOrdersPage({
                 <Link
                   key={filter.value}
                   href={href}
-                  className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                  className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     active
                       ? "bg-caramel text-cream-alt"
                       : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
@@ -93,11 +93,11 @@ export default async function AdminOrdersPage({
                   <li key={order.id}>
                     <Link
                       href={rowHref}
-                      className={`flex flex-col gap-3 py-5 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
+                      className={`flex min-w-0 flex-col gap-3 py-5 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
                         isActive ? "bg-honey-light/40" : ""
                       }`}
                     >
-                      <div>
+                      <div className="min-w-0">
                         <p className="font-medium text-cocoa">
                           {new Date(order.createdAt).toLocaleDateString("en-GB", {
                             day: "numeric",
@@ -115,7 +115,7 @@ export default async function AdminOrdersPage({
                           {order.id.slice(0, 8)}…
                         </p>
                       </div>
-                      <div className="flex items-center gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <PaymentStatusBadge status={order.paymentStatus} />
                         <OrderStatusBadge status={order.status} />
                       </div>

@@ -38,11 +38,11 @@ export function CategoryForm({ category }: { category?: Category }) {
           rows={3}
           defaultValue={category?.description ?? ""}
           disabled={pending}
-          className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-24 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         />
       </div>
       {isEdit && (
-        <label className="flex items-center gap-2 text-sm text-cocoa">
+      <label className="flex min-h-11 items-center gap-2 text-sm text-cocoa">
           <input
             type="checkbox"
             name="isActive"

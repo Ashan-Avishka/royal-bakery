@@ -36,7 +36,7 @@ export function CustomerRoleForm({
           name="role"
           defaultValue={currentRole}
           disabled={pending || locked}
-          className="rounded-lg border border-border-warm bg-white px-3 py-2 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-11 rounded-lg border border-border-warm bg-white px-3 py-2 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         >
           <option value="customer">Customer</option>
           <option value="admin">Admin</option>

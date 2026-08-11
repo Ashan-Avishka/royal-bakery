@@ -102,4 +102,14 @@ describe("AdminOrdersPage", () => {
       "/admin/orders?status=pending&selected=order-1"
     );
   });
+
+  it("keeps status filters and order records touch-friendly on narrow screens", async () => {
+    render(await AdminOrdersPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("link", { name: /2026/ })).toHaveClass(
+      "min-w-0",
+      "sm:flex-row"
+    );
+  });
 });

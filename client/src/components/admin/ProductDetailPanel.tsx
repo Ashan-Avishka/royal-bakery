@@ -33,11 +33,11 @@ export function ProductDetailPanel({
         {!product.isAvailable && <Badge tone="muted">Unavailable</Badge>}
       </div>
 
-      <p className="mb-1 font-display text-lg text-cocoa">{product.name}</p>
+      <p className="mb-1 break-words font-display text-lg text-cocoa">{product.name}</p>
       <p className="mb-4 text-sm text-text-muted">{formatPrice(product.price)}</p>
 
       {product.description && (
-        <p className="mb-4 text-sm text-cocoa">{product.description}</p>
+        <p className="mb-4 break-words text-sm text-cocoa">{product.description}</p>
       )}
 
       <dl className="mb-6 grid grid-cols-1 gap-3 text-sm">

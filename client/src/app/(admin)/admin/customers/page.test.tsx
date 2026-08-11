@@ -79,4 +79,11 @@ describe("AdminCustomersPage", () => {
     );
     expect(screen.getAllByRole("button", { name: "Update" })).toHaveLength(1);
   });
+
+  it("keeps role filters and customer records touch-friendly on narrow screens", async () => {
+    render(await AdminCustomersPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("link", { name: "Admins" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveClass("min-w-0");
+  });
 });

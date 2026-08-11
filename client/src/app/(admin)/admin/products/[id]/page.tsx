@@ -32,7 +32,7 @@ export default async function EditProductPage({
   const remove = deleteProduct.bind(null, product.id);
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-7 sm:px-6 sm:py-10">
       <Link
         href="/admin/products"
         className="mb-6 inline-block text-sm font-medium text-caramel hover:text-caramel-hover"
@@ -43,7 +43,7 @@ export default async function EditProductPage({
       <div className="mb-8 flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl text-cocoa">Edit product</h1>
-          <div className="mt-2 flex gap-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             <Badge tone={stock.tone}>{stock.label}</Badge>
             {!product.isAvailable && <Badge tone="muted">Unavailable</Badge>}
           </div>

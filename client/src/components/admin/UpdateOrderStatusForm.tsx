@@ -39,7 +39,7 @@ export function UpdateOrderStatusForm({
             name="status"
             defaultValue={currentStatus}
             disabled={pending}
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+            className="min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>

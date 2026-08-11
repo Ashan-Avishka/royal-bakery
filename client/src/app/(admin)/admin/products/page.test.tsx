@@ -110,4 +110,15 @@ describe("AdminProductsPage", () => {
       "/admin/products?categoryId=cakes&selected=cake-1"
     );
   });
+
+  it("uses stacked touch-friendly filters and wrapping product records", async () => {
+    render(await AdminProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("searchbox")).toHaveClass("w-full", "min-w-0", "text-base");
+    expect(screen.getByRole("button", { name: "Filter" })).toHaveClass("min-h-11", "w-full");
+    expect(screen.getByRole("link", { name: /Chocolate Cake/ })).toHaveClass(
+      "min-w-0",
+      "sm:flex-row"
+    );
+  });
 });

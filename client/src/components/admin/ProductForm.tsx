@@ -44,7 +44,7 @@ export function ProductForm({
           rows={3}
           defaultValue={product?.description ?? ""}
           disabled={pending}
-          className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-24 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         />
       </div>
       <Input
@@ -76,7 +76,7 @@ export function ProductForm({
           name="categoryId"
           defaultValue={product?.categoryId ?? ""}
           disabled={pending}
-          className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         >
           <option value="">No category</option>
           {categories.map((c) => (
@@ -87,7 +87,7 @@ export function ProductForm({
           ))}
         </select>
       </div>
-      <label className="flex items-center gap-2 text-sm text-cocoa">
+      <label className="flex min-h-11 items-center gap-2 text-sm text-cocoa">
         <input
           type="checkbox"
           name="isAvailable"
@@ -107,7 +107,7 @@ export function ProductForm({
           type="file"
           accept="image/*"
           disabled={pending}
-          className="text-sm text-text-muted file:mr-3 file:rounded-full file:border-0 file:bg-honey-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-cocoa"
+          className="min-h-11 text-base text-text-muted file:mr-3 file:min-h-11 file:rounded-full file:border-0 file:bg-honey-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-cocoa sm:text-sm"
         />
         {product?.imageUrl && (
           <p className="text-xs text-text-muted">
