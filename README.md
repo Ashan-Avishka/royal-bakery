@@ -66,28 +66,21 @@ selected target prints its own summary report.
 
 ### Product image delivery policy
 
-The client currently keeps Next.js image optimization disabled globally. This is
-the safe fallback until a real imported Supabase product URL has been verified
-through the production `/_next/image` endpoint: the optimizer resolves upstream
-hosts and may reject a Supabase origin that resolves through NAT64/private-address
-space. Global `unoptimized` delivers each raw source URL; Next emits no responsive
-`srcset` variants or `sizes` attribute in this mode. Component `sizes` values are
-kept accurate as readiness for a future optimized policy, rather than as an
-active source-selection mechanism today. Images remain lazy by default, and only
-a genuine initial LCP image receives `preload`.
+The client uses Next.js image optimization for the imported Supabase product
+assets. A production build was verified against a real imported URL through
+`/_next/image`: the request returned HTTP 200 with optimized image content.
+Component `sizes` values therefore drive responsive source selection. Images
+remain lazy by default, and only a genuine initial LCP image receives `preload`.
 
-The image importer supplies the fallback's efficient source assets: square WebP
-files capped at 1000px with quality 82 and long-lived CDN caching. `remotePatterns`
-are constraints for a future Next optimizer, not a browser-side allowlist for the
-current raw-source delivery. The Supabase pattern is derived at build time from
-the non-secret `NEXT_PUBLIC_SUPABASE_URL`: it must be the exact HTTPS project URL
-and permits only `/storage/v1/object/public/product-images/**`. No Supabase host
+The image importer supplies efficient source assets: square WebP files capped at
+1000px with quality 82 and long-lived CDN caching. `remotePatterns` constrain the
+optimizer's permitted upstream sources. The Supabase pattern is derived at build
+time from the non-secret `NEXT_PUBLIC_SUPABASE_URL`: it must be the exact HTTPS
+project URL and permits only `/storage/v1/object/public/product-images/**`. No Supabase host
 is configured if that variable is missing or invalid. Each existing Unsplash
 image has its own exact pathname pattern and shares the exact
-`?auto=format&fit=crop&w=1400&q=80` query string, so a future optimizer accepts
-only the currently used source URLs. When a production runtime returns HTTP 200
-with an image content type for an imported URL, this policy can be revisited and
-the global fallback removed.
+`?auto=format&fit=crop&w=1400&q=80` query string, so the optimizer accepts only
+the currently used source URLs.
 
 ## Test PayHere payments
 

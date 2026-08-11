@@ -48,13 +48,9 @@ const nextConfig: NextConfig = {
         search: unsplashImageSearch,
       })),
     ],
-    // Product sources remain raw CDN assets until a production `/_next/image`
-    // request succeeds for a real imported URL. With this global fallback,
-    // Next does not generate srcset variants or emit `sizes`; component sizes
-    // stay accurate so the future optimized policy can be enabled safely.
-    // The patterns above constrain that future optimizer, not browser-side
-    // requests for the current raw source delivery.
-    unoptimized: true,
+    // Remote sources stay constrained to the exact hosted product bucket and
+    // current Unsplash assets. Component `sizes` values guide the responsive
+    // variants emitted by the production optimizer.
   },
 };
 

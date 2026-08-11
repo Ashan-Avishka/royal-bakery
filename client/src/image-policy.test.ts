@@ -39,6 +39,12 @@ afterEach(() => {
   vi.resetModules();
 });
 
+it("keeps the production image optimizer enabled after the hosted runtime probe", async () => {
+  const { default: nextConfig } = await import("../next.config");
+
+  expect(nextConfig.images?.unoptimized).not.toBe(true);
+});
+
 it("derives a future optimizer allowlist from the exact configured Supabase project", async () => {
   process.env.NEXT_PUBLIC_SUPABASE_URL = "https://catalog-abc.supabase.co";
   vi.resetModules();
