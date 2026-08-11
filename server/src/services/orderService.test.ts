@@ -8,6 +8,7 @@ const notificationMocks = vi.hoisted(() => ({
   sendOrderConfirmationEmail: vi.fn(),
   sendAdminNewOrderEmail: vi.fn(),
   sendAdminLowStockEmail: vi.fn(),
+  sendOrderStatusChangeEmail: vi.fn(),
 }));
 vi.mock("./notificationService.js", () => notificationMocks);
 
@@ -331,5 +332,26 @@ describe("updateOrderStatus", () => {
     );
 
     await expect(updateOrderStatus(ORDER_A, "cancelled")).rejects.toMatchObject({ status: 409 });
+  });
+
+  it("sends a status-change email when the order status changes", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(seed() as any);
+
+    const order = await updateOrderStatus(ORDER_A, "processing");
+
+    expect(notificationMocks.sendOrderStatusChangeEmail).toHaveBeenCalledWith(
+      order,
+      CUSTOMER_EMAIL,
+      "pending",
+      "processing"
+    );
+  });
+
+  it("does not send a status-change email when the status does not actually change", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(seed() as any);
+
+    await updateOrderStatus(ORDER_A, "pending");
+
+    expect(notificationMocks.sendOrderStatusChangeEmail).not.toHaveBeenCalled();
   });
 });

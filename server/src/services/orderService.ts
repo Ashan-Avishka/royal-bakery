@@ -5,6 +5,7 @@ import {
   sendAdminLowStockEmail,
   sendAdminNewOrderEmail,
   sendOrderConfirmationEmail,
+  sendOrderStatusChangeEmail,
 } from "./notificationService.js";
 import type { Order, OrderItem, OrderStatus, OrderSummary, PaymentStatus } from "../types/order.js";
 
@@ -199,5 +200,37 @@ export async function updateOrderStatus(orderId: string, status: OrderStatus): P
 
   const order = await getOrderById(orderId);
   if (!order) throw new AppError(404, "Order not found");
+
+  if (existing.status !== order.status) {
+    await notifyOrderStatusChanged(orderId, order, existing.status);
+  }
+
   return order;
+}
+
+async function notifyOrderStatusChanged(
+  orderId: string,
+  order: Order,
+  previousStatus: OrderStatus
+): Promise<void> {
+  try {
+    const { data: row, error } = await getSupabaseAdmin()
+      .from("orders")
+      .select("*")
+      .eq("id", orderId)
+      .maybeSingle();
+    if (error || !row) return;
+    const userId = (row as { user_id: string }).user_id;
+
+    const { data: userData } = await getSupabaseAdmin().auth.admin.getUserById(userId);
+    const customerEmail = userData?.user?.email;
+    if (!customerEmail) {
+      console.warn(`No email found for user ${userId}; skipping order-status notification`);
+      return;
+    }
+
+    void sendOrderStatusChangeEmail(order, customerEmail, previousStatus, order.status);
+  } catch (err) {
+    console.error("Failed to send order-status-change notification", err);
+  }
 }
