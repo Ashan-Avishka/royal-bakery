@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import type { Category } from "@/lib/catalog";
 
 export function ProductFilters({
@@ -22,6 +22,11 @@ export function ProductFilters({
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestSearchRef = useRef(activeSearch ?? "");
   const latestCategoryRef = useRef(activeCategoryId);
+
+  useEffect(() => {
+    latestSearchRef.current = activeSearch ?? "";
+    latestCategoryRef.current = activeCategoryId;
+  }, [activeCategoryId, activeSearch]);
 
   function updateParams(next: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
@@ -70,7 +75,7 @@ export function ProductFilters({
             className={`min-h-11 w-full rounded-full border px-4 py-2 text-[12px] font-medium tracking-wide transition-all duration-300 sm:w-auto ${
               !activeCategoryId
                 ? "border-caramel bg-cocoa text-cream-alt shadow-sm"
-                : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel"
+                : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel-hover"
             }`}
           >
             All
@@ -84,7 +89,7 @@ export function ProductFilters({
               className={`min-h-11 w-full rounded-full border px-4 py-2 text-[12px] font-medium tracking-wide transition-all duration-300 sm:w-auto ${
                 activeCategoryId === category.id
                   ? "border-caramel bg-cocoa text-cream-alt shadow-sm"
-                  : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel"
+                  : "border-border-warm bg-cream-alt text-cocoa hover:border-caramel hover:text-caramel-hover"
               }`}
             >
               {category.name}
@@ -108,7 +113,7 @@ export function ProductFilters({
             <Link
               href="/products"
               onClick={cancelPendingSearch}
-              className="min-h-11 w-full py-2 text-center text-sm font-medium text-caramel transition-colors hover:text-caramel-hover sm:w-auto sm:text-right"
+              className="min-h-11 w-full py-2 text-center text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa sm:w-auto sm:text-right"
             >
               Browse all products
             </Link>

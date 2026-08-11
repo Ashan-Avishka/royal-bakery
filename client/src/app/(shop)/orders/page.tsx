@@ -62,7 +62,7 @@ export default async function OrdersPage({
             </p>
             <Link
               href="/products"
-              className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-caramel transition-colors hover:text-caramel-hover"
+              className="mt-6 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa"
             >
               Browse the menu →
             </Link>

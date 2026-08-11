@@ -10,10 +10,9 @@ export default async function ProductsPage({
   searchParams: Promise<{ categoryId?: string; search?: string }>;
 }) {
   const { categoryId, search } = await searchParams;
-  const [categories, products] = await Promise.all([
-    listCategories(),
-    listProducts({ categoryId, search }),
-  ]);
+  const categoriesPromise = listCategories().catch(() => []);
+  const productsPromise = listProducts({ categoryId, search }).catch(() => []);
+  const [categories, products] = await Promise.all([categoriesPromise, productsPromise]);
   const filtersActive = Boolean(categoryId || search);
 
   return (
@@ -41,13 +40,13 @@ export default async function ProductsPage({
             <div className="rounded-[1.35rem] border border-dashed border-border-warm bg-cream-alt/70 px-4 py-12 text-center sm:px-6 sm:py-16">
               <h2 className="font-display text-lg text-cocoa">No products found</h2>
               <p className="mt-2 text-sm text-text-muted">No products match this search and category. Clear the filters to browse the full menu.</p>
-              <Link href="/products" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel hover:text-caramel-hover">Clear filters</Link>
+              <Link href="/products" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa">Clear filters</Link>
             </div>
           ) : (
             <div className="rounded-[1.35rem] border border-dashed border-border-warm bg-cream-alt/70 px-4 py-12 text-center sm:px-6 sm:py-16">
               <h2 className="font-display text-lg text-cocoa">The menu is currently unavailable</h2>
               <p className="mt-2 text-sm text-text-muted">There are no products available in the menu right now.</p>
-              <Link href="/" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel hover:text-caramel-hover">Back to home</Link>
+              <Link href="/" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa">Back to home</Link>
             </div>
           )
         ) : (

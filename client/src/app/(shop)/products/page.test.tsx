@@ -132,11 +132,22 @@ describe("ProductsPage", () => {
     expect(screen.queryByRole("link", { name: "Clear filters" })).not.toBeInTheDocument();
   });
 
-  it("lets catalog API failures reach the route error boundary", async () => {
+  it("keeps product results available when categories cannot load", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+
+    render(await ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) }));
+
+    expect(screen.getByText("2 products")).toBeVisible();
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(4);
+  });
+
+  it("keeps category filters available when products cannot load", async () => {
     catalogMocks.listProducts.mockRejectedValue(new Error("Catalog unavailable"));
 
-    await expect(
-      ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) })
-    ).rejects.toThrow("Catalog unavailable");
+    render(await ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) }));
+
+    expect(screen.getByRole("button", { name: "Cakes" })).toBeVisible();
+    expect(screen.getByText("0 products")).toBeVisible();
+    expect(screen.getByRole("heading", { name: "No products found" })).toBeVisible();
   });
 });

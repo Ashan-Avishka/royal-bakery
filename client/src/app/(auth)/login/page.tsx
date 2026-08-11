@@ -17,7 +17,7 @@ export default function LoginPage() {
       <div>
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-caramel/60" aria-hidden />
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">
             Welcome back
           </p>
         </div>
@@ -39,7 +39,11 @@ export default function LoginPage() {
         <span className="h-px flex-1 bg-border-warm/70" aria-hidden />
       </div>
 
-      <form action={formAction} className="flex min-w-0 flex-col gap-4">
+      <form
+        action={formAction}
+        aria-describedby={state.error ? "login-form-error" : undefined}
+        className="flex min-w-0 flex-col gap-4"
+      >
         <Input
           label="Email"
           name="email"
@@ -56,7 +60,7 @@ export default function LoginPage() {
         />
 
         {state.error && (
-          <p className="rounded-[0.85rem] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+          <p id="login-form-error" role="alert" className="rounded-[0.85rem] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {state.error}
           </p>
         )}
@@ -74,7 +78,7 @@ export default function LoginPage() {
         Don&apos;t have an account?{" "}
         <Link
           href="/signup"
-          className="font-medium text-caramel transition-colors hover:text-caramel-hover"
+          className="inline-flex min-h-11 items-center font-medium text-caramel-hover transition-colors hover:text-cocoa"
         >
           Sign up
         </Link>

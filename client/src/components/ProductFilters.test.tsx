@@ -4,17 +4,19 @@ import { ProductFilters } from "./ProductFilters";
 
 const push = vi.fn();
 const replace = vi.fn();
+const navigationState = vi.hoisted(() => ({ query: "categoryId=cakes&search=chocolate" }));
 
 vi.mock("next/navigation", () => ({
   usePathname: () => "/products",
   useRouter: () => ({ push, replace }),
-  useSearchParams: () => new URLSearchParams("categoryId=cakes&search=chocolate"),
+  useSearchParams: () => new URLSearchParams(navigationState.query),
 }));
 
 afterEach(() => {
   cleanup();
   push.mockClear();
   replace.mockClear();
+  navigationState.query = "categoryId=cakes&search=chocolate";
   vi.useRealTimers();
 });
 
@@ -163,7 +165,8 @@ it("provides a reset control when filters are active", () => {
     "/products"
   );
   expect(screen.getByRole("link", { name: /browse all products/i })).toHaveClass(
-    "hover:text-caramel-hover"
+    "text-caramel-hover",
+    "hover:text-cocoa"
   );
 });
 
@@ -179,5 +182,31 @@ it("uses full-width, touch-friendly controls before the small breakpoint", () =>
     "w-full",
     "text-base",
     "sm:text-sm"
+  );
+});
+
+it("resyncs cleared query props so a later search cannot restore stale filters", () => {
+  vi.useFakeTimers();
+  const { rerender } = render(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
+  );
+
+  navigationState.query = "";
+  rerender(<ProductFilters categories={categories} resultCount={2} />);
+  fireEvent.change(screen.getByRole("searchbox", { name: /search products/i }), {
+    target: { value: "vanilla" },
+  });
+  vi.advanceTimersByTime(350);
+
+  expect(push).toHaveBeenCalledWith("/products?search=vanilla");
+});
+
+it("keeps every category control touch-sized on narrow screens", () => {
+  render(<ProductFilters categories={categories} resultCount={2} />);
+
+  expect(screen.getByRole("button", { name: "Cakes" })).toHaveClass(
+    "min-h-11",
+    "w-full",
+    "sm:w-auto"
   );
 });

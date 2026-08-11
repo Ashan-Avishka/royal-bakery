@@ -54,8 +54,8 @@ it("links the product and preserves labelled quantity bounds and line total", ()
   expect(quantityInput).toHaveAttribute("max", "4");
   expect(quantityInput).toHaveClass("border-text-muted");
   expect(screen.getByText("LKR 5,000")).toBeVisible();
-  expect(screen.getByRole("button", { name: "Update" })).toHaveClass("w-28");
-  expect(screen.getByRole("button", { name: "Remove" })).toHaveClass("w-28");
+  expect(screen.getByRole("button", { name: "Update" })).toHaveClass("w-full", "sm:w-28");
+  expect(screen.getByRole("button", { name: "Remove" })).toHaveClass("w-full", "sm:w-28");
 });
 
 it("submits the update and remove forms through their cart server actions", async () => {
@@ -102,4 +102,10 @@ it("stacks cart controls beneath a wrapping product identity on narrow screens",
     "text-base",
     "sm:text-sm"
   );
+  const controls = screen.getByRole("spinbutton", { name: /quantity for chocolate/i })
+    .closest("div");
+  expect(controls).toHaveClass("col-span-2", "sm:col-span-1", "flex-wrap");
+  expect(screen.getByText("LKR 5,000").parentElement).toBe(controls);
+  expect(screen.getByRole("button", { name: "Remove" }).closest("form")?.parentElement)
+    .toBe(controls);
 });

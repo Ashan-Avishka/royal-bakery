@@ -5,7 +5,7 @@ import AboutPage from "./page";
 afterEach(cleanup);
 
 describe("AboutPage", () => {
-  it("turns the bakery story into a clear path from Colombo to ordering online", () => {
+  it("turns the Medawala bakery story into a clear path to ordering online", () => {
     render(<AboutPage />);
 
     expect(
@@ -14,7 +14,7 @@ describe("AboutPage", () => {
     expect(
       screen.getByRole("heading", {
         level: 2,
-        name: "A Colombo bakery for everyday cravings and celebrations",
+        name: "A Medawala bakery for everyday cravings and celebrations",
       })
     ).toBeInTheDocument();
     expect(
@@ -27,6 +27,11 @@ describe("AboutPage", () => {
       "href",
       "/products"
     );
+    expect(screen.getByRole("link", { name: "Browse the menu" })).toHaveClass(
+      "bg-cocoa",
+      "hover:bg-cocoa-dark"
+    );
+    expect(screen.queryByRole("button", { name: "Browse the menu" })).not.toBeInTheDocument();
   });
 
   it("uses established storefront facts without unsupported process or ingredient claims", () => {

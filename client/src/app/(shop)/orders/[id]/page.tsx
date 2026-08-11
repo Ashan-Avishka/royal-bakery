@@ -136,7 +136,7 @@ export default async function OrderDetailPage({
 
         <Link
           href="/products"
-          className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-caramel transition-colors hover:text-caramel-hover"
+          className="mt-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa"
         >
           Continue shopping →
         </Link>

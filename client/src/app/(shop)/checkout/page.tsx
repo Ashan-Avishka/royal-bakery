@@ -27,10 +27,10 @@ export default async function CheckoutPage() {
               {cart.items.map((item) => <li key={item.productId} className="flex min-w-0 justify-between gap-4"><span className="min-w-0 break-words text-text-muted">{item.name} <span className="text-cocoa/70">× {item.quantity}</span></span><span className="shrink-0 font-medium">{formatPrice(item.subtotal)}</span></li>)}
             </ul>
             <div className="mt-5 flex justify-between border-t border-border-warm pt-5 font-display text-lg font-medium text-cocoa"><span>Subtotal</span><span>{formatPrice(cart.subtotal)}</span></div>
-            <Link href="/cart" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel transition-colors hover:text-caramel-hover">Edit cart</Link>
+            <Link href="/cart" className="mt-5 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa">Edit cart</Link>
           </aside>
         </div>
-        <p className="mt-6 text-center text-sm text-text-muted">Need to change something? <Link href="/cart" className="font-medium text-caramel transition-colors hover:text-caramel-hover">Return to cart</Link></p>
+        <p className="mt-6 text-center text-sm text-text-muted">Need to change something? <Link href="/cart" className="font-medium text-caramel-hover transition-colors hover:text-cocoa">Return to cart</Link></p>
       </div>
     </section>
   );

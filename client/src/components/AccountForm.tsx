@@ -20,7 +20,13 @@ export function AccountForm({ profile }: { profile: Profile }) {
   });
 
   return (
-    <form action={formAction} className="flex min-w-0 flex-col gap-4">
+    <form
+      action={formAction}
+      aria-describedby={
+        state.error ? "account-form-error" : state.success ? "account-form-success" : undefined
+      }
+      className="flex min-w-0 flex-col gap-4"
+    >
       <div>
         <p className="text-sm font-medium text-cocoa">Email</p>
         <p className="text-sm text-text-muted">{profile.email}</p>
@@ -43,9 +49,9 @@ export function AccountForm({ profile }: { profile: Profile }) {
         defaultValue={profile.address ?? ""}
       />
 
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p id="account-form-error" role="alert" className="text-sm text-red-600">{state.error}</p>}
       {state.success && (
-        <p className="text-sm text-emerald-700">Profile updated.</p>
+        <p id="account-form-success" role="status" aria-live="polite" className="text-sm text-emerald-700">Profile updated.</p>
       )}
 
       <Button type="submit" disabled={pending} className="mt-2 w-full sm:w-fit">

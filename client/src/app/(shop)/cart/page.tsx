@@ -2,7 +2,6 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { CartItemRow } from "@/components/CartItemRow";
 import { PageHeader } from "@/components/PageHeader";
-import { Button } from "@/components/ui/Button";
 import { getCart } from "@/lib/cart";
 import { formatPrice } from "@/lib/catalog";
 import { createClient } from "@/lib/supabase/server";
@@ -26,7 +25,7 @@ export default async function CartPage({ searchParams }: { searchParams: Promise
           <div className="surface-pad rounded-[1.5rem] border border-border-warm/80 bg-cream-alt py-14 text-center shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]">
             <h2 className="font-display text-xl text-cocoa">Your cart is empty</h2>
             <p className="mt-2 text-sm text-text-muted">Browse the menu and add something to your cart.</p>
-            <Link href="/products" className="mt-6 inline-block"><Button className="px-7 py-3 text-[13px] tracking-[0.06em]">Browse the menu</Button></Link>
+            <Link href="/products" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-full bg-cocoa px-7 py-3 text-[13px] font-medium tracking-[0.06em] text-cream-alt transition-colors hover:bg-cocoa-dark">Browse the menu</Link>
           </div>
         ) : (
           <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start">

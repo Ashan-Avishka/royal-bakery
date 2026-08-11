@@ -50,14 +50,14 @@ export function CartItemRow({ item, error }: { item: CartItem; error?: string })
             defaultValue={item.quantity}
             className="min-h-11 w-16 rounded-full border border-text-muted bg-cream-alt px-2 py-1.5 text-center text-base text-cocoa focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 sm:text-sm"
           />
-          <Button type="submit" variant="secondary" className="w-28 w-full px-3 py-1.5 text-xs sm:w-28">
+          <Button type="submit" variant="secondary" className="w-full px-3 py-1.5 text-xs sm:w-28">
             Update
           </Button>
         </form>
         <p className="font-medium text-cocoa">{formatPrice(item.subtotal)}</p>
         <form action={removeCartItem}>
           <input type="hidden" name="productId" value={item.productId} />
-          <Button type="submit" variant="ghost" className="w-28 w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 sm:w-28">
+          <Button type="submit" variant="ghost" className="w-full px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 sm:w-28">
             Remove
           </Button>
         </form>

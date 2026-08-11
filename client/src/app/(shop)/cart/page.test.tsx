@@ -90,6 +90,7 @@ describe("CartPage", () => {
       "href",
       "/products"
     );
+    expect(screen.queryByRole("button", { name: "Browse the menu" })).not.toBeInTheDocument();
     expect(screen.queryByRole("heading", { name: "Order summary" }))
       .not.toBeInTheDocument();
   });
