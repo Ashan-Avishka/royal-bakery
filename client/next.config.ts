@@ -29,17 +29,24 @@ function getSupabaseImagePattern() {
 }
 
 const supabaseImagePattern = getSupabaseImagePattern();
+const unsplashImagePaths = [
+  "/photo-1517433670267-08bbd4be890f",
+  "/photo-1578985545062-69928b1d9587",
+  "/photo-1509440159596-0249088772ff",
+] as const;
+const unsplashImageSearch = "?auto=format&fit=crop&w=1400&q=80";
 
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       ...(supabaseImagePattern ? [supabaseImagePattern] : []),
-      {
-        protocol: "https",
+      ...unsplashImagePaths.map((pathname) => ({
+        protocol: "https" as const,
         hostname: "images.unsplash.com",
         port: "",
-        pathname: "/**",
-      },
+        pathname,
+        search: unsplashImageSearch,
+      })),
     ],
     // Product sources remain raw CDN assets until a production `/_next/image`
     // request succeeds for a real imported URL. With this global fallback,
