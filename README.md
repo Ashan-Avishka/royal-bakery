@@ -70,15 +70,23 @@ The client currently keeps Next.js image optimization disabled globally. This is
 the safe fallback until a real imported Supabase product URL has been verified
 through the production `/_next/image` endpoint: the optimizer resolves upstream
 hosts and may reject a Supabase origin that resolves through NAT64/private-address
-space. Remote image sources remain allowlisted to HTTPS Supabase public-storage
-paths (and the separately used Unsplash source).
+space. Global `unoptimized` delivers each raw source URL; Next emits no responsive
+`srcset` variants or `sizes` attribute in this mode. Component `sizes` values are
+kept accurate as readiness for a future optimized policy, rather than as an
+active source-selection mechanism today. Images remain lazy by default, and only
+a genuine initial LCP image receives `preload`.
 
 The image importer supplies the fallback's efficient source assets: square WebP
-files capped at 1000px with quality 82 and long-lived CDN caching. Storefront
-images provide layout-accurate `sizes`; images are lazy by default, and only a
-genuine initial LCP image should receive preload treatment. When a production
-runtime returns HTTP 200 with an image content type for an imported URL, this
-policy can be revisited and the global fallback removed.
+files capped at 1000px with quality 82 and long-lived CDN caching. `remotePatterns`
+are constraints for a future Next optimizer, not a browser-side allowlist for the
+current raw-source delivery. The Supabase pattern is derived at build time from
+the non-secret `NEXT_PUBLIC_SUPABASE_URL`: it must be the exact HTTPS project URL
+and permits only `/storage/v1/object/public/product-images/**`. No Supabase host
+is configured if that variable is missing or invalid. The existing Unsplash
+pattern intentionally omits `search`, because current source URLs use different
+query parameters and a future optimizer must accept each of them. When a
+production runtime returns HTTP 200 with an image content type for an imported
+URL, this policy can be revisited and the global fallback removed.
 
 ## Test PayHere payments
 

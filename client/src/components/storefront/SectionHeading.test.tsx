@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import Link from "next/link";
 import { expect, it } from "vitest";
 import { SectionHeading } from "./SectionHeading";
 
@@ -14,7 +15,7 @@ it("keeps a long action within the heading layout at tablet widths", () => {
   render(
     <SectionHeading
       title="Seasonal favorites"
-      action={<a href="/products">{actionLabel}</a>}
+      action={<Link href="/products">{actionLabel}</Link>}
     />
   );
 

@@ -21,10 +21,10 @@ vi.mock("@/lib/admin/session", () => ({
 }));
 
 vi.mock("next/image", () => ({
-  default: (imageProps: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
-    const { priority, fill, ...props } = imageProps;
+  default: (imageProps: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
+    const { preload, fill, ...props } = imageProps;
     void fill;
-    return createElement("img", { ...props, "data-priority": priority ? "true" : undefined });
+    return createElement("img", { ...props, "data-preload": preload ? "true" : undefined });
   },
 }));
 

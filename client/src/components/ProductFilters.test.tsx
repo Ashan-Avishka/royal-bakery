@@ -37,6 +37,10 @@ const categories = [
   },
 ];
 
+function getSearchbox(): HTMLInputElement {
+  return screen.getByRole("searchbox", { name: /search products/i }) as HTMLInputElement;
+}
+
 it("exposes the selected category with aria-pressed and a polite result summary", () => {
   render(
     <ProductFilters
@@ -193,7 +197,7 @@ it("resyncs cleared query props so a later search cannot restore stale filters",
 
   navigationState.query = "";
   rerender(<ProductFilters categories={categories} resultCount={2} />);
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
   expect(searchbox).toHaveValue("");
 
   fireEvent.change(searchbox, {
@@ -210,7 +214,7 @@ it("keeps the same focused textbox and selection when the debounced search is ac
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   searchbox.focus();
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
@@ -222,7 +226,7 @@ it("keeps the same focused textbox and selection when the debounced search is ac
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
   );
 
-  const acknowledgedSearchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const acknowledgedSearchbox = getSearchbox();
   expect(acknowledgedSearchbox).toBe(searchbox);
   expect(acknowledgedSearchbox).toHaveFocus();
   expect(acknowledgedSearchbox).toHaveValue("vanilla");
@@ -235,7 +239,7 @@ it("does not overwrite newer draft text when an older submitted query is acknowl
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   vi.advanceTimersByTime(350);
@@ -254,7 +258,7 @@ it("cancels a pending search when an external search transition arrives", () => 
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   navigationState.query = "categoryId=cakes&search=mango";
@@ -272,7 +276,7 @@ it("cancels a pending search when an external category transition arrives", () =
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   navigationState.query = "categoryId=cookies&search=chocolate";
@@ -290,7 +294,7 @@ it("corrects an older response after the latest submitted search has been acknow
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   vi.advanceTimersByTime(350);
@@ -322,7 +326,7 @@ it("retires settled submissions so browser Back to an earlier query wins", () =>
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   vi.advanceTimersByTime(350);
@@ -353,7 +357,7 @@ it("corrects a stale search response to the latest category navigation", () => {
   const { rerender } = render(
     <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
   );
-  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  const searchbox = getSearchbox();
 
   fireEvent.change(searchbox, { target: { value: "vanilla" } });
   vi.advanceTimersByTime(350);

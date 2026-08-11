@@ -15,13 +15,13 @@ vi.mock("@/lib/catalog", async (importOriginal) => ({
 }));
 
 vi.mock("next/image", () => ({
-  default: (imageProps: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
-    const { priority, fill, ...props } = imageProps;
+  default: (imageProps: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
+    const { preload, fill, ...props } = imageProps;
     void fill;
 
     return createElement("img", {
       ...props,
-      "data-priority": priority ? "true" : undefined,
+      "data-preload": preload ? "true" : undefined,
     });
   },
 }));
@@ -91,7 +91,7 @@ describe("HomePage", () => {
     );
     expect(
       screen.getByRole("img", { name: "Fresh pastries and baked goods on a bakery counter" })
-    ).toHaveAttribute("data-priority", "true");
+    ).toHaveAttribute("data-preload", "true");
   });
 
   it("uses existing accessible color tokens for the current hero and section actions", async () => {
@@ -146,7 +146,7 @@ describe("HomePage", () => {
 
     const productImages = within(featuredSection as HTMLElement).getAllByRole("img");
     expect(productImages).toHaveLength(2);
-    expect(productImages.every((image) => image.dataset.priority !== "true")).toBe(true);
+    expect(productImages.every((image) => image.dataset.preload !== "true")).toBe(true);
     expect(
       productImages.every(
         (image) =>

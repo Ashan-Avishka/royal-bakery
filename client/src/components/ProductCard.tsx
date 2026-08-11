@@ -125,7 +125,7 @@ export function ProductCard({
                 src={product.imageUrl}
                 alt={product.name}
                 fill
-                priority={priority}
+                preload={priority}
                 sizes={sizes}
                 className="object-cover transition-transform duration-500 motion-reduce:transition-none"
               />

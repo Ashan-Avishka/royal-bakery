@@ -9,9 +9,9 @@ import { afterEach, expect, it, vi } from "vitest";
 import { HeroCarousel, type HeroSlide } from "./HeroCarousel";
 
 vi.mock("next/image", () => ({
-  default: ({ priority, fill, ...props }: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
+  default: ({ preload, fill, ...props }: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
     void fill;
-    return createElement("img", { ...props, "data-priority": priority ? "true" : undefined });
+    return createElement("img", { ...props, "data-preload": preload ? "true" : undefined });
   },
 }));
 
@@ -41,9 +41,9 @@ afterEach(() => {
 it("only preloads the first hero slide", () => {
   render(<HeroCarousel slides={slides} />);
 
-  expect(screen.getByRole("img", { name: "First hero" })).toHaveAttribute("data-priority", "true");
+  expect(screen.getByRole("img", { name: "First hero" })).toHaveAttribute("data-preload", "true");
   fireEvent.click(screen.getByRole("tab", { name: "Go to slide 2" }));
-  expect(screen.getByRole("img", { name: "Second hero" })).not.toHaveAttribute("data-priority");
+  expect(screen.getByRole("img", { name: "Second hero" })).not.toHaveAttribute("data-preload");
 });
 
 it("pauses autoplay while focus stays in the hero and exposes a touch-sized pause control", () => {

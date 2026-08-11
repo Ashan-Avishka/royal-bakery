@@ -77,6 +77,21 @@ export interface FakePaymentRow {
 }
 
 type Row = Record<string, any>;
+type ComparableValue = string | number;
+
+function isComparableValue(value: unknown): value is ComparableValue {
+  return typeof value === "string" || typeof value === "number";
+}
+
+function compareRange(
+  rowValue: unknown,
+  filterValue: unknown,
+  comparison: "gte" | "lte"
+): boolean {
+  if (!isComparableValue(rowValue) || !isComparableValue(filterValue)) return false;
+  if (typeof rowValue !== typeof filterValue) return false;
+  return comparison === "gte" ? rowValue >= filterValue : rowValue <= filterValue;
+}
 
 interface FakeSupabaseOptions {
   usersByToken: Record<string, FakeAuthUser>;
@@ -135,12 +150,12 @@ class FakeQueryBuilder implements PromiseLike<FakeResult<any>> {
   }
 
   gte(column: string, value: unknown) {
-    this.filters.push((row) => row[column] >= value);
+    this.filters.push((row) => compareRange(row[column], value, "gte"));
     return this;
   }
 
   lte(column: string, value: unknown) {
-    this.filters.push((row) => row[column] <= value);
+    this.filters.push((row) => compareRange(row[column], value, "lte"));
     return this;
   }
 

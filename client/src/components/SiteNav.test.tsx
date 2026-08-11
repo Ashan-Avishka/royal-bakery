@@ -9,7 +9,7 @@ vi.mock("next/navigation", () => ({
 
 vi.mock("@/components/BrandLogo", () => ({
   BrandLogo: ({ priority }: { priority?: boolean }) => (
-    <span role="img" aria-label="Royal Bakery" data-priority={String(priority)} />
+    <span role="img" aria-label="Royal Bakery" data-preload={String(priority)} />
   ),
 }));
 
@@ -33,11 +33,11 @@ describe("SiteNav", () => {
     );
   });
 
-  it("does not priority-load the persistent header logo", () => {
+  it("does not preload the persistent header logo", () => {
     render(<SiteNav isSignedIn={false} cartItemCount={0} />);
 
     expect(screen.getByRole("img", { name: "Royal Bakery" })).toHaveAttribute(
-      "data-priority",
+      "data-preload",
       "undefined"
     );
   });

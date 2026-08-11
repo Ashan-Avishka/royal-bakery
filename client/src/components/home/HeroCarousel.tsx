@@ -103,7 +103,7 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
               src={slide.imageSrc}
               alt={slide.imageAlt}
               fill
-              priority={index === 0}
+              preload={index === 0}
               sizes="100vw"
               className="object-cover"
             />

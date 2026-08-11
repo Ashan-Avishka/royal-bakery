@@ -4,8 +4,8 @@ import { afterEach, expect, it, vi } from "vitest";
 import { ProductCard } from "./ProductCard";
 
 vi.mock("next/image", () => ({
-  default: ({ priority, fill, alt, ...props }: ComponentProps<"img"> & {
-    priority?: boolean;
+  default: ({ preload, fill, alt, ...props }: ComponentProps<"img"> & {
+    preload?: boolean;
     fill?: boolean;
   }) => {
     void fill;
@@ -13,7 +13,7 @@ vi.mock("next/image", () => ({
     return createElement("img", {
       ...props,
       alt: alt ?? "",
-      "data-priority": priority ? "true" : undefined,
+      "data-preload": preload ? "true" : undefined,
     });
   },
 }));
@@ -61,10 +61,10 @@ it("shows an out-of-stock badge for unavailable inventory", () => {
   expect(screen.getByText("Sold out")).toBeVisible();
 });
 
-it("forwards priority and an accurate responsive size hint to the product image", () => {
+it("translates the public priority prop into preload with an accurate responsive size hint", () => {
   render(<ProductCard product={product} priority />);
 
-  expect(screen.getByRole("img")).toHaveAttribute("data-priority", "true");
+  expect(screen.getByRole("img")).toHaveAttribute("data-preload", "true");
   expect(screen.getByRole("img")).toHaveAttribute(
     "sizes",
     "(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)"
