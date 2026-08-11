@@ -2,8 +2,12 @@ import { render, screen } from "@testing-library/react";
 import { expect, it } from "vitest";
 import { Input } from "./Input";
 
-it("applies the 44px minimum-height utility to shared inputs", () => {
-  render(<Input aria-label="Email address" />);
+it("keeps shared inputs readable and touch-friendly on mobile", () => {
+  render(<Input label="Email" name="email" />);
 
-  expect(screen.getByRole("textbox", { name: "Email address" })).toHaveClass("min-h-11");
+  expect(screen.getByLabelText("Email")).toHaveClass(
+    "min-h-11",
+    "text-base",
+    "sm:text-sm"
+  );
 });

@@ -8,6 +8,7 @@ it("uses the accessible dark primary-action token pairing", () => {
   expect(screen.getByRole("button", { name: "Continue" })).toHaveClass(
     "bg-cocoa",
     "text-cream-alt",
-    "hover:bg-cocoa-dark"
+    "hover:bg-cocoa-dark",
+    "min-h-11"
   );
 });

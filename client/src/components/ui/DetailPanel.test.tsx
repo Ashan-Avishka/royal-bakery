@@ -24,6 +24,7 @@ describe("DetailPanel", () => {
       "href",
       "/admin/orders"
     );
+    expect(screen.getByRole("link", { name: /Back to list/ })).toHaveClass("min-h-11");
   });
 
   it("accepts a className override for context-specific styling", () => {
