@@ -309,6 +309,68 @@ it("corrects an older response after the latest submitted search has been acknow
   expect(searchbox).toHaveValue("strawberry");
   expect(push).toHaveBeenLastCalledWith("/products?categoryId=cakes&search=strawberry");
   expect(push).toHaveBeenCalledTimes(3);
+
+  navigationState.query = "categoryId=cakes&search=strawberry";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="strawberry" resultCount={1} />
+  );
+  expect(push).toHaveBeenCalledTimes(3);
+});
+
+it("retires settled submissions so browser Back to an earlier query wins", () => {
+  vi.useFakeTimers();
+  const { rerender } = render(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
+  );
+  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+
+  fireEvent.change(searchbox, { target: { value: "vanilla" } });
+  vi.advanceTimersByTime(350);
+  navigationState.query = "categoryId=cakes&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
+  );
+
+  fireEvent.change(searchbox, { target: { value: "strawberry" } });
+  vi.advanceTimersByTime(350);
+  navigationState.query = "categoryId=cakes&search=strawberry";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="strawberry" resultCount={1} />
+  );
+
+  window.dispatchEvent(new PopStateEvent("popstate"));
+  navigationState.query = "categoryId=cakes&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
+  );
+
+  expect(searchbox).toHaveValue("vanilla");
+  expect(push).toHaveBeenCalledTimes(2);
+});
+
+it("corrects a stale search response to the latest category navigation", () => {
+  vi.useFakeTimers();
+  const { rerender } = render(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
+  );
+  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+
+  fireEvent.change(searchbox, { target: { value: "vanilla" } });
+  vi.advanceTimersByTime(350);
+  fireEvent.click(screen.getByRole("button", { name: "Cookies" }));
+
+  navigationState.query = "categoryId=cookies&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cookies" activeSearch="vanilla" resultCount={1} />
+  );
+  navigationState.query = "categoryId=cakes&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
+  );
+
+  expect(searchbox).toHaveValue("vanilla");
+  expect(push).toHaveBeenLastCalledWith("/products?categoryId=cookies&search=vanilla");
+  expect(push).toHaveBeenCalledTimes(3);
 });
 
 it("keeps every category control touch-sized on narrow screens", () => {

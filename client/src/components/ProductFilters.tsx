@@ -18,6 +18,25 @@ function searchReducer(_: string, action: SearchAction) {
   return action.value;
 }
 
+function createNavigation(
+  pathname: string,
+  currentQuery: string,
+  next: Record<string, string | undefined>
+) {
+  const params = new URLSearchParams(currentQuery);
+  Object.entries(next).forEach(([key, value]) => {
+    if (value) params.set(key, value);
+    else params.delete(key);
+  });
+  const query = params.toString();
+
+  return {
+    url: query ? `${pathname}?${query}` : pathname,
+    search: params.get("search") ?? "",
+    categoryId: params.get("categoryId") ?? undefined,
+  };
+}
+
 export function ProductFilters({
   categories,
   activeCategoryId,
@@ -34,13 +53,25 @@ export function ProductFilters({
   const searchParams = useSearchParams();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestCategoryRef = useRef(activeCategoryId);
-  const submittedNavigationsRef = useRef<SubmittedNavigation[]>([]);
+  const unresolvedNavigationsRef = useRef<SubmittedNavigation[]>([]);
+  const latestIntentRef = useRef<SubmittedNavigation | null>(null);
+  const correctionUrlRef = useRef<string | null>(null);
+  const historyTraversalRef = useRef(false);
   const nextNavigationIdRef = useRef(0);
   const previousRouteRef = useRef({
     search: activeSearch ?? "",
     categoryId: activeCategoryId,
   });
   const [searchValue, dispatchSearch] = useReducer(searchReducer, activeSearch ?? "");
+
+  useEffect(() => {
+    const markHistoryTraversal = () => {
+      historyTraversalRef.current = true;
+    };
+
+    window.addEventListener("popstate", markHistoryTraversal);
+    return () => window.removeEventListener("popstate", markHistoryTraversal);
+  }, []);
 
   useEffect(() => {
     const route = { search: activeSearch ?? "", categoryId: activeCategoryId };
@@ -55,16 +86,41 @@ export function ProductFilters({
     previousRouteRef.current = route;
     latestCategoryRef.current = route.categoryId;
 
-    const acknowledged = submittedNavigationsRef.current.find(
+    if (historyTraversalRef.current) {
+      historyTraversalRef.current = false;
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+        debounceRef.current = null;
+      }
+      unresolvedNavigationsRef.current = [];
+      latestIntentRef.current = null;
+      correctionUrlRef.current = null;
+      dispatchSearch({ value: route.search });
+      return;
+    }
+
+    const acknowledgedIndex = unresolvedNavigationsRef.current.findIndex(
       (navigation) =>
         navigation.search === route.search && navigation.categoryId === route.categoryId
     );
-    const latestSubmission = submittedNavigationsRef.current.at(-1);
 
-    if (acknowledged) {
-      if (latestSubmission && acknowledged.id < latestSubmission.id) {
-        router.push(latestSubmission.url);
+    if (acknowledgedIndex !== -1) {
+      const acknowledged = unresolvedNavigationsRef.current[acknowledgedIndex]!;
+      unresolvedNavigationsRef.current.splice(acknowledgedIndex, 1);
+      const latestIntent = latestIntentRef.current;
+      if (latestIntent && acknowledged.id < latestIntent.id) {
+        correctionUrlRef.current = latestIntent.url;
+        latestCategoryRef.current = latestIntent.categoryId;
+        router.push(latestIntent.url);
       }
+      return;
+    }
+
+    if (
+      correctionUrlRef.current ===
+      createNavigation(pathname, searchParams.toString(), route).url
+    ) {
+      correctionUrlRef.current = null;
       return;
     }
 
@@ -72,56 +128,53 @@ export function ProductFilters({
       clearTimeout(debounceRef.current);
       debounceRef.current = null;
     }
-    submittedNavigationsRef.current = [];
+    unresolvedNavigationsRef.current = [];
+    latestIntentRef.current = null;
+    correctionUrlRef.current = null;
     dispatchSearch({ value: route.search });
-  }, [activeCategoryId, activeSearch, router]);
+  }, [activeCategoryId, activeSearch, pathname, router, searchParams]);
 
   function buildNavigation(next: Record<string, string | undefined>) {
-    const params = new URLSearchParams(searchParams.toString());
-    Object.entries(next).forEach(([key, value]) => {
-      if (value) params.set(key, value);
-      else params.delete(key);
-    });
-    const query = params.toString();
-
-    return {
-      url: query ? `${pathname}?${query}` : pathname,
-      search: params.get("search") ?? "",
-      categoryId: params.get("categoryId") ?? undefined,
-    };
+    return createNavigation(pathname, searchParams.toString(), next);
   }
 
-  function updateParams(next: Record<string, string | undefined>) {
-    router.push(buildNavigation(next).url);
+  function submitNavigation(navigation: Omit<SubmittedNavigation, "id">) {
+    const intent = { ...navigation, id: ++nextNavigationIdRef.current };
+    unresolvedNavigationsRef.current.push(intent);
+    latestIntentRef.current = intent;
+    router.push(intent.url);
   }
 
   function selectCategory(categoryId?: string) {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
     latestCategoryRef.current = categoryId;
-    updateParams({
+    submitNavigation(buildNavigation({
       categoryId,
       search: searchValue || undefined,
-    });
+    }));
   }
 
   function handleSearchChange(value: string) {
     dispatchSearch({ value });
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
+      debounceRef.current = null;
       const navigation = buildNavigation({
         categoryId: latestCategoryRef.current,
         search: value || undefined,
       });
-      submittedNavigationsRef.current.push({
-        ...navigation,
-        id: ++nextNavigationIdRef.current,
-      });
-      router.push(navigation.url);
+      submitNavigation(navigation);
     }, 350);
   }
 
   function cancelPendingSearch() {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
   }
 
   const filtersActive = Boolean(activeCategoryId || activeSearch);
