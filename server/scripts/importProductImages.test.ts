@@ -136,16 +136,27 @@ describe("runImageImportCli", () => {
     expect(hosted.readSource).toHaveBeenCalledOnce();
   });
 
-  it("retains and reports a mutation result before a verification failure", async () => {
+  it("prints a final target report with mutation totals and verification failure details", async () => {
     const local = targetDependencies();
-    const printReport = vi.fn();
+    const serializedReports: string[] = [];
     const reports = await runImageImportCli(
       { target: "local", execute: true, verify: true },
-      { sourceDirectory: "C:/images", createDependencies: () => local, printReport, verify: vi.fn().mockRejectedValue(new Error("verification unavailable")) },
+      {
+        sourceDirectory: "C:/images",
+        createDependencies: () => local,
+        printReport: (report) => serializedReports.push(JSON.stringify(report)),
+        verify: vi.fn().mockRejectedValue(new Error("verification unavailable")),
+      },
       [{ fileName: "butter_cake.png", productName: "Butter Cake" }]
     );
 
-    expect(printReport).toHaveBeenCalledWith(expect.objectContaining({ uploaded: 1, updated: 1 }));
+    expect(JSON.parse(serializedReports[0]!)).toEqual({
+      environmentName: "local",
+      validated: 1,
+      uploaded: 1,
+      updated: 1,
+      failures: [{ productName: "verification", message: "verification unavailable" }],
+    });
     expect(reports[0]).toMatchObject({ uploaded: 1, updated: 1, failures: [{ productName: "verification", message: "verification unavailable" }] });
   });
 });

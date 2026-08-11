@@ -18,7 +18,7 @@ export default async function CheckoutPage() {
     <section className="relative overflow-x-hidden">
       <div className="pointer-events-none absolute -right-16 top-20 h-64 w-64 rounded-full bg-honey/25 blur-3xl" aria-hidden />
       <div className="page-container page-section relative min-w-0">
-        <PageHeader eyebrow="Almost there" title="Checkout" description="Confirm your details and place the order — we’ll bake it fresh." />
+        <PageHeader eyebrow="Almost there" title="Checkout" description="Confirm your details and place your order." />
         <div className="flex min-w-0 flex-col gap-6 lg:flex-row lg:items-start">
           <div className="surface-pad min-w-0 flex-1 rounded-[1.5rem] border border-border-warm/80 bg-cream-alt shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]"><CheckoutForm /></div>
           <aside className="surface-pad w-full min-w-0 rounded-[1.5rem] border border-border-warm/80 bg-cream-alt shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)] lg:w-96 lg:shrink-0">

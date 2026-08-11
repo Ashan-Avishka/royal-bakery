@@ -5,7 +5,7 @@ import type { Category } from "@/lib/catalog";
 
 const categoryImagery = [
   { image: "/images/cakes.jpg", alt: "Layered celebration cake" },
-  { image: "/images/bread.jpg", alt: "Fresh artisan bread" },
+  { image: "/images/bread.jpg", alt: "Artisan bread" },
   { image: "/images/pastries.jpg", alt: "Golden bakery pastries" },
   { image: "/images/rolls.jpg", alt: "Crispy bakery rolls" },
   { image: "/images/patties.jpg", alt: "Golden short-eat patties" },
@@ -22,7 +22,7 @@ const curatedCollections = [
   },
   {
     name: "Buns",
-    description: "Sweet and savoury buns fresh from the oven",
+    description: "Sweet and savoury buns",
     search: "bun",
   },
   {
@@ -32,7 +32,7 @@ const curatedCollections = [
   },
   {
     name: "Rolls",
-    description: "Crispy rolls filled and fried to order",
+    description: "Crispy bakery rolls",
     search: "roll",
   },
   {
@@ -132,7 +132,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
         <SectionHeader
           eyebrow="Collections"
           title="Shop by craving"
-          description="Explore every corner of the bakery — cakes, breads, pastries, and more, each with its own ritual."
+          description="Explore bakery categories including cakes, breads, pastries, and more."
           href="/products"
           linkLabel="View full menu"
         />
@@ -204,7 +204,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="font-display text-[10px] uppercase tracking-[0.22em] text-caramel">
+                    <p className="font-display text-[10px] uppercase tracking-[0.22em] text-caramel-hover">
                       Collection
                     </p>
                     <h3 className="mt-1 font-display text-lg font-medium text-cocoa sm:text-xl">
@@ -215,7 +215,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                         {category.description}
                       </p>
                     )}
-                    <span className="mt-2 inline-flex text-[12px] tracking-[0.08em] text-caramel opacity-80 transition-opacity group-hover:opacity-100">
+                    <span className="mt-2 inline-flex text-[12px] tracking-[0.08em] text-caramel-hover transition-opacity">
                       Browse →
                     </span>
                   </div>

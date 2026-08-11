@@ -319,7 +319,6 @@ export async function runImageImportCli(
         mappings
       );
       reports.push(report);
-      dependencies.printReport?.(report);
 
       if (arguments_.verify) {
         try {
@@ -331,6 +330,7 @@ export async function runImageImportCli(
           report.failures.push({ productName: "verification", message: errorMessage(error) });
         }
       }
+      dependencies.printReport?.(report);
     } catch (error) {
       const report: ImportReport = {
         environmentName: environmentFile.name,

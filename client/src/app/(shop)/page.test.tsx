@@ -73,12 +73,12 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Baked before sunrise. Ready when you are.",
+        name: "Discover the Royal Bakery menu.",
       })
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Handcrafted cakes, pastries, and bread — ordered online, finished fresh for pickup or delivery in Harispaththuwa."
+        "Browse cakes, pastries, breads, and sweets, then place your order online."
       )
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Explore the menu" })).toHaveAttribute(
@@ -90,7 +90,7 @@ describe("HomePage", () => {
       "/about"
     );
     expect(
-      screen.getByRole("img", { name: "Fresh pastries and baked goods on a bakery counter" })
+      screen.getByRole("img", { name: "Pastries and bakery products on a counter" })
     ).toHaveAttribute("data-preload", "true");
   });
 
@@ -169,6 +169,6 @@ describe("HomePage", () => {
     expect(screen.getAllByText("No products are available right now — check back soon.")).toHaveLength(
       3
     );
-    expect(screen.getByRole("img", { name: "Fresh pastries and baked goods on a bakery counter" })).toBeVisible();
+    expect(screen.getByRole("img", { name: "Pastries and bakery products on a counter" })).toBeVisible();
   });
 });
