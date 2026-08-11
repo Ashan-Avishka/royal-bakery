@@ -8,7 +8,7 @@ export default async function AdminCategoriesPage() {
   const categories = await listAdminCategories(session.accessToken);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
         <h1 className="font-display text-3xl text-cocoa">Categories</h1>
         <Link
@@ -27,7 +27,7 @@ export default async function AdminCategoriesPage() {
             <li key={category.id}>
               <Link
                 href={`/admin/categories/${category.id}`}
-                className="flex min-w-0 flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <div className="min-w-0">
                   <p className="break-words font-medium text-cocoa">{category.name}</p>

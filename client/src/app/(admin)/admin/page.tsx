@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
   const analytics = await getAdminAnalytics(session.accessToken);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl text-cocoa">Dashboard</h1>
@@ -93,7 +93,7 @@ export default async function AdminDashboardPage() {
             {analytics.topProducts.slice(0, 5).map((product) => (
               <li
                 key={product.productId}
-                className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <span className="break-words font-medium text-cocoa">{product.name}</span>
                 <span className="break-words text-text-muted">
@@ -123,7 +123,7 @@ export default async function AdminDashboardPage() {
             <li key={order.id}>
               <Link
                 href={`/admin/orders/${order.id}`}
-                className="flex min-w-0 flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <div className="min-w-0">
                   <p className="font-medium text-cocoa">

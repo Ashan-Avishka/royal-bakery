@@ -31,7 +31,7 @@ export default async function AdminReportsPage({
   const analytics = await getAdminAnalytics(session.accessToken, { from, to });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-7 sm:px-6 sm:py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <h1 className="mb-2 font-display text-3xl text-cocoa">Reports</h1>
       <p className="mb-6 text-sm text-text-muted">
         Sales figures include paid orders only. Order history lists all orders
@@ -122,7 +122,7 @@ export default async function AdminReportsPage({
             {analytics.topProducts.map((product, index) => (
               <li
                 key={product.productId}
-                className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <span className="min-w-0 break-words text-cocoa">
                   <span className="mr-2 text-text-muted">{index + 1}.</span>
@@ -148,7 +148,7 @@ export default async function AdminReportsPage({
             {analytics.categorySales.map((row) => (
               <li
                 key={row.category}
-                className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <span className="min-w-0 break-words font-medium text-cocoa">{row.category}</span>
                 <span className="break-words text-text-muted">
@@ -178,7 +178,7 @@ export default async function AdminReportsPage({
               <li key={order.id}>
                 <Link
                   href={`/admin/orders/${order.id}`}
-                  className="flex min-w-0 flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between"
                 >
                   <div className="min-w-0">
                     <p className="font-medium text-cocoa">
