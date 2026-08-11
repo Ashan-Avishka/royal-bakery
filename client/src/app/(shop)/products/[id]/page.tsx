@@ -1,9 +1,9 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { addToCart } from "@/app/actions/cart";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { ProductImage } from "@/components/ProductImage";
 import { formatPrice, getProduct } from "@/lib/catalog";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,7 +23,7 @@ export default async function ProductDetailPage({ params, searchParams }: { para
         <Link href="/products" className="group inline-flex min-h-11 items-center gap-2 text-[12px] tracking-[0.08em] text-caramel-hover transition-colors hover:text-cocoa"><span aria-hidden className="transition-transform duration-300 group-hover:-translate-x-0.5">←</span>Back to all products</Link>
         <div className="mt-8 grid min-w-0 items-start gap-10 lg:grid-cols-12 lg:gap-14">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem] bg-honey-light/60 shadow-[0_24px_50px_-28px_rgba(58,26,19,0.35)] ring-1 ring-border-warm/70 lg:col-span-6">
-            {product.imageUrl ? <Image src={product.imageUrl} alt={product.name} fill sizes="(min-width: 1024px) 40vw, calc(100vw - 2rem)" className="object-cover" preload /> : <div className="flex h-full items-center justify-center text-text-muted">Photo coming soon</div>}
+            <ProductImage key={product.imageUrl ?? "missing"} src={product.imageUrl} alt={product.name} fill sizes="(min-width: 1024px) 40vw, calc(100vw - 2rem)" className="object-cover" preload />
           </div>
           <div className="flex min-w-0 flex-col lg:col-span-6 lg:pt-4">
             <div className="mb-4 flex items-center gap-3"><span className="h-px w-8 bg-caramel/60" aria-hidden /><p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">From the bakery</p></div>

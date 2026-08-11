@@ -87,6 +87,13 @@ it("renders a supplied mutation error as a row-local alert", () => {
   expect(alert.closest("article")).not.toBeNull();
 });
 
+it("replaces a failed cart thumbnail with an accessible fallback", () => {
+  render(<CartItemRow item={item} />);
+  fireEvent.error(screen.getByRole("img", { name: item.name }));
+  expect(screen.getByRole("img", { name: `${item.name} photo unavailable` })).toBeVisible();
+  expect(screen.queryByRole("img", { name: item.name })).not.toBeInTheDocument();
+});
+
 it("stacks cart controls beneath a wrapping product identity on narrow screens", () => {
   const { container } = render(<CartItemRow item={item} />);
 

@@ -9,6 +9,9 @@ import {
   type ProductImageMapping,
   validateManifest,
 } from "./productImageManifest.js";
+import { canonicalCatalogProductName } from "./catalogAliases.js";
+
+export { PRODUCT_IMAGE_MANIFEST } from "./productImageManifest.js";
 
 interface CatalogProduct {
   id: string;
@@ -72,10 +75,6 @@ export async function convertToWebp(input: Buffer): Promise<Buffer> {
     .toBuffer();
 }
 
-function normalizeProductName(name: string): string {
-  return name.trim().toLocaleLowerCase("en");
-}
-
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
 }
@@ -91,14 +90,14 @@ export async function importProductImages(
 
   const productsByName = new Map<string, CatalogProduct[]>();
   for (const product of await dependencies.listProducts()) {
-    const normalizedName = normalizeProductName(product.name);
+    const normalizedName = canonicalCatalogProductName(product.name);
     const matchingProducts = productsByName.get(normalizedName) ?? [];
     matchingProducts.push(product);
     productsByName.set(normalizedName, matchingProducts);
   }
 
   const resolvedMappings = mappings.map((mapping) => {
-    const matches = productsByName.get(normalizeProductName(mapping.productName)) ?? [];
+    const matches = productsByName.get(canonicalCatalogProductName(mapping.productName)) ?? [];
     if (matches.length === 0) {
       throw new Error(`No catalog product found for "${mapping.productName}"`);
     }
@@ -241,14 +240,14 @@ export async function verifyProductImageUrls(
 ): Promise<void> {
   const productsByName = new Map<string, CatalogProductWithImageUrl[]>();
   for (const product of products) {
-    const normalizedName = normalizeProductName(product.name);
+    const normalizedName = canonicalCatalogProductName(product.name);
     const matchingProducts = productsByName.get(normalizedName) ?? [];
     matchingProducts.push(product);
     productsByName.set(normalizedName, matchingProducts);
   }
 
   await Promise.all(mappings.map(async (mapping) => {
-    const matches = productsByName.get(normalizeProductName(mapping.productName)) ?? [];
+    const matches = productsByName.get(canonicalCatalogProductName(mapping.productName)) ?? [];
     if (matches.length === 0) {
       throw new Error(`No catalog product found for "${mapping.productName}"`);
     }
@@ -298,6 +297,55 @@ function createTargetImportDependencies(environmentFile: TargetEnvironmentFile):
   return createImportDependencies(url, key);
 }
 
+export interface ImageImportCliDependencies {
+  sourceDirectory: string;
+  createDependencies(environmentFile: TargetEnvironmentFile): TargetImportDependencies;
+  printReport?(report: ImportReport): void;
+  verify?(products: readonly CatalogProductWithImageUrl[], mappings: readonly ProductImageMapping[]): Promise<void>;
+}
+
+export async function runImageImportCli(
+  arguments_: ImageImportArguments,
+  dependencies: ImageImportCliDependencies,
+  mappings: readonly ProductImageMapping[] = PRODUCT_IMAGE_MANIFEST
+): Promise<ImportReport[]> {
+  const reports: ImportReport[] = [];
+  for (const environmentFile of targetEnvironmentFiles(arguments_.target)) {
+    try {
+      const targetDependencies = dependencies.createDependencies(environmentFile);
+      const report = await importProductImages(
+        { sourceDirectory: dependencies.sourceDirectory, execute: arguments_.execute, environmentName: environmentFile.name },
+        targetDependencies,
+        mappings
+      );
+      reports.push(report);
+      dependencies.printReport?.(report);
+
+      if (arguments_.verify) {
+        try {
+          await (dependencies.verify ?? verifyProductImageUrls)(
+            await targetDependencies.listProductsForVerification(),
+            mappings
+          );
+        } catch (error) {
+          report.failures.push({ productName: "verification", message: errorMessage(error) });
+        }
+      }
+    } catch (error) {
+      const report: ImportReport = {
+        environmentName: environmentFile.name,
+        validated: 0,
+        uploaded: 0,
+        updated: 0,
+        failures: [{ productName: environmentFile.name, message: errorMessage(error) }],
+      };
+      reports.push(report);
+      dependencies.printReport?.(report);
+    }
+  }
+  return reports;
+}
+
 const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
 const sourceDirectory = path.resolve(scriptDirectory, "../../System/assets/products");
 
@@ -308,23 +356,13 @@ const isMain =
 if (isMain) {
   const run = async () => {
     const arguments_ = parseArguments(process.argv.slice(2));
-    for (const environmentFile of targetEnvironmentFiles(arguments_.target)) {
-      const dependencies = createTargetImportDependencies(environmentFile);
-      const report = await importProductImages(
-        {
-          sourceDirectory,
-          execute: arguments_.execute,
-          environmentName: environmentFile.name,
-        },
-        dependencies
-      );
-      if (arguments_.verify) {
-        await verifyProductImageUrls(await dependencies.listProductsForVerification());
-      }
-      console.log(JSON.stringify(report, null, 2));
-      if (report.failures.length > 0) {
-        process.exitCode = 1;
-      }
+    const reports = await runImageImportCli(arguments_, {
+      sourceDirectory,
+      createDependencies: createTargetImportDependencies,
+      printReport: (report) => console.log(JSON.stringify(report, null, 2)),
+    });
+    if (reports.some((report) => report.failures.length > 0)) {
+      process.exitCode = 1;
     }
   };
 

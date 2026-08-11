@@ -6,6 +6,7 @@
  */
 import "dotenv/config";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { PRODUCT_ALIASES } from "./catalogAliases.js";
 
 interface SeedCategory {
   name: string;
@@ -260,13 +261,6 @@ const PRODUCTS_BY_CATEGORY: Record<string, SeedProduct[]> = {
 };
 
 /** Older messy names → canonical product names */
-const PRODUCT_ALIASES: Record<string, string> = {
-  "cream bun": "Cream Buns",
-  "sweet buns": "Tea Buns",
-  rolls: "Fish Rolls",
-  "chocolate truffle cake": "Chocolate Cake",
-};
-
 async function ensureCategory(
   supabase: SupabaseClient,
   category: SeedCategory

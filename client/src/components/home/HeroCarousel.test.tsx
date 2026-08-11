@@ -66,3 +66,10 @@ it("pauses autoplay while focus stays in the hero and exposes a touch-sized paus
   fireEvent.click(screen.getByRole("button", { name: "Pause auto-advance" }));
   expect(screen.getByRole("button", { name: "Resume auto-advance" })).toBeVisible();
 });
+
+it("uses a touch-sized CTA link without nesting a button", () => {
+  render(<HeroCarousel slides={slides} />);
+  const link = screen.getByRole("link", { name: "Shop" });
+  expect(link).toHaveClass("min-h-11");
+  expect(link.querySelector("button")).toBeNull();
+});

@@ -1,4 +1,4 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createElement, type ComponentProps } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ProductCard } from "./ProductCard";
@@ -51,8 +51,8 @@ it("renders the product image, formatted price, and a full-card product link", (
 it("renders a clear fallback when the product has no image", () => {
   render(<ProductCard product={{ ...product, imageUrl: null }} />);
 
-  expect(screen.getByText("Photo coming soon")).toBeVisible();
-  expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  expect(screen.getByRole("img", { name: "Chocolate Celebration Cake photo unavailable" })).toBeVisible();
+  expect(screen.queryByRole("img", { name: product.name })).not.toBeInTheDocument();
 });
 
 it("shows an out-of-stock badge for unavailable inventory", () => {
@@ -71,6 +71,13 @@ it("translates the public priority prop into preload with an accurate responsive
   );
 });
 
+it("replaces a failed card image with the accessible fallback", () => {
+  render(<ProductCard product={product} />);
+  fireEvent.error(screen.getByRole("img", { name: product.name }));
+  expect(screen.getByRole("img", { name: `${product.name} photo unavailable` })).toBeVisible();
+  expect(screen.queryByRole("img", { name: product.name })).not.toBeInTheDocument();
+});
+
 it("keeps wishlist and purchase actions visible with touch-sized controls", () => {
   render(<ProductCard product={product} />);
 
@@ -80,6 +87,12 @@ it("keeps wishlist and purchase actions visible with touch-sized controls", () =
   );
   expect(screen.getByRole("button", { name: "Add to cart" })).toBeVisible();
   expect(screen.getByRole("link", { name: "Details" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "Details" })).toHaveClass("text-caramel-hover");
+});
+
+it("uses neutral fallback product copy", () => {
+  render(<ProductCard product={{ ...product, description: null }} />);
+  expect(screen.getByText("Description available on the product page.")).toBeVisible();
 });
 
 it("uses a caller-provided image size hint for wider product rails", () => {

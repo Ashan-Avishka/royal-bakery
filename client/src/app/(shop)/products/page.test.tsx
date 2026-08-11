@@ -147,7 +147,28 @@ describe("ProductsPage", () => {
     render(await ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) }));
 
     expect(screen.getByRole("button", { name: "Cakes" })).toBeVisible();
-    expect(screen.getByText("0 products")).toBeVisible();
-    expect(screen.getByRole("heading", { name: "No products found" })).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent("We couldn't load the menu.");
+    expect(screen.queryByText("0 products")).not.toBeInTheDocument();
+  });
+
+  it("keeps an empty menu distinct from an unavailable categories request", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+    catalogMocks.listProducts.mockResolvedValue([]);
+
+    render(await ProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Categories are temporarily unavailable.");
+    expect(screen.getByRole("heading", { name: "The menu is currently unavailable" })).toBeVisible();
+  });
+
+  it("reports independent catalog and category failures without presenting an empty menu", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+    catalogMocks.listProducts.mockRejectedValue(new Error("Catalog unavailable"));
+
+    render(await ProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
+    expect(screen.getByText("We couldn't load the menu.")).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "The menu is currently unavailable" })).not.toBeInTheDocument();
   });
 });

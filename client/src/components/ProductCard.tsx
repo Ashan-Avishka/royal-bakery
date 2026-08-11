@@ -1,11 +1,11 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useSyncExternalStore, type MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 import { addToCart } from "@/app/actions/cart";
 import { Badge } from "@/components/ui/Badge";
+import { ProductImage } from "@/components/ProductImage";
 import { formatPrice, type Product } from "@/lib/catalog";
 
 const WISHLIST_KEY = "royal-bakery-wishlist";
@@ -102,9 +102,7 @@ export function ProductCard({
     writeWishlist(next);
   };
 
-  const description =
-    product.description?.trim() ||
-    "Fresh from the oven, made in small batches.";
+  const description = product.description?.trim() || "Description available on the product page.";
 
   return (
     <article className="product-card group relative h-full">
@@ -120,22 +118,7 @@ export function ProductCard({
             className="absolute inset-0 block outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-caramel/40"
             aria-label={`View ${product.name}`}
           >
-            {product.imageUrl ? (
-              <Image
-                src={product.imageUrl}
-                alt={product.name}
-                fill
-                preload={priority}
-                sizes={sizes}
-                className="object-cover transition-transform duration-500 motion-reduce:transition-none"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center bg-gradient-to-br from-honey-light via-cream to-honey/40 px-4 text-center">
-                <span className="font-display text-sm tracking-wide text-text-muted">
-                  Photo coming soon
-                </span>
-              </div>
-            )}
+            <ProductImage key={product.imageUrl ?? "missing"} src={product.imageUrl} alt={product.name} fill preload={priority} sizes={sizes} className="object-cover transition-transform duration-500 motion-reduce:transition-none" />
           </Link>
 
           <div
@@ -203,7 +186,7 @@ export function ProductCard({
           <div className="mt-auto flex items-center justify-between gap-3 pt-2">
             <Link
               href={`/products/${product.id}`}
-              className="text-[11px] font-medium tracking-[0.12em] text-caramel transition-colors hover:text-caramel-hover"
+              className="text-[11px] font-medium tracking-[0.12em] text-caramel-hover transition-colors hover:text-cocoa"
             >
               Details
             </Link>

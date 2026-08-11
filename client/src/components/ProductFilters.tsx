@@ -46,7 +46,7 @@ export function ProductFilters({
   categories: Category[];
   activeCategoryId?: string;
   activeSearch?: string;
-  resultCount: number;
+  resultCount?: number;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -235,9 +235,11 @@ export function ProductFilters({
           )}
         </div>
       </div>
-      <p className="mt-3 text-sm text-text-muted" aria-live="polite">
-        {resultCount} {resultCount === 1 ? "product" : "products"}
-      </p>
+      {resultCount !== undefined && (
+        <p className="mt-3 text-sm text-text-muted" aria-live="polite">
+          {resultCount} {resultCount === 1 ? "product" : "products"}
+        </p>
+      )}
     </section>
   );
 }

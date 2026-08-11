@@ -10,9 +10,14 @@ export default async function ProductsPage({
   searchParams: Promise<{ categoryId?: string; search?: string }>;
 }) {
   const { categoryId, search } = await searchParams;
-  const categoriesPromise = listCategories().catch(() => []);
-  const productsPromise = listProducts({ categoryId, search }).catch(() => []);
-  const [categories, products] = await Promise.all([categoriesPromise, productsPromise]);
+  const [categoriesResult, productsResult] = await Promise.allSettled([
+    listCategories(),
+    listProducts({ categoryId, search }),
+  ]);
+  const categories = categoriesResult.status === "fulfilled" ? categoriesResult.value : [];
+  const products = productsResult.status === "fulfilled" ? productsResult.value : [];
+  const categoriesFailed = categoriesResult.status === "rejected";
+  const productsFailed = productsResult.status === "rejected";
   const filtersActive = Boolean(categoryId || search);
 
   return (
@@ -27,15 +32,25 @@ export default async function ProductsPage({
           description="Cakes, pastries, breads, and daily bakes — browse what is available and order ahead."
         />
         <div className="mb-10 min-w-0">
+          {categoriesFailed && (
+            <p role="alert" className="mb-4 rounded-[0.85rem] border border-amber-200 bg-honey-light/50 px-4 py-3 text-sm text-cocoa">
+              Categories are temporarily unavailable. You can still search the menu.
+            </p>
+          )}
           <ProductFilters
             categories={categories}
             activeCategoryId={categoryId}
             activeSearch={search}
-            resultCount={products.length}
+            resultCount={productsFailed ? undefined : products.length}
           />
         </div>
 
-        {products.length === 0 ? (
+        {productsFailed ? (
+          <div role="alert" className="rounded-[1.35rem] border border-amber-200 bg-honey-light/40 px-4 py-12 text-center sm:px-6 sm:py-16">
+            <h2 className="font-display text-lg text-cocoa">We couldn&apos;t load the menu.</h2>
+            <p className="mt-2 text-sm text-text-muted">Please refresh the page or try again shortly.</p>
+          </div>
+        ) : products.length === 0 ? (
           filtersActive ? (
             <div className="rounded-[1.35rem] border border-dashed border-border-warm bg-cream-alt/70 px-4 py-12 text-center sm:px-6 sm:py-16">
               <h2 className="font-display text-lg text-cocoa">No products found</h2>

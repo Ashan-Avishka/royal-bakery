@@ -1,7 +1,10 @@
 import { describe, expect, it, vi } from "vitest";
+import path from "node:path";
 import {
   importProductImages,
+  PRODUCT_IMAGE_MANIFEST,
   parseArguments,
+  runImageImportCli,
   targetEnvironmentFiles,
   verifyProductImageUrls,
   type ImportDependencies,
@@ -86,6 +89,64 @@ describe("importProductImages", () => {
     ).rejects.toThrow('Expected exactly one catalog product for "Butter Cake", found 2');
     expect(deps.readSource).not.toHaveBeenCalled();
     expect(deps.upload).not.toHaveBeenCalled();
+  });
+
+  it("resolves established seed aliases while validating the default manifest", async () => {
+    const deps = dependencies();
+    const aliases: Record<string, string> = {
+      "Cream Buns": "cream bun",
+      "Tea Buns": "sweet buns",
+      "Fish Rolls": "rolls",
+      "Chocolate Cake": "chocolate truffle cake",
+    };
+    vi.mocked(deps.listProducts).mockResolvedValue(
+      PRODUCT_IMAGE_MANIFEST.map((mapping, index) => ({
+        id: `product-${index}`,
+        name: aliases[mapping.productName] ?? mapping.productName,
+      }))
+    );
+
+    const report = await importProductImages(
+      { sourceDirectory: path.resolve(import.meta.dirname, "../../System/assets/products"), execute: false, environmentName: "local" },
+      deps
+    );
+
+    expect(report).toMatchObject({ validated: 31, failures: [] });
+  });
+});
+
+describe("runImageImportCli", () => {
+  const targetDependencies = () => ({ ...dependencies(), listProductsForVerification: vi.fn().mockResolvedValue([]) });
+
+  it("continues with hosted execution when local target setup fails", async () => {
+    const hosted = targetDependencies();
+    const reports = await runImageImportCli(
+      { target: "all", execute: false, verify: false },
+      { sourceDirectory: "C:/images", createDependencies: (target) => {
+        if (target.name === "local") throw new Error("local unavailable");
+        return hosted;
+      } },
+      [{ fileName: "butter_cake.png", productName: "Butter Cake" }]
+    );
+
+    expect(reports).toEqual([
+      expect.objectContaining({ environmentName: "local", failures: [{ productName: "local", message: "local unavailable" }] }),
+      expect.objectContaining({ environmentName: "hosted", validated: 1 }),
+    ]);
+    expect(hosted.readSource).toHaveBeenCalledOnce();
+  });
+
+  it("retains and reports a mutation result before a verification failure", async () => {
+    const local = targetDependencies();
+    const printReport = vi.fn();
+    const reports = await runImageImportCli(
+      { target: "local", execute: true, verify: true },
+      { sourceDirectory: "C:/images", createDependencies: () => local, printReport, verify: vi.fn().mockRejectedValue(new Error("verification unavailable")) },
+      [{ fileName: "butter_cake.png", productName: "Butter Cake" }]
+    );
+
+    expect(printReport).toHaveBeenCalledWith(expect.objectContaining({ uploaded: 1, updated: 1 }));
+    expect(reports[0]).toMatchObject({ uploaded: 1, updated: 1, failures: [{ productName: "verification", message: "verification unavailable" }] });
   });
 });
 

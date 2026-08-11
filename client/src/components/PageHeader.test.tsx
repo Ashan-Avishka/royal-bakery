@@ -31,3 +31,9 @@ it("disables its action-arrow motion for reduced-motion users", () => {
     "motion-reduce:group-hover:translate-x-0"
   );
 });
+
+it("uses a contrast-safe caramel token for small eyebrow and action text", () => {
+  render(<PageHeader eyebrow="Orders" title="Orders" action={{ href: "/orders", label: "View orders" }} />);
+  expect(screen.getByText("Orders", { selector: "p" })).toHaveClass("text-caramel-hover");
+  expect(screen.getByRole("link", { name: "View orders" })).toHaveClass("text-caramel-hover");
+});

@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Button } from "@/components/ui/Button";
 
 export function AboutTeaser() {
   return (
@@ -29,28 +28,24 @@ export function AboutTeaser() {
         <div className="lg:col-span-6 lg:pl-4">
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-caramel/60" aria-hidden />
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">
               Our craft
             </p>
           </div>
           <h2 className="font-display text-[2rem] font-medium leading-[1.15] tracking-tight text-cocoa text-balance sm:text-4xl lg:text-[2.75rem]">
-            Real butter. Real chocolate.{" "}
-            <span className="italic text-caramel">No shortcuts.</span>
+            A bakery menu for everyday orders and celebrations.
           </h2>
           <p className="mt-6 max-w-md text-[15px] leading-relaxed text-text-muted sm:text-base">
-            Royal Bakery grew from a neighbourhood counter into the bakery
-            people plan celebrations around. Everything is still made in-house,
-            in small batches, by bakers who start before sunrise.
+            Royal Bakery is a neighbourhood bakery with a menu for everyday
+            orders and celebrations. Browse the catalogue to see available items.
           </p>
           <div className="mt-9 flex flex-wrap items-center gap-4">
-            <Link href="/about">
-              <Button className="px-7 py-3 text-[13px] tracking-[0.06em]">
-                Read our story
-              </Button>
+            <Link href="/about" className="inline-flex min-h-11 items-center justify-center rounded-full bg-cocoa px-7 py-3 text-[13px] font-medium tracking-[0.06em] text-cream-alt shadow-[0_1px_0_rgba(58,26,19,0.08)] transition-colors duration-300 hover:bg-cocoa-dark">
+              Read our story
             </Link>
             <Link
               href="/products"
-              className="group inline-flex items-center gap-2 border-b border-border-warm pb-0.5 text-[13px] tracking-[0.06em] text-cocoa transition-colors duration-300 hover:border-caramel hover:text-caramel"
+              className="group inline-flex min-h-11 items-center gap-2 border-b border-border-warm pb-0.5 text-[13px] tracking-[0.06em] text-cocoa transition-colors duration-300 hover:border-caramel hover:text-caramel-hover"
             >
               Browse the menu
               <span

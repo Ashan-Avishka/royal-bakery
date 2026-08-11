@@ -98,14 +98,14 @@ describe("HomePage", () => {
     render(await HomePage());
 
     expect(screen.getByRole("heading", { level: 1 })).toHaveClass("text-cream");
-    expect(screen.getByRole("button", { name: "Explore the menu" })).toHaveClass(
+    expect(screen.getByRole("link", { name: "Explore the menu" })).toHaveClass(
       "bg-cocoa",
       "text-cream-alt",
       "hover:bg-cocoa-dark"
     );
     expect(screen.getByRole("link", { name: "View full menu" })).toHaveClass(
-      "text-caramel",
-      "hover:text-caramel-hover"
+      "text-caramel-hover",
+      "hover:text-cocoa"
     );
   });
 
@@ -124,7 +124,7 @@ describe("HomePage", () => {
     expect(screen.getByRole("heading", { name: "Featured selections" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "Real butter. Real chocolate. No shortcuts.",
+        name: "A bakery menu for everyday orders and celebrations.",
       })
     ).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Read our story" })).toHaveAttribute(
@@ -144,7 +144,9 @@ describe("HomePage", () => {
     const featuredSection = featuredHeading.closest("section");
     expect(featuredSection).not.toBeNull();
 
-    const productImages = within(featuredSection as HTMLElement).getAllByRole("img");
+    const productImages = within(featuredSection as HTMLElement)
+      .getAllByRole("img")
+      .filter((image) => image.tagName === "IMG");
     expect(productImages).toHaveLength(2);
     expect(productImages.every((image) => image.dataset.preload !== "true")).toBe(true);
     expect(

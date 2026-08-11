@@ -11,7 +11,6 @@ import {
 } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BrandLogo } from "@/components/BrandLogo";
-import { Button } from "@/components/ui/Button";
 
 export interface HeroSlide {
   id: string;
@@ -171,10 +170,8 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
               {slide.support}
             </p>
             <div className={`flex flex-wrap items-center gap-4 ${compact ? "mt-6" : "mt-9"}`}>
-              <Link href={slide.ctaHref}>
-                <Button className="px-7 py-3 text-[13px] tracking-[0.06em]">
-                  {slide.ctaLabel}
-                </Button>
+              <Link href={slide.ctaHref} className="inline-flex min-h-11 items-center justify-center rounded-full bg-cocoa px-7 py-3 text-[13px] font-medium tracking-[0.06em] text-cream-alt shadow-[0_1px_0_rgba(58,26,19,0.08)] transition-colors duration-300 hover:bg-cocoa-dark">
+                {slide.ctaLabel}
               </Link>
               <Link
                 href="/about"

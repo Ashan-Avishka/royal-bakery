@@ -1,7 +1,7 @@
-import Image from "next/image";
 import Link from "next/link";
 import { removeCartItem, updateCartItemQuantity } from "@/app/actions/cart";
 import { Button } from "@/components/ui/Button";
+import { ProductImage } from "@/components/ProductImage";
 import type { CartItem } from "@/lib/cart";
 import { formatPrice } from "@/lib/catalog";
 
@@ -15,11 +15,7 @@ export function CartItemRow({ item, error }: { item: CartItem; error?: string })
         aria-label={`View ${item.name}`}
         className="relative size-20 overflow-hidden rounded-[1rem] bg-honey-light/60 ring-1 ring-border-warm/60"
       >
-        {item.imageUrl ? (
-          <Image src={item.imageUrl} alt={item.name} fill sizes="80px" className="object-cover" />
-        ) : (
-          <div className="flex h-full items-center justify-center text-xs text-text-muted">No photo</div>
-        )}
+        <ProductImage key={item.imageUrl ?? "missing"} src={item.imageUrl} alt={item.name} fill sizes="80px" className="object-cover" />
       </Link>
 
       <div className="min-w-0 break-words">
