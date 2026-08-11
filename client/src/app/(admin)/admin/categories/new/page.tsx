@@ -6,10 +6,10 @@ export default async function NewCategoryPage() {
   await requireAdminSession();
 
   return (
-    <div className="mx-auto max-w-3xl px-6 py-10">
+    <div className="mx-auto max-w-3xl px-4 py-7 sm:px-6 sm:py-10">
       <Link
         href="/admin/categories"
-        className="mb-6 inline-block text-sm font-medium text-caramel hover:text-caramel-hover"
+        className="mb-6 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
       >
         ← Categories
       </Link>

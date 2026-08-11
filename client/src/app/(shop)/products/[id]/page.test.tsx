@@ -26,12 +26,12 @@ vi.mock("@/app/actions/cart", () => ({ addToCart: vi.fn() }));
 vi.mock("next/navigation", () => ({ notFound: mocks.notFound }));
 
 vi.mock("next/image", () => ({
-  default: (imageProps: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
-    const { priority, fill, ...props } = imageProps;
+  default: (imageProps: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
+    const { preload, fill, ...props } = imageProps;
     void fill;
     return createElement("img", {
       ...props,
-      "data-priority": priority ? "true" : undefined,
+      "data-preload": preload ? "true" : undefined,
     });
   },
 }));
@@ -70,6 +70,10 @@ describe("ProductDetailPage", () => {
 
     expect(screen.getByRole("img", { name: product.name }).parentElement).toHaveClass(
       "aspect-[4/5]"
+    );
+    expect(screen.getByRole("img", { name: product.name })).toHaveAttribute(
+      "data-preload",
+      "true"
     );
     expect(screen.getByRole("heading", { level: 1, name: product.name })).toBeVisible();
     expect(screen.getByText("LKR 3,250")).toHaveClass("text-cocoa");

@@ -21,10 +21,10 @@ vi.mock("@/lib/admin/session", () => ({
 }));
 
 vi.mock("next/image", () => ({
-  default: (imageProps: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
-    const { priority, fill, ...props } = imageProps;
+  default: (imageProps: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
+    const { preload, fill, ...props } = imageProps;
     void fill;
-    return createElement("img", { ...props, "data-priority": priority ? "true" : undefined });
+    return createElement("img", { ...props, "data-preload": preload ? "true" : undefined });
   },
 }));
 
@@ -83,6 +83,10 @@ describe("AdminProductsPage", () => {
       "/admin/products/cake-1"
     );
     expect(screen.getAllByText("Cakes").length).toBeGreaterThan(0);
+    expect(screen.getByRole("link", { name: /Chocolate Cake/ })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
   });
 
   it("shows a not-found message for a stale selected id", async () => {
@@ -109,5 +113,32 @@ describe("AdminProductsPage", () => {
       "href",
       "/admin/products?categoryId=cakes&selected=cake-1"
     );
+  });
+
+  it("uses stacked touch-friendly filters and wrapping product records", async () => {
+    render(await AdminProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("searchbox", { name: "Search products" })).toHaveClass("w-full", "min-w-0", "text-base");
+    expect(screen.getByRole("combobox", { name: "Category" })).toHaveClass("w-full", "text-base");
+    expect(screen.getByRole("button", { name: "Filter" })).toHaveClass("min-h-11", "w-full");
+    expect(screen.getByRole("link", { name: /Chocolate Cake/ })).toHaveClass(
+      "min-w-0",
+      "sm:flex-row"
+    );
+    expect(screen.getByRole("link", { name: "Add product" })).toHaveClass("min-h-11", "bg-cocoa");
+  });
+
+  it("breaks long product and category names without changing the selected route", async () => {
+    const longName = "ChocolateCake".repeat(16);
+    const longCategory = "CelebrationCakes".repeat(12);
+    mocks.listAdminProducts.mockResolvedValue([{ ...product, name: longName }]);
+    mocks.listAdminCategories.mockResolvedValue([{ ...category, name: longCategory }]);
+
+    render(await AdminProductsPage({ searchParams: Promise.resolve({ selected: "cake-1" }) }));
+
+    expect(screen.getAllByText(longName)[0]).toHaveClass("break-words");
+    expect(
+      screen.getAllByText(longCategory).find((element) => element.tagName === "DD")
+    ).toHaveClass("break-words");
   });
 });

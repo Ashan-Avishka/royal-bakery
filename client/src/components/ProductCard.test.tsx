@@ -1,11 +1,11 @@
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { createElement, type ComponentProps } from "react";
 import { afterEach, expect, it, vi } from "vitest";
 import { ProductCard } from "./ProductCard";
 
 vi.mock("next/image", () => ({
-  default: ({ priority, fill, alt, ...props }: ComponentProps<"img"> & {
-    priority?: boolean;
+  default: ({ preload, fill, alt, ...props }: ComponentProps<"img"> & {
+    preload?: boolean;
     fill?: boolean;
   }) => {
     void fill;
@@ -13,7 +13,7 @@ vi.mock("next/image", () => ({
     return createElement("img", {
       ...props,
       alt: alt ?? "",
-      "data-priority": priority ? "true" : undefined,
+      "data-preload": preload ? "true" : undefined,
     });
   },
 }));
@@ -31,7 +31,10 @@ const product = {
   updatedAt: "2026-08-06T00:00:00.000Z",
 };
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
+});
 
 it("renders the product image, formatted price, and a full-card product link", () => {
   render(<ProductCard product={product} />);
@@ -39,27 +42,80 @@ it("renders the product image, formatted price, and a full-card product link", (
   expect(
     screen.getByRole("img", { name: "Chocolate Celebration Cake" })
   ).toHaveAttribute("src", product.imageUrl);
-  expect(screen.getByText("LKR 3,250")).toHaveClass("text-caramel-hover");
+  expect(screen.getByText("LKR 3,250")).toHaveClass("text-cocoa");
   expect(
-    screen.getByRole("link", { name: /chocolate celebration cake/i })
+    screen.getAllByRole("link", { name: /chocolate celebration cake/i })[0]
   ).toHaveAttribute("href", "/products/baked-001");
 });
 
-it("renders a Royal Bakery fallback when the product has no image", () => {
+it("renders a clear fallback when the product has no image", () => {
   render(<ProductCard product={{ ...product, imageUrl: null }} />);
 
-  expect(screen.getByText(/royal bakery/i)).toBeVisible();
-  expect(screen.queryByRole("img")).not.toBeInTheDocument();
+  expect(screen.getByRole("img", { name: "Chocolate Celebration Cake photo unavailable" })).toBeVisible();
+  expect(screen.queryByRole("img", { name: product.name })).not.toBeInTheDocument();
 });
 
 it("shows an out-of-stock badge for unavailable inventory", () => {
   render(<ProductCard product={{ ...product, stockQuantity: 0 }} />);
 
-  expect(screen.getByText("Out of stock")).toBeVisible();
+  expect(screen.getByText("Sold out")).toBeVisible();
 });
 
-it("forwards priority to the product image", () => {
+it("translates the public priority prop into preload with an accurate responsive size hint", () => {
   render(<ProductCard product={product} priority />);
 
-  expect(screen.getByRole("img")).toHaveAttribute("data-priority", "true");
+  expect(screen.getByRole("img")).toHaveAttribute("data-preload", "true");
+  expect(screen.getByRole("img")).toHaveAttribute(
+    "sizes",
+    "(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)"
+  );
+});
+
+it("replaces a failed card image with the accessible fallback", () => {
+  render(<ProductCard product={product} />);
+  fireEvent.error(screen.getByRole("img", { name: product.name }));
+  expect(screen.getByRole("img", { name: `${product.name} photo unavailable` })).toBeVisible();
+  expect(screen.queryByRole("img", { name: product.name })).not.toBeInTheDocument();
+});
+
+it("keeps wishlist and purchase actions visible with touch-sized controls", () => {
+  render(<ProductCard product={product} />);
+
+  expect(screen.getByRole("button", { name: "Add to wishlist" })).toHaveClass(
+    "h-11",
+    "w-11"
+  );
+  expect(screen.getByRole("button", { name: "Add to cart" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "Details" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "Details" })).toHaveClass("text-caramel-hover");
+});
+
+it("uses neutral fallback product copy", () => {
+  render(<ProductCard product={{ ...product, description: null }} />);
+  expect(screen.getByText("Description available on the product page.")).toBeVisible();
+});
+
+it("uses a caller-provided image size hint for wider product rails", () => {
+  render(
+    <ProductCard
+      product={product}
+      sizes="(min-width: 1024px) 352px, calc(100vw - 2rem)"
+    />
+  );
+
+  expect(screen.getByRole("img")).toHaveAttribute(
+    "sizes",
+    "(min-width: 1024px) 352px, calc(100vw - 2rem)"
+  );
+});
+
+it("resynchronizes wishlist state when the rendered product changes", () => {
+  window.localStorage.setItem("royal-bakery-wishlist", JSON.stringify(["baked-002"]));
+  const { rerender } = render(<ProductCard product={product} />);
+
+  expect(screen.getByRole("button", { name: "Add to wishlist" })).toBeVisible();
+
+  rerender(<ProductCard product={{ ...product, id: "baked-002" }} />);
+
+  expect(screen.getByRole("button", { name: "Remove from wishlist" })).toBeVisible();
 });

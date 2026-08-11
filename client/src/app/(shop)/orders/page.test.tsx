@@ -86,5 +86,7 @@ describe("OrdersPage", () => {
       link.getAttribute("href")?.includes("selected=order-1")
     );
     expect(orderRow).toHaveAttribute("href", "/orders?selected=order-1");
+    expect(orderRow).toHaveClass("flex-col", "sm:flex-row");
+    expect(orderRow?.firstElementChild).toHaveClass("min-w-0", "break-words");
   });
 });

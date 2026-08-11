@@ -14,17 +14,17 @@ export function SectionHeading({
   action,
 }: SectionHeadingProps) {
   return (
-    <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-      <div className="max-w-2xl">
+    <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-end sm:justify-between">
+      <div className="min-w-0 max-w-2xl">
         {eyebrow && (
           <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-caramel-hover">
             {eyebrow}
           </p>
         )}
-        <h2 className="font-display text-2xl text-cocoa sm:text-3xl">{title}</h2>
+        <h2 className="break-words font-display text-2xl text-cocoa sm:text-3xl">{title}</h2>
         {description && <p className="mt-2 text-text-muted">{description}</p>}
       </div>
-      {action && <div className="shrink-0">{action}</div>}
+      {action && <div className="min-w-0 max-w-full break-anywhere">{action}</div>}
     </div>
   );
 }

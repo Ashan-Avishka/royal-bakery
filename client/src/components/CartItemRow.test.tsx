@@ -54,8 +54,8 @@ it("links the product and preserves labelled quantity bounds and line total", ()
   expect(quantityInput).toHaveAttribute("max", "4");
   expect(quantityInput).toHaveClass("border-text-muted");
   expect(screen.getByText("LKR 5,000")).toBeVisible();
-  expect(screen.getByRole("button", { name: "Update" })).toHaveClass("w-28");
-  expect(screen.getByRole("button", { name: "Remove" })).toHaveClass("w-28");
+  expect(screen.getByRole("button", { name: "Update" })).toHaveClass("w-full", "sm:w-28");
+  expect(screen.getByRole("button", { name: "Remove" })).toHaveClass("w-full", "sm:w-28");
 });
 
 it("submits the update and remove forms through their cart server actions", async () => {
@@ -85,4 +85,34 @@ it("renders a supplied mutation error as a row-local alert", () => {
   const alert = screen.getByRole("alert");
   expect(alert).toHaveTextContent("Only four cakes remain.");
   expect(alert.closest("article")).not.toBeNull();
+});
+
+it("replaces a failed cart thumbnail with an accessible fallback", () => {
+  render(<CartItemRow item={item} />);
+  fireEvent.error(screen.getByRole("img", { name: item.name }));
+  expect(screen.getByRole("img", { name: `${item.name} photo unavailable` })).toBeVisible();
+  expect(screen.queryByRole("img", { name: item.name })).not.toBeInTheDocument();
+});
+
+it("stacks cart controls beneath a wrapping product identity on narrow screens", () => {
+  const { container } = render(<CartItemRow item={item} />);
+
+  expect(container.querySelector("article")).toHaveClass(
+    "grid-cols-[5rem_minmax(0,1fr)]",
+    "sm:grid-cols-[5rem_minmax(0,1fr)_auto]"
+  );
+  expect(screen.getByRole("link", { name: "Chocolate Celebration Cake" })).toHaveClass(
+    "min-w-0",
+    "break-words"
+  );
+  expect(screen.getByRole("spinbutton", { name: /quantity for chocolate/i })).toHaveClass(
+    "text-base",
+    "sm:text-sm"
+  );
+  const controls = screen.getByRole("spinbutton", { name: /quantity for chocolate/i })
+    .closest("div");
+  expect(controls).toHaveClass("col-span-2", "sm:col-span-1", "flex-wrap");
+  expect(screen.getByText("LKR 5,000").parentElement).toBe(controls);
+  expect(screen.getByRole("button", { name: "Remove" }).closest("form")?.parentElement)
+    .toBe(controls);
 });

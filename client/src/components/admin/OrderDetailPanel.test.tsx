@@ -39,4 +39,13 @@ describe("OrderDetailPanel (admin)", () => {
     render(<OrderDetailPanel order={{ ...order, deliveryAddress: null }} />);
     expect(screen.getByText("Pickup")).toBeVisible();
   });
+
+  it("wraps a long delivery address", () => {
+    const deliveryAddress = "No123GalleRoadColombo".repeat(12);
+    render(<OrderDetailPanel order={{ ...order, deliveryAddress }} />);
+
+    const fulfillment = screen.getByText("Fulfillment").nextElementSibling;
+    expect(fulfillment).toHaveTextContent(deliveryAddress);
+    expect(fulfillment).toHaveClass("break-words");
+  });
 });

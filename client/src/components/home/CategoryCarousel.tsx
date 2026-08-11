@@ -24,7 +24,7 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
       <SectionHeader
         eyebrow="Collections"
         title="Shop by craving"
-        description="Celebration cakes, morning breads, and afternoon pastries — curated for every moment."
+        description="Browse cakes, breads, pastries, and other bakery categories."
         href="/products"
         linkLabel="View full menu"
       />
@@ -64,7 +64,7 @@ export function CategoryCarousel({ categories }: CategoryCarouselProps) {
                       {category.description}
                     </p>
                   )}
-                  <span className="mt-4 inline-flex items-center gap-1.5 text-[12px] tracking-[0.08em] text-caramel opacity-70 transition-all duration-300 group-hover:opacity-100">
+                  <span className="mt-4 inline-flex items-center gap-1.5 text-[12px] tracking-[0.08em] text-caramel-hover transition-all duration-300">
                     Explore
                     <span
                       aria-hidden

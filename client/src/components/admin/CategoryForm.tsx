@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import {
   createCategory,
   updateCategory,
@@ -18,9 +18,11 @@ export function CategoryForm({ category }: { category?: Category }) {
     ? updateCategory.bind(null, category!.id)
     : createCategory;
   const [state, formAction, pending] = useActionState(action, initialState);
+  const feedbackId = useId();
+  const feedback = state.error ?? (state.success ? "Category saved." : null);
 
   return (
-    <form action={formAction} className="flex max-w-lg flex-col gap-4">
+    <form action={formAction} className="flex max-w-lg flex-col gap-4" aria-describedby={feedback ? feedbackId : undefined}>
       <Input
         label="Name"
         name="name"
@@ -38,11 +40,11 @@ export function CategoryForm({ category }: { category?: Category }) {
           rows={3}
           defaultValue={category?.description ?? ""}
           disabled={pending}
-          className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-24 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         />
       </div>
       {isEdit && (
-        <label className="flex items-center gap-2 text-sm text-cocoa">
+      <label className="flex min-h-11 items-center gap-2 text-sm text-cocoa">
           <input
             type="checkbox"
             name="isActive"
@@ -53,9 +55,9 @@ export function CategoryForm({ category }: { category?: Category }) {
           Active (shown on storefront)
         </label>
       )}
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p id={feedbackId} role="alert" className="text-sm text-red-600">{state.error}</p>}
       {state.success && !state.error && (
-        <p className="text-sm text-emerald-700">Category saved.</p>
+        <p id={feedbackId} role="status" aria-live="polite" className="text-sm text-emerald-700">Category saved.</p>
       )}
       <Button type="submit" disabled={pending} className="w-fit">
         {pending ? "Saving…" : isEdit ? "Save changes" : "Create category"}

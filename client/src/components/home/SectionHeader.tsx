@@ -24,7 +24,7 @@ export function SectionHeader({
               className="h-px w-8 bg-caramel/60"
               aria-hidden
             />
-            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+            <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">
               {eyebrow}
             </p>
           </div>
@@ -41,7 +41,7 @@ export function SectionHeader({
       {href && (
         <Link
           href={href}
-          className="group inline-flex shrink-0 items-center gap-2 border-b border-caramel/30 pb-0.5 text-sm tracking-wide text-caramel transition-colors duration-300 hover:border-caramel hover:text-caramel-hover"
+          className="group inline-flex shrink-0 items-center gap-2 border-b border-caramel/30 pb-0.5 text-sm tracking-wide text-caramel-hover transition-colors duration-300 hover:border-caramel hover:text-cocoa"
         >
           {linkLabel}
           <span

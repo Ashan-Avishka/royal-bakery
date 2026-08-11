@@ -8,6 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "test": "vitest run",
+    "images:dry-run": "tsx scripts/importProductImages.ts",
+    "images:import": "tsx scripts/importProductImages.ts --execute",
     "set-admin": "tsx scripts/setAdminRole.ts",
     "seed:categories": "tsx scripts/seedCategories.ts",
     "seed:catalog": "tsx scripts/seedCatalog.ts"
@@ -19,6 +21,7 @@
     "express": "^5.2.1",
     "jose": "^6.2.8",
     "multer": "^2.0.1",
+    "sharp": "^0.35.3",
     "ws": "^8.21.3",
     "zod": "^4.4.3"
   },

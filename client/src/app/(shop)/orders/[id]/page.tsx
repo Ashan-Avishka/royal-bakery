@@ -49,7 +49,7 @@ export default async function OrderDetailPage({
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-2xl px-6 py-16 sm:py-20">
+      <div className="page-container page-section relative min-w-0 max-w-2xl">
         <PageHeader
           eyebrow="Order history"
           title="Order details"
@@ -61,7 +61,7 @@ export default async function OrderDetailPage({
           action={{ href: "/orders", label: "All orders" }}
         />
 
-        <div className="mb-6 flex justify-end gap-2">
+        <div className="mb-6 flex flex-wrap justify-end gap-2">
           <PaymentStatusBadge status={order.paymentStatus} />
           <OrderStatusBadge status={order.status} />
         </div>
@@ -83,7 +83,7 @@ export default async function OrderDetailPage({
         )}
         <PaymentStatusPoller active={showConfirming} />
 
-        <div className="rounded-[1.5rem] border border-border-warm/80 bg-cream-alt p-6 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)] sm:p-8">
+        <div className="surface-pad min-w-0 rounded-[1.5rem] border border-border-warm/80 bg-cream-alt shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]">
           <dl className="mb-6 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
             <div>
               <dt className="text-text-muted">Placed on</dt>
@@ -110,9 +110,9 @@ export default async function OrderDetailPage({
             {order.items.map((item) => (
               <li
                 key={item.productId}
-                className="flex justify-between gap-4 border-b border-border-warm/60 pb-3 last:border-0 last:pb-0"
+                className="flex min-w-0 justify-between gap-4 border-b border-border-warm/60 pb-3 last:border-0 last:pb-0"
               >
-                <span>
+                <span className="min-w-0 break-words">
                   {item.name} &times; {item.quantity}
                 </span>
                 <span className="shrink-0 font-medium">
@@ -136,7 +136,7 @@ export default async function OrderDetailPage({
 
         <Link
           href="/products"
-          className="mt-8 inline-flex items-center gap-2 text-sm font-medium text-caramel transition-colors hover:text-caramel-hover"
+          className="mt-8 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa"
         >
           Continue shopping →
         </Link>

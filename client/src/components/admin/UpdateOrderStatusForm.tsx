@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import {
   updateOrderStatus,
   type UpdateOrderStatusState,
@@ -26,9 +26,11 @@ export function UpdateOrderStatusForm({
 }) {
   const action = updateOrderStatus.bind(null, orderId);
   const [state, formAction, pending] = useActionState(action, initialState);
+  const feedbackId = useId();
+  const feedback = state.error ?? (state.success ? "Status updated." : null);
 
   return (
-    <form action={formAction} className="flex flex-col gap-3">
+    <form action={formAction} className="flex flex-col gap-3" aria-describedby={feedback ? feedbackId : undefined}>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex flex-1 flex-col gap-1.5">
           <label htmlFor="status" className="text-sm font-medium text-cocoa">
@@ -39,7 +41,7 @@ export function UpdateOrderStatusForm({
             name="status"
             defaultValue={currentStatus}
             disabled={pending}
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+            className="min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
           >
             {STATUS_OPTIONS.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -52,9 +54,9 @@ export function UpdateOrderStatusForm({
           {pending ? "Saving…" : "Save status"}
         </Button>
       </div>
-      {state.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state.error && <p id={feedbackId} role="alert" className="text-sm text-red-600">{state.error}</p>}
       {state.success && !state.error && (
-        <p className="text-sm text-emerald-700">Status updated.</p>
+        <p id={feedbackId} role="status" aria-live="polite" className="text-sm text-emerald-700">Status updated.</p>
       )}
     </form>
   );

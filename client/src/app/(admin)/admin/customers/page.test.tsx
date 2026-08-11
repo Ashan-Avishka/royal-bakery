@@ -79,4 +79,33 @@ describe("AdminCustomersPage", () => {
     );
     expect(screen.getAllByRole("button", { name: "Update" })).toHaveLength(1);
   });
+
+  it("keeps role filters and customer records touch-friendly on narrow screens", async () => {
+    render(await AdminCustomersPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("link", { name: "Admins" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveClass("min-w-0");
+  });
+
+  it("exposes the active role filter and selected customer beyond color", async () => {
+    render(
+      await AdminCustomersPage({
+        searchParams: Promise.resolve({ role: "customer", selected: "cust-1" }),
+      })
+    );
+
+    expect(screen.getByRole("link", { name: "Customers" })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+    expect(screen.getByRole("link", { name: "Customers" })).toHaveClass(
+      "font-semibold",
+      "border-b-2",
+      "border-cream-alt"
+    );
+    expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+  });
 });

@@ -52,7 +52,6 @@ body {
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
 }
 
 ::selection {
@@ -74,6 +73,35 @@ body {
     text-wrap: balance;
   }
 
+  .page-container {
+    width: 100%;
+    max-width: 72rem;
+    margin-inline: auto;
+    padding-inline: 1rem;
+  }
+
+  .page-section {
+    padding-block: 3rem;
+  }
+
+  .surface-pad {
+    padding: 1rem;
+  }
+
+  .safe-x {
+    padding-left: max(1rem, env(safe-area-inset-left));
+    padding-right: max(1rem, env(safe-area-inset-right));
+  }
+
+  .touch-target {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .break-anywhere {
+    overflow-wrap: anywhere;
+  }
+
   .hairline {
     height: 1px;
     background: linear-gradient(
@@ -91,6 +119,39 @@ body {
 
   .float-slower {
     animation: float-slower 12s ease-in-out infinite;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .product-card:hover img {
+    transform: scale(1.04);
+  }
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .ambient-blur {
+    filter: none;
+    opacity: 0.35;
+  }
+
+  .elevated-surface {
+    box-shadow: none;
+  }
+}
+
+@media (min-width: 40rem) {
+  @layer utilities {
+    .page-container {
+      padding-inline: 1.5rem;
+    }
+
+    .page-section {
+      padding-block: 5rem;
+    }
+
+    .surface-pad {
+      padding: 1.75rem;
+    }
   }
 }
 
@@ -123,20 +184,5 @@ body {
   .float-slow,
   .float-slower {
     animation: none !important;
-  }
-}
-
-::selection {
-  background: var(--honey);
-  color: var(--cocoa-dark);
-}
-
-html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
   }
 }

@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
   const analytics = await getAdminAnalytics(session.accessToken);
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <div className="mb-8 flex flex-wrap items-baseline justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl text-cocoa">Dashboard</h1>
@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
             Sales KPIs use paid orders only.{" "}
             <Link
               href="/admin/reports"
-              className="font-medium text-caramel hover:text-caramel-hover"
+              className="inline-flex min-h-11 items-center font-medium text-caramel-hover hover:text-cocoa"
             >
               Full reports
             </Link>
@@ -33,7 +33,7 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      <div className="mb-10 grid grid-cols-2 gap-6 sm:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-4">
         <div className="border-b border-border-warm pb-3">
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Paid revenue
@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
         </div>
         <Link
           href="/admin/products?lowStock=1"
-          className="border-b border-border-warm pb-3 transition-colors hover:border-caramel"
+          className="block min-h-11 border-b border-border-warm pb-3 transition-colors hover:border-caramel"
         >
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Low stock
@@ -69,12 +69,12 @@ export default async function AdminDashboardPage() {
         </Link>
       </div>
 
-      <div className="mb-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-4">
         {STATUS_COUNTS.map((status) => (
           <Link
             key={status}
             href={`/admin/orders?status=${status}`}
-            className="border-b border-border-warm pb-3 transition-colors hover:border-caramel"
+            className="block min-h-11 border-b border-border-warm pb-3 transition-colors hover:border-caramel"
           >
             <p className="text-xs uppercase tracking-wide text-text-muted">
               {status}
@@ -93,10 +93,10 @@ export default async function AdminDashboardPage() {
             {analytics.topProducts.slice(0, 5).map((product) => (
               <li
                 key={product.productId}
-                className="flex items-center justify-between gap-4 py-3 text-sm"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <span className="font-medium text-cocoa">{product.name}</span>
-                <span className="text-text-muted">
+                <span className="break-words font-medium text-cocoa">{product.name}</span>
+                <span className="break-words text-text-muted">
                   {product.quantitySold} sold · {formatPrice(product.revenue)}
                 </span>
               </li>
@@ -109,7 +109,7 @@ export default async function AdminDashboardPage() {
         <h2 className="font-display text-xl text-cocoa">Recent orders</h2>
         <Link
           href="/admin/orders"
-          className="text-sm font-medium text-caramel hover:text-caramel-hover"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
         >
           View all
         </Link>
@@ -123,9 +123,9 @@ export default async function AdminDashboardPage() {
             <li key={order.id}>
               <Link
                 href={`/admin/orders/${order.id}`}
-                className="flex items-center justify-between gap-4 py-4 transition-colors hover:bg-honey-light/30"
+                className="flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <div>
+                <div className="min-w-0">
                   <p className="font-medium text-cocoa">
                     {new Date(order.createdAt).toLocaleDateString("en-GB", {
                       day: "numeric",
@@ -138,7 +138,7 @@ export default async function AdminDashboardPage() {
                     {formatPrice(order.totalAmount)}
                   </p>
                 </div>
-                <OrderStatusBadge status={order.status} />
+                <div className="flex flex-wrap"><OrderStatusBadge status={order.status} /></div>
               </Link>
             </li>
           ))}

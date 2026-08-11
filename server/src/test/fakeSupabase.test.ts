@@ -232,3 +232,22 @@ describe("createFakeSupabaseClient — storage mock", () => {
     expect(data.publicUrl).toContain("prod-1/photo.png");
   });
 });
+
+describe("range filters", () => {
+  it("filters comparable values and safely rejects non-comparable filter inputs", async () => {
+    const client = createFakeSupabaseClient({
+      usersByToken: {},
+      profiles: [],
+      orders: [
+        { id: "order-1", user_id: "u1", status: "pending", payment_status: "pending", total_amount: "100", delivery_address: null, created_at: "2026-01-01T00:00:00.000Z", updated_at: "2026-01-01T00:00:00.000Z" },
+        { id: "order-2", user_id: "u1", status: "pending", payment_status: "pending", total_amount: "200", delivery_address: null, created_at: "2026-02-01T00:00:00.000Z", updated_at: "2026-02-01T00:00:00.000Z" },
+      ],
+    });
+
+    const ranged = await client.from("orders").select("*").gte("created_at", "2026-01-15T00:00:00.000Z");
+    expect(ranged.data.map((order: { id: string }) => order.id)).toEqual(["order-2"]);
+
+    const invalid = await client.from("orders").select("*").lte("created_at", {});
+    expect(invalid.data).toEqual([]);
+  });
+});

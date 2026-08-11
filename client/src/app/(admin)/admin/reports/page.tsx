@@ -31,7 +31,7 @@ export default async function AdminReportsPage({
   const analytics = await getAdminAnalytics(session.accessToken, { from, to });
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-7 sm:px-6 sm:py-10">
       <h1 className="mb-2 font-display text-3xl text-cocoa">Reports</h1>
       <p className="mb-6 text-sm text-text-muted">
         Sales figures include paid orders only. Order history lists all orders
@@ -40,9 +40,9 @@ export default async function AdminReportsPage({
 
       <form
         method="get"
-        className="mb-10 flex flex-wrap items-end gap-3 border-b border-border-warm pb-6"
+        className="mb-10 flex min-w-0 flex-col gap-3 border-b border-border-warm pb-6 sm:flex-row sm:flex-wrap sm:items-end"
       >
-        <div className="flex flex-col gap-1.5">
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
           <label htmlFor="from" className="text-sm font-medium text-cocoa">
             From
           </label>
@@ -51,10 +51,10 @@ export default async function AdminReportsPage({
             type="date"
             name="from"
             defaultValue={from}
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel"
+            className="min-h-11 w-full rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:text-sm"
           />
         </div>
-        <div className="flex flex-col gap-1.5">
+        <div className="flex w-full flex-col gap-1.5 sm:w-auto">
           <label htmlFor="to" className="text-sm font-medium text-cocoa">
             To
           </label>
@@ -63,18 +63,18 @@ export default async function AdminReportsPage({
             type="date"
             name="to"
             defaultValue={to}
-            className="rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel"
+            className="min-h-11 w-full rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:text-sm"
           />
         </div>
         <button
           type="submit"
-          className="rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt hover:bg-caramel-hover"
+          className="min-h-11 w-full rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt hover:bg-cocoa-dark sm:w-auto"
         >
           Apply
         </button>
       </form>
 
-      <div className="mb-10 grid grid-cols-2 gap-6 sm:grid-cols-4">
+      <div className="mb-10 grid grid-cols-1 gap-4 min-[420px]:grid-cols-2 sm:grid-cols-4">
         <div className="border-b border-border-warm pb-3">
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Revenue
@@ -103,7 +103,7 @@ export default async function AdminReportsPage({
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Top category
           </p>
-          <p className="mt-1 font-display text-2xl text-cocoa">
+          <p className="mt-1 min-w-0 break-words font-display text-2xl text-cocoa">
             {analytics.topCategory ?? "—"}
           </p>
         </div>
@@ -122,13 +122,13 @@ export default async function AdminReportsPage({
             {analytics.topProducts.map((product, index) => (
               <li
                 key={product.productId}
-                className="flex items-center justify-between gap-4 py-3 text-sm"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <span className="text-cocoa">
+                <span className="min-w-0 break-words text-cocoa">
                   <span className="mr-2 text-text-muted">{index + 1}.</span>
                   {product.name}
                 </span>
-                <span className="shrink-0 text-text-muted">
+                <span className="break-words text-text-muted sm:shrink-0">
                   {product.quantitySold} sold · {formatPrice(product.revenue)}
                 </span>
               </li>
@@ -148,10 +148,10 @@ export default async function AdminReportsPage({
             {analytics.categorySales.map((row) => (
               <li
                 key={row.category}
-                className="flex items-center justify-between gap-4 py-3 text-sm"
+                className="flex min-w-0 flex-col gap-1 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <span className="font-medium text-cocoa">{row.category}</span>
-                <span className="text-text-muted">
+                <span className="min-w-0 break-words font-medium text-cocoa">{row.category}</span>
+                <span className="break-words text-text-muted">
                   {row.count} items · {formatPrice(row.revenue)}
                 </span>
               </li>
@@ -165,7 +165,7 @@ export default async function AdminReportsPage({
           <h2 className="font-display text-xl text-cocoa">Order history</h2>
           <Link
             href="/admin/orders"
-            className="text-sm font-medium text-caramel hover:text-caramel-hover"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
           >
             Manage orders
           </Link>
@@ -178,9 +178,9 @@ export default async function AdminReportsPage({
               <li key={order.id}>
                 <Link
                   href={`/admin/orders/${order.id}`}
-                  className="flex flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex min-w-0 flex-col gap-3 px-4 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between"
                 >
-                  <div>
+                  <div className="min-w-0">
                     <p className="font-medium text-cocoa">
                       {new Date(order.createdAt).toLocaleDateString("en-GB", {
                         day: "numeric",
@@ -192,7 +192,7 @@ export default async function AdminReportsPage({
                       {formatPrice(order.totalAmount)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <PaymentStatusBadge status={order.paymentStatus} />
                     <OrderStatusBadge status={order.status} />
                   </div>

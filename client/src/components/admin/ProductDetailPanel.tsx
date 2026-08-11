@@ -33,18 +33,18 @@ export function ProductDetailPanel({
         {!product.isAvailable && <Badge tone="muted">Unavailable</Badge>}
       </div>
 
-      <p className="mb-1 font-display text-lg text-cocoa">{product.name}</p>
+      <p className="mb-1 break-words font-display text-lg text-cocoa">{product.name}</p>
       <p className="mb-4 text-sm text-text-muted">{formatPrice(product.price)}</p>
 
       {product.description && (
-        <p className="mb-4 text-sm text-cocoa">{product.description}</p>
+        <p className="mb-4 break-words text-sm text-cocoa">{product.description}</p>
       )}
 
       <dl className="mb-6 grid grid-cols-1 gap-3 text-sm">
         {categoryName && (
           <div>
             <dt className="text-text-muted">Category</dt>
-            <dd className="font-medium text-cocoa">{categoryName}</dd>
+            <dd className="break-words font-medium text-cocoa">{categoryName}</dd>
           </div>
         )}
         <div>
@@ -55,7 +55,7 @@ export function ProductDetailPanel({
 
       <Link
         href={`/admin/products/${product.id}`}
-        className="inline-flex items-center gap-2 rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark"
       >
         Edit product
       </Link>

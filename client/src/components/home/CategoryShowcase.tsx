@@ -5,7 +5,7 @@ import type { Category } from "@/lib/catalog";
 
 const categoryImagery = [
   { image: "/images/cakes.jpg", alt: "Layered celebration cake" },
-  { image: "/images/bread.jpg", alt: "Fresh artisan bread" },
+  { image: "/images/bread.jpg", alt: "Artisan bread" },
   { image: "/images/pastries.jpg", alt: "Golden bakery pastries" },
   { image: "/images/rolls.jpg", alt: "Crispy bakery rolls" },
   { image: "/images/patties.jpg", alt: "Golden short-eat patties" },
@@ -22,7 +22,7 @@ const curatedCollections = [
   },
   {
     name: "Buns",
-    description: "Sweet and savoury buns fresh from the oven",
+    description: "Sweet and savoury buns",
     search: "bun",
   },
   {
@@ -32,7 +32,7 @@ const curatedCollections = [
   },
   {
     name: "Rolls",
-    description: "Crispy rolls filled and fried to order",
+    description: "Crispy bakery rolls",
     search: "roll",
   },
   {
@@ -120,19 +120,19 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
   return (
     <section className="relative overflow-hidden py-20 sm:py-24">
       <div
-        className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-honey/30 blur-3xl float-slow"
+        className="ambient-blur pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-honey/30 blur-3xl float-slow"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-caramel/15 blur-3xl float-slower"
+        className="ambient-blur pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-caramel/15 blur-3xl float-slower"
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Collections"
           title="Shop by craving"
-          description="Explore every corner of the bakery — cakes, breads, pastries, and more, each with its own ritual."
+          description="Explore bakery categories including cakes, breads, pastries, and more."
           href="/products"
           linkLabel="View full menu"
         />
@@ -189,7 +189,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                 <Link
                   key={category.key}
                   href={category.href}
-                  className={`group relative flex min-h-[150px] flex-1 items-center gap-4 overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/90 p-4 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(58,26,19,0.4)] sm:p-5 ${
+                  className={`elevated-surface group relative flex min-h-[150px] flex-1 items-center gap-4 overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/90 p-4 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(58,26,19,0.4)] motion-reduce:transition-none sm:p-5 ${
                     flip ? "flex-row-reverse text-right" : "flex-row"
                   }`}
                 >
@@ -204,7 +204,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                   </div>
 
                   <div className="min-w-0 flex-1">
-                    <p className="font-display text-[10px] uppercase tracking-[0.22em] text-caramel">
+                    <p className="font-display text-[10px] uppercase tracking-[0.22em] text-caramel-hover">
                       Collection
                     </p>
                     <h3 className="mt-1 font-display text-lg font-medium text-cocoa sm:text-xl">
@@ -215,7 +215,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                         {category.description}
                       </p>
                     )}
-                    <span className="mt-2 inline-flex text-[12px] tracking-[0.08em] text-caramel opacity-80 transition-opacity group-hover:opacity-100">
+                    <span className="mt-2 inline-flex text-[12px] tracking-[0.08em] text-caramel-hover transition-opacity">
                       Browse →
                     </span>
                   </div>

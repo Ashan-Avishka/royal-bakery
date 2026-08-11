@@ -17,7 +17,7 @@ export default function SignupPage() {
       <div className="flex flex-col gap-5 text-center">
         <div className="mx-auto flex items-center gap-3">
           <span className="h-px w-8 bg-caramel/60" aria-hidden />
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">
             Almost there
           </p>
           <span className="h-px w-8 bg-caramel/60" aria-hidden />
@@ -25,10 +25,10 @@ export default function SignupPage() {
         <h1 className="font-display text-[1.75rem] font-medium tracking-tight text-cocoa">
           Check your email
         </h1>
-        <p className="text-sm leading-relaxed text-text-muted">{state.message}</p>
+        <p role="status" aria-live="polite" className="text-sm leading-relaxed text-text-muted">{state.message}</p>
         <Link
           href="/login"
-          className="font-medium text-caramel transition-colors hover:text-caramel-hover"
+          className="inline-flex min-h-11 items-center font-medium text-caramel-hover transition-colors hover:text-cocoa"
         >
           Back to sign in
         </Link>
@@ -41,7 +41,7 @@ export default function SignupPage() {
       <div>
         <div className="mb-4 flex items-center gap-3">
           <span className="h-px w-8 bg-caramel/60" aria-hidden />
-          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel">
+          <p className="font-display text-[11px] uppercase tracking-[0.28em] text-caramel-hover">
             Join us
           </p>
         </div>
@@ -63,7 +63,11 @@ export default function SignupPage() {
         <span className="h-px flex-1 bg-border-warm/70" aria-hidden />
       </div>
 
-      <form action={formAction} className="flex flex-col gap-4">
+      <form
+        action={formAction}
+        aria-describedby={state.error ? "signup-form-error" : undefined}
+        className="flex min-w-0 flex-col gap-4"
+      >
         <Input
           label="Full name"
           name="fullName"
@@ -95,7 +99,7 @@ export default function SignupPage() {
         />
 
         {state.error && (
-          <p className="rounded-[0.85rem] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
+          <p id="signup-form-error" role="alert" className="rounded-[0.85rem] border border-red-200 bg-red-50 px-3.5 py-2.5 text-sm text-red-700">
             {state.error}
           </p>
         )}
@@ -113,7 +117,7 @@ export default function SignupPage() {
         Already have an account?{" "}
         <Link
           href="/login"
-          className="font-medium text-caramel transition-colors hover:text-caramel-hover"
+          className="inline-flex min-h-11 items-center font-medium text-caramel-hover transition-colors hover:text-cocoa"
         >
           Sign in
         </Link>

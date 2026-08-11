@@ -10,8 +10,8 @@ interface HomeHeroStageProps {
 
 export function HomeHeroStage({ slides }: HomeHeroStageProps) {
   return (
-    <div className="flex h-dvh max-h-dvh flex-col overflow-hidden">
-      <div className="min-h-0 flex-1">
+    <div className="flex h-dvh flex-col">
+      <div className="min-h-80 flex-1">
         <HeroCarousel slides={slides} compact />
       </div>
       <TrustBar />

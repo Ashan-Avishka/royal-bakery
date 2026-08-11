@@ -84,7 +84,9 @@ describe("ProductsPage", () => {
     expect(screen.getByText("2 products")).toBeVisible();
     expect(screen.getByRole("searchbox", { name: "Search products" }).closest("section"))
       .toHaveClass("lg:sticky", "bg-cream");
-    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(4);
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })[0]
+      ?.closest(".grid")).toHaveClass("grid-cols-1", "sm:grid-cols-2");
   });
 
   it("offers a clear recovery path when active filters have no matches", async () => {
@@ -130,11 +132,43 @@ describe("ProductsPage", () => {
     expect(screen.queryByRole("link", { name: "Clear filters" })).not.toBeInTheDocument();
   });
 
-  it("lets catalog API failures reach the route error boundary", async () => {
+  it("keeps product results available when categories cannot load", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+
+    render(await ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) }));
+
+    expect(screen.getByText("2 products")).toBeVisible();
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(4);
+  });
+
+  it("keeps category filters available when products cannot load", async () => {
     catalogMocks.listProducts.mockRejectedValue(new Error("Catalog unavailable"));
 
-    await expect(
-      ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) })
-    ).rejects.toThrow("Catalog unavailable");
+    render(await ProductsPage({ searchParams: Promise.resolve({ search: "cake" }) }));
+
+    expect(screen.getByRole("button", { name: "Cakes" })).toBeVisible();
+    expect(screen.getByRole("alert")).toHaveTextContent("We couldn't load the menu.");
+    expect(screen.queryByText("0 products")).not.toBeInTheDocument();
+  });
+
+  it("keeps an empty menu distinct from an unavailable categories request", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+    catalogMocks.listProducts.mockResolvedValue([]);
+
+    render(await ProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Categories are temporarily unavailable.");
+    expect(screen.getByRole("heading", { name: "The menu is currently unavailable" })).toBeVisible();
+  });
+
+  it("reports independent catalog and category failures without presenting an empty menu", async () => {
+    catalogMocks.listCategories.mockRejectedValue(new Error("Categories unavailable"));
+    catalogMocks.listProducts.mockRejectedValue(new Error("Catalog unavailable"));
+
+    render(await ProductsPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getAllByRole("alert")).toHaveLength(2);
+    expect(screen.getByText("We couldn't load the menu.")).toBeVisible();
+    expect(screen.queryByRole("heading", { name: "The menu is currently unavailable" })).not.toBeInTheDocument();
   });
 });

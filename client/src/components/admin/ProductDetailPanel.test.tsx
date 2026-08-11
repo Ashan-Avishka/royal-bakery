@@ -5,10 +5,10 @@ import type { Product } from "@/lib/catalog";
 import { ProductDetailPanel } from "./ProductDetailPanel";
 
 vi.mock("next/image", () => ({
-  default: (imageProps: ComponentProps<"img"> & { priority?: boolean; fill?: boolean }) => {
-    const { priority, fill, ...props } = imageProps;
+  default: (imageProps: ComponentProps<"img"> & { preload?: boolean; fill?: boolean }) => {
+    const { preload, fill, ...props } = imageProps;
     void fill;
-    return createElement("img", { ...props, "data-priority": priority ? "true" : undefined });
+    return createElement("img", { ...props, "data-preload": preload ? "true" : undefined });
   },
 }));
 
@@ -42,10 +42,28 @@ describe("ProductDetailPanel", () => {
       "href",
       "/admin/products/cake-1"
     );
+    expect(screen.getByRole("link", { name: "Edit product" })).toHaveClass(
+      "min-h-11",
+      "bg-cocoa"
+    );
   });
 
   it("flags unavailable products", () => {
     render(<ProductDetailPanel product={{ ...product, isAvailable: false }} />);
     expect(screen.getByText("Unavailable")).toBeVisible();
+  });
+
+  it("wraps long product and category names", () => {
+    const longName = "ChocolateCake".repeat(16);
+    const longCategory = "CelebrationCakes".repeat(12);
+    render(
+      <ProductDetailPanel
+        product={{ ...product, name: longName }}
+        categoryName={longCategory}
+      />
+    );
+
+    expect(screen.getByText(longName)).toHaveClass("break-words");
+    expect(screen.getByText(longCategory)).toHaveClass("break-words");
   });
 });

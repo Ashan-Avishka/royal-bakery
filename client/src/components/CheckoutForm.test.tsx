@@ -73,4 +73,13 @@ describe("CheckoutForm", () => {
     expect(alert).toHaveTextContent("Unable to place this order.");
     expect(alert.closest("form")).not.toBeNull();
   });
+
+  it("keeps the delivery textarea readable at mobile browser zoom", () => {
+    render(<CheckoutForm />);
+
+    expect(screen.getByRole("textbox", { name: /delivery address/i })).toHaveClass(
+      "text-base",
+      "sm:text-sm"
+    );
+  });
 });

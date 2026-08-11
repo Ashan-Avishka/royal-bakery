@@ -29,7 +29,7 @@ export function BrandLogo({
       alt="Royal Bakery"
       width={px}
       height={px}
-      priority={priority}
+      preload={priority}
       className={`object-contain ${box} ${className}`}
     />
   );

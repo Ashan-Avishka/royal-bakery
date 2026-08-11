@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useId } from "react";
 import {
   updateCustomerRole,
   type UpdateCustomerRoleState,
@@ -25,18 +25,21 @@ export function CustomerRoleForm({
   const action = updateCustomerRole.bind(null, customerId);
   const [state, formAction, pending] = useActionState(action, initialState);
   const locked = isSelf && currentRole === "admin";
+  const feedbackId = useId();
+  const feedback = state.error ?? (state.success ? "Role updated." : null);
 
   return (
     <form
       action={formAction}
       className="flex flex-col items-stretch gap-1 sm:items-end"
+      aria-describedby={feedback ? feedbackId : undefined}
     >
       <div className="flex flex-wrap items-center gap-2">
         <select
           name="role"
           defaultValue={currentRole}
           disabled={pending || locked}
-          className="rounded-lg border border-border-warm bg-white px-3 py-2 text-sm text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60"
+          className="min-h-11 rounded-lg border border-border-warm bg-white px-3 py-2 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel disabled:opacity-60 sm:text-sm"
         >
           <option value="customer">Customer</option>
           <option value="admin">Admin</option>
@@ -53,9 +56,9 @@ export function CustomerRoleForm({
       {locked && (
         <p className="text-xs text-text-muted">You cannot demote yourself</p>
       )}
-      {state.error && <p className="text-xs text-red-600">{state.error}</p>}
+      {state.error && <p id={feedbackId} role="alert" className="text-xs text-red-600">{state.error}</p>}
       {state.success && !state.error && (
-        <p className="text-xs text-emerald-700">Role updated.</p>
+        <p id={feedbackId} role="status" aria-live="polite" className="text-xs text-emerald-700">Role updated.</p>
       )}
     </form>
   );

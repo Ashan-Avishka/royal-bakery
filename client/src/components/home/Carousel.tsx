@@ -1,12 +1,14 @@
 "use client";
 
 import {
+  type KeyboardEvent,
   type ReactNode,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from "react";
+import { useReducedMotion } from "framer-motion";
 
 interface CarouselProps {
   children: ReactNode;
@@ -24,6 +26,7 @@ export function Carousel({
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const reduceMotion = useReducedMotion();
 
   const updateArrows = useCallback(() => {
     const el = trackRef.current;
@@ -50,7 +53,18 @@ export function Carousel({
     const el = trackRef.current;
     if (!el) return;
     const amount = Math.max(el.clientWidth * 0.72, 260);
-    el.scrollBy({ left: direction * amount, behavior: "smooth" });
+    el.scrollBy({ left: direction * amount, behavior: reduceMotion ? "auto" : "smooth" });
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      scrollByPage(-1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      scrollByPage(1);
+    }
   };
 
   return (
@@ -58,9 +72,11 @@ export function Carousel({
       <div
         ref={trackRef}
         role="region"
-        aria-label={ariaLabel}
+        aria-label={`${ariaLabel} carousel. Use the left and right arrow keys to browse.`}
+        aria-roledescription="carousel"
         tabIndex={0}
-        className="scrollbar-hide -mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-3 outline-none focus-visible:ring-2 focus-visible:ring-caramel/30 sm:gap-6"
+        onKeyDown={handleKeyDown}
+        className="scrollbar-hide -mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-3 outline-none focus-visible:ring-2 focus-visible:ring-caramel/30 motion-reduce:scroll-auto sm:gap-6"
       >
         {Array.isArray(children) ? (
           children.map((child, i) => (
@@ -106,7 +122,7 @@ function CarouselArrow({
       aria-label={direction === "prev" ? "Previous" : "Next"}
       disabled={disabled}
       onClick={onClick}
-        className={`pointer-events-auto absolute top-[38%] z-10 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-border-warm/80 bg-cream-alt/90 text-cocoa backdrop-blur-md transition-all duration-300 hover:border-caramel/50 hover:text-caramel disabled:pointer-events-none disabled:opacity-0 ${
+        className={`pointer-events-auto absolute top-[38%] z-10 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border border-border-warm/80 bg-cream-alt/90 text-cocoa backdrop-blur-md transition-colors duration-300 hover:border-caramel/50 hover:text-caramel motion-reduce:transition-none disabled:pointer-events-none disabled:opacity-0 ${
           direction === "prev" ? "left-2" : "right-2"
         }`}
       >

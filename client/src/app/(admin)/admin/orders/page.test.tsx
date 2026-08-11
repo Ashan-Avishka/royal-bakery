@@ -102,4 +102,30 @@ describe("AdminOrdersPage", () => {
       "/admin/orders?status=pending&selected=order-1"
     );
   });
+
+  it("keeps status filters and order records touch-friendly on narrow screens", async () => {
+    render(await AdminOrdersPage({ searchParams: Promise.resolve({}) }));
+
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveClass("min-h-11");
+    expect(screen.getByRole("link", { name: /2026/ })).toHaveClass(
+      "min-w-0",
+      "sm:flex-row"
+    );
+  });
+
+  it("exposes the active status and selected order beyond color", async () => {
+    render(
+      await AdminOrdersPage({
+        searchParams: Promise.resolve({ status: "pending", selected: "order-1" }),
+      })
+    );
+
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveClass(
+      "font-semibold",
+      "border-b-2",
+      "border-cream-alt"
+    );
+    expect(screen.getByRole("link", { name: /2026/ })).toHaveAttribute("aria-current", "page");
+  });
 });
