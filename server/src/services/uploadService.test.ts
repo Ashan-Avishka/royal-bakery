@@ -6,7 +6,7 @@ vi.mock("../lib/supabase.js", () => ({
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
-import { uploadProductImage } from "./uploadService.js";
+import { uploadProductImage, deleteProductImage } from "./uploadService.js";
 
 const PRODUCT_ID = "55555555-5555-5555-5555-555555555555";
 
@@ -35,5 +35,61 @@ describe("uploadProductImage", () => {
     });
 
     expect(url).not.toMatch(/[ ?]/);
+  });
+});
+
+describe("deleteProductImage", () => {
+  it("calls storage.remove with the path extracted from the public URL", async () => {
+    const remove = vi.fn().mockResolvedValue({ data: null, error: null });
+    vi.mocked(getSupabaseAdmin).mockReturnValue({
+      storage: { from: () => ({ remove }) },
+    } as any);
+
+    await deleteProductImage(
+      `https://fake-storage.test/product-images/${PRODUCT_ID}/167-photo.png`
+    );
+
+    expect(remove).toHaveBeenCalledWith([`${PRODUCT_ID}/167-photo.png`]);
+  });
+
+  it("does nothing if the url doesn't contain the bucket segment", async () => {
+    const remove = vi.fn();
+    vi.mocked(getSupabaseAdmin).mockReturnValue({
+      storage: { from: () => ({ remove }) },
+    } as any);
+
+    await deleteProductImage("https://example.test/not-a-bucket-url.png");
+
+    expect(remove).not.toHaveBeenCalled();
+  });
+
+  it("logs and does not throw when storage.remove returns an error", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const remove = vi.fn().mockResolvedValue({ data: null, error: { message: "boom" } });
+    vi.mocked(getSupabaseAdmin).mockReturnValue({
+      storage: { from: () => ({ remove }) },
+    } as any);
+
+    await expect(
+      deleteProductImage(`https://fake-storage.test/product-images/${PRODUCT_ID}/167-photo.png`)
+    ).resolves.toBeUndefined();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
+  });
+
+  it("logs and does not throw when storage.remove itself throws", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const remove = vi.fn().mockRejectedValue(new Error("network exception"));
+    vi.mocked(getSupabaseAdmin).mockReturnValue({
+      storage: { from: () => ({ remove }) },
+    } as any);
+
+    await expect(
+      deleteProductImage(`https://fake-storage.test/product-images/${PRODUCT_ID}/167-photo.png`)
+    ).resolves.toBeUndefined();
+    expect(consoleErrorSpy).toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
   });
 });

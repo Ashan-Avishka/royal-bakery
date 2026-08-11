@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { deleteProduct } from "@/app/actions/admin/products";
@@ -54,18 +53,6 @@ export default async function EditProductPage({
           action={remove}
         />
       </div>
-
-      {product.imageUrl && (
-        <div className="relative mb-8 aspect-[16/9] max-w-md overflow-hidden rounded-xl bg-honey-light">
-          <Image
-            src={product.imageUrl}
-            alt={product.name}
-            fill
-            className="object-cover"
-            sizes="448px"
-          />
-        </div>
-      )}
 
       <ProductForm product={product} categories={categories} />
     </div>

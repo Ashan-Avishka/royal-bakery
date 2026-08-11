@@ -165,6 +165,20 @@ export async function uploadAdminProductImage(
   return data.product;
 }
 
+export async function removeAdminProductImage(
+  accessToken: string,
+  id: string
+): Promise<Product> {
+  const { product } = await api<{ product: Product }>(
+    `/api/admin/products/${id}/image`,
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    }
+  );
+  return product;
+}
+
 export function stockLabel(stockQuantity: number): {
   label: string;
   tone: "success" | "warning" | "muted";

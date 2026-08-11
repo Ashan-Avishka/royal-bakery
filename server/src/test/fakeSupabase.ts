@@ -319,6 +319,9 @@ export function createFakeSupabaseClient(options: FakeSupabaseOptions) {
           async upload(path: string, _body: unknown, _opts?: unknown) {
             return { data: { path }, error: null };
           },
+          async remove(_paths: string[]) {
+            return { data: null, error: null };
+          },
           getPublicUrl(path: string) {
             return { data: { publicUrl: `https://fake-storage.test/${bucket}/${path}` } };
           },

@@ -7,6 +7,7 @@ import {
   type ProductFormState,
 } from "@/app/actions/admin/products";
 import { Button } from "@/components/ui/Button";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { Input } from "@/components/ui/Input";
 import type { Category, Product } from "@/lib/catalog";
 
@@ -99,24 +100,11 @@ export function ProductForm({
         />
         Available for purchase
       </label>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="image" className="text-sm font-medium text-cocoa">
-          {isEdit ? "Replace image" : "Product image"}
-        </label>
-        <input
-          id="image"
-          name="image"
-          type="file"
-          accept="image/*"
-          disabled={pending}
-          className="min-h-11 text-base text-text-muted file:mr-3 file:min-h-11 file:rounded-full file:border-0 file:bg-honey-light file:px-4 file:py-2 file:text-sm file:font-medium file:text-cocoa sm:text-sm"
-        />
-        {product?.imageUrl && (
-          <p className="text-xs text-text-muted">
-            Current image is set. Upload a new file to replace it.
-          </p>
-        )}
-      </div>
+      <ImageUploadField
+        productId={product?.id}
+        initialImageUrl={product?.imageUrl ?? null}
+        disabled={pending}
+      />
       {state.error && <p id={feedbackId} role="alert" className="text-sm text-red-600">{state.error}</p>}
       {state.success && !state.error && (
         <p id={feedbackId} role="status" aria-live="polite" className="text-sm text-emerald-700">Product saved.</p>

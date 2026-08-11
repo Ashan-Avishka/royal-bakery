@@ -6,6 +6,7 @@ import { ApiError } from "@/lib/api";
 import {
   createAdminProduct,
   deleteAdminProduct,
+  removeAdminProductImage,
   updateAdminProduct,
   uploadAdminProductImage,
 } from "@/lib/admin/catalog";
@@ -155,4 +156,15 @@ export async function deleteProduct(productId: string): Promise<void> {
   }
   revalidateProducts();
   redirect("/admin/products");
+}
+
+export async function removeProductImage(productId: string): Promise<{ error: string | null }> {
+  const session = await requireAdminSession();
+  try {
+    await removeAdminProductImage(session.accessToken, productId);
+  } catch (err) {
+    return { error: err instanceof ApiError ? err.message : "Failed to remove image." };
+  }
+  revalidateProducts(productId);
+  return { error: null };
 }

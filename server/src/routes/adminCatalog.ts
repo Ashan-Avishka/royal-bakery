@@ -13,10 +13,11 @@ import {
   listCategories,
   listProducts,
   setProductImage,
+  clearProductImage,
   updateCategory,
   updateProduct,
 } from "../services/catalogService.js";
-import { uploadProductImage } from "../services/uploadService.js";
+import { deleteProductImage, uploadProductImage } from "../services/uploadService.js";
 import {
   createCategorySchema,
   createProductSchema,
@@ -192,7 +193,44 @@ adminCatalogRouter.post(
         mimetype: req.file.mimetype,
         originalname: req.file.originalname,
       });
+      // Write the new imageUrl to the DB before deleting the old storage
+      // object: if the DB write fails, the row still points at the (still
+      // live) old image instead of a dead link to a deleted file.
       const product = await setProductImage(paramsParsed.data.id, imageUrl);
+      if (existing.imageUrl) {
+        await deleteProductImage(existing.imageUrl);
+      }
+      res.json({ product });
+    } catch (err) {
+      next(err);
+    }
+  }
+);
+
+adminCatalogRouter.delete(
+  "/admin/products/:id/image",
+  async (req, res, next) => {
+    const paramsParsed = idParamSchema.safeParse(req.params);
+    if (!paramsParsed.success) {
+      res.status(400).json({ error: { message: "Invalid product id" } });
+      return;
+    }
+
+    try {
+      const existing = await getProductById(paramsParsed.data.id);
+      if (!existing) {
+        next(new AppError(404, "Product not found"));
+        return;
+      }
+      if (!existing.imageUrl) {
+        next(new AppError(400, "Product has no image to remove"));
+        return;
+      }
+      // Clear the DB before deleting the storage object: if the DB clear
+      // fails, the row still points at a file that's still there instead
+      // of a dead link.
+      const product = await clearProductImage(paramsParsed.data.id);
+      await deleteProductImage(existing.imageUrl);
       res.json({ product });
     } catch (err) {
       next(err);
