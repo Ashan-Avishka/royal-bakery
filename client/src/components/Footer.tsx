@@ -4,7 +4,7 @@ import { SITE_CONTACT } from "@/lib/site";
 
 const footerLinks = [
   { href: "/products", label: "Menu" },
-  { href: "/about", label: "About" },
+  { href: "/about", label: "Our bakery" },
   { href: "/orders", label: "Orders" },
   { href: "/cart", label: "Cart" },
 ];
@@ -12,9 +12,15 @@ const footerLinks = [
 export function Footer() {
   return (
     <footer className="border-t border-border-warm/70 bg-cream-alt">
-      <div className="mx-auto grid max-w-6xl gap-12 px-6 py-14 sm:grid-cols-2 lg:grid-cols-3 lg:gap-10">
+      <div className="safe-x mx-auto grid max-w-6xl gap-12 py-14 sm:grid-cols-2 md:px-6 lg:grid-cols-3 lg:gap-10">
         <div>
-          <BrandLogo size="md" />
+          <Link
+            href="/"
+            aria-label="Royal Bakery home"
+            className="inline-flex min-h-11 items-center"
+          >
+            <BrandLogo size="md" href={null} />
+          </Link>
           <p className="mt-5 max-w-xs text-[14px] leading-relaxed text-text-muted">
             Handcrafted cakes, pastries, and bread in Harispaththuwa — baked in
             small batches, ordered online.
@@ -30,7 +36,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="text-[14px] text-cocoa/80 transition-colors duration-300 hover:text-caramel"
+                  className="inline-flex min-h-11 items-center text-[14px] text-cocoa/80 transition-colors duration-300 hover:text-caramel-hover"
                 >
                   {link.label}
                 </Link>
@@ -52,7 +58,7 @@ export function Footer() {
             ))}
             <a
               href={`mailto:${SITE_CONTACT.email}`}
-              className="mt-3 inline-block text-cocoa/80 transition-colors hover:text-caramel"
+              className="mt-3 inline-flex min-h-11 items-center text-cocoa/80 transition-colors hover:text-caramel-hover"
             >
               {SITE_CONTACT.email}
             </a>
@@ -65,7 +71,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-border-warm/70">
-        <p className="mx-auto max-w-6xl px-6 py-5 text-[12px] tracking-wide text-text-muted/80">
+        <p className="safe-x mx-auto max-w-6xl py-5 text-[12px] tracking-wide text-text-muted/80 md:px-6">
           &copy; {new Date().getFullYear()} Royal Bakery. All rights reserved.
         </p>
       </div>
