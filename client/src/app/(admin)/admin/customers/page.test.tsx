@@ -86,4 +86,21 @@ describe("AdminCustomersPage", () => {
     expect(screen.getByRole("link", { name: "Admins" })).toHaveClass("min-h-11");
     expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveClass("min-w-0");
   });
+
+  it("exposes the active role filter and selected customer beyond color", async () => {
+    render(
+      await AdminCustomersPage({
+        searchParams: Promise.resolve({ role: "customer", selected: "cust-1" }),
+      })
+    );
+
+    expect(screen.getByRole("link", { name: "Customers" })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+    expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveAttribute(
+      "aria-current",
+      "page"
+    );
+  });
 });

@@ -50,7 +50,7 @@ export default async function AdminProductsPage({
         <h1 className="font-display text-3xl text-cocoa">Products</h1>
         <Link
           href="/admin/products/new"
-          className="inline-flex min-h-11 items-center rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover"
+          className="inline-flex min-h-11 items-center rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark"
         >
           Add product
         </Link>
@@ -59,14 +59,22 @@ export default async function AdminProductsPage({
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
         <div className={`min-w-0 flex-1 ${selected ? "hidden lg:block" : ""}`}>
           <form className="mb-6 flex min-w-0 flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end" method="get">
+            <label htmlFor="admin-product-search" className="sr-only">
+              Search products
+            </label>
             <input
+              id="admin-product-search"
               type="search"
               name="search"
               placeholder="Search products…"
               defaultValue={search ?? ""}
               className="w-full min-w-0 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:flex-1 sm:text-sm"
             />
+            <label htmlFor="admin-product-category" className="sr-only">
+              Category
+            </label>
             <select
+              id="admin-product-category"
               name="categoryId"
               defaultValue={categoryId ?? ""}
               className="w-full min-h-11 rounded-lg border border-border-warm bg-white px-3.5 py-2.5 text-base text-cocoa focus:outline-none focus:ring-2 focus:ring-caramel sm:w-auto sm:text-sm"
@@ -111,6 +119,7 @@ export default async function AdminProductsPage({
                   <li key={product.id}>
                     <Link
                       href={rowHref}
+                      aria-current={isActive ? "page" : undefined}
                       className={`flex min-w-0 flex-col gap-3 py-4 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
                         isActive ? "bg-honey-light/40" : ""
                       }`}

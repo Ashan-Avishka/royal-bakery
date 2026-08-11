@@ -30,7 +30,7 @@ export function DetailPanel({
         </Link>
         <Link
           href={closeHref}
-          className="inline-flex min-h-11 items-center text-sm font-medium text-caramel transition-colors hover:text-caramel-hover lg:hidden"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover transition-colors hover:text-cocoa lg:hidden"
         >
           ← Back to list
         </Link>

@@ -9,7 +9,7 @@ export default async function NewCategoryPage() {
     <div className="mx-auto max-w-3xl px-4 py-7 sm:px-6 sm:py-10">
       <Link
         href="/admin/categories"
-        className="mb-6 inline-block text-sm font-medium text-caramel hover:text-caramel-hover"
+        className="mb-6 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
       >
         ← Categories
       </Link>

@@ -68,7 +68,7 @@ export default async function AdminReportsPage({
         </div>
         <button
           type="submit"
-          className="min-h-11 w-full rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt hover:bg-caramel-hover sm:w-auto"
+          className="min-h-11 w-full rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt hover:bg-cocoa-dark sm:w-auto"
         >
           Apply
         </button>
@@ -124,11 +124,11 @@ export default async function AdminReportsPage({
                 key={product.productId}
                 className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <span className="text-cocoa">
+                <span className="min-w-0 break-words text-cocoa">
                   <span className="mr-2 text-text-muted">{index + 1}.</span>
                   {product.name}
                 </span>
-                <span className="shrink-0 text-text-muted">
+                <span className="break-words text-text-muted sm:shrink-0">
                   {product.quantitySold} sold · {formatPrice(product.revenue)}
                 </span>
               </li>
@@ -150,8 +150,8 @@ export default async function AdminReportsPage({
                 key={row.category}
                 className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <span className="break-words font-medium text-cocoa">{row.category}</span>
-                <span className="text-text-muted">
+                <span className="min-w-0 break-words font-medium text-cocoa">{row.category}</span>
+                <span className="break-words text-text-muted">
                   {row.count} items · {formatPrice(row.revenue)}
                 </span>
               </li>
@@ -165,7 +165,7 @@ export default async function AdminReportsPage({
           <h2 className="font-display text-xl text-cocoa">Order history</h2>
           <Link
             href="/admin/orders"
-            className="text-sm font-medium text-caramel hover:text-caramel-hover"
+            className="inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
           >
             Manage orders
           </Link>

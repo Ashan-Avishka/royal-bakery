@@ -24,7 +24,7 @@ export default async function AdminOrderDetailPage({
     <div className="mx-auto max-w-3xl px-4 py-7 sm:px-6 sm:py-10">
       <Link
         href="/admin/orders"
-        className="mb-6 inline-block text-sm font-medium text-caramel hover:text-caramel-hover"
+        className="mb-6 inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
       >
         ← All orders
       </Link>
@@ -38,7 +38,7 @@ export default async function AdminOrderDetailPage({
       </div>
 
       <dl className="mb-8 grid grid-cols-1 gap-4 text-sm sm:grid-cols-2">
-        <div>
+        <div className="min-w-0">
           <dt className="text-text-muted">Placed on</dt>
           <dd className="break-words font-medium text-cocoa">
             {new Date(order.createdAt).toLocaleDateString("en-GB", {
@@ -50,9 +50,9 @@ export default async function AdminOrderDetailPage({
             })}
           </dd>
         </div>
-        <div>
+        <div className="min-w-0">
           <dt className="text-text-muted">Fulfillment</dt>
-          <dd className="font-medium text-cocoa">
+          <dd className="break-words font-medium text-cocoa">
             {order.deliveryAddress
               ? `Delivery — ${order.deliveryAddress}`
               : "Pickup"}

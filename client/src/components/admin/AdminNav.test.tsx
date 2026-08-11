@@ -21,6 +21,7 @@ describe("AdminNav", () => {
     render(<AdminNav mode="mobile" email="admin@royalbakery.lk" />);
 
     const trigger = screen.getByRole("button", { name: /open admin navigation/i });
+    expect(screen.getByRole("link", { name: /Royal Bakery/i })).toHaveClass("min-h-11");
     expect(trigger).toHaveAttribute("aria-controls", "admin-mobile-navigation");
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(screen.queryByRole("link", { name: "Orders" })).not.toBeInTheDocument();
@@ -90,6 +91,10 @@ describe("AdminNav", () => {
       "page"
     );
     expect(screen.getByRole("link", { name: "View storefront" })).toBeVisible();
+    expect(screen.getByRole("link", { name: "View storefront" })).toHaveClass(
+      "min-h-11",
+      "hover:text-caramel-hover"
+    );
     expect(screen.getByRole("button", { name: "Sign out" })).toBeVisible();
   });
 });

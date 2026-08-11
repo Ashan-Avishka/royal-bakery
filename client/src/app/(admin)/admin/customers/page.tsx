@@ -59,9 +59,10 @@ export default async function AdminCustomersPage({
                 <Link
                   key={filter.value}
                   href={filter.href}
+                  aria-current={active ? "page" : undefined}
                   className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-caramel text-cream-alt"
+                      ? "bg-cocoa text-cream-alt"
                       : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
                   }`}
                 >
@@ -89,7 +90,11 @@ export default async function AdminCustomersPage({
                       isActive ? "bg-honey-light/40" : ""
                     }`}
                   >
-                    <Link href={rowHref} className="min-w-0 flex-1">
+                    <Link
+                      href={rowHref}
+                      aria-current={isActive ? "page" : undefined}
+                      className="min-w-0 flex-1"
+                    >
                       <div className="flex flex-wrap items-center gap-2">
                         <p className="break-words font-medium text-cocoa">
                           {customer.fullName?.trim() || "Unnamed user"}

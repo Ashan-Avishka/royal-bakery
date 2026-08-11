@@ -13,7 +13,7 @@ export default async function AdminCategoriesPage() {
         <h1 className="font-display text-3xl text-cocoa">Categories</h1>
         <Link
           href="/admin/categories/new"
-          className="inline-flex min-h-11 items-center rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover"
+          className="inline-flex min-h-11 items-center rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark"
         >
           Add category
         </Link>

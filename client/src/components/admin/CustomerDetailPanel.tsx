@@ -12,7 +12,7 @@ export function CustomerDetailPanel({
   return (
     <div>
       <div className="mb-4 flex flex-wrap items-center gap-2">
-        <p className="font-display text-lg text-cocoa">
+        <p className="min-w-0 break-words font-display text-lg text-cocoa">
           {customer.fullName?.trim() || "Unnamed user"}
         </p>
         <Badge tone={customer.role === "admin" ? "honey" : "muted"}>

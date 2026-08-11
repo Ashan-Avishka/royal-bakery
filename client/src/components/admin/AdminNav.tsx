@@ -65,7 +65,7 @@ function AccountActions({ email, closeMenu }: { email: string; closeMenu?: () =>
       <Link
         href="/"
         onClick={closeMenu}
-        className="flex min-h-11 items-center text-sm font-medium text-cocoa transition-colors hover:text-caramel"
+        className="flex min-h-11 items-center text-sm font-medium text-cocoa transition-colors hover:text-caramel-hover"
       >
         View storefront
       </Link>
@@ -126,7 +126,7 @@ export function AdminNav({ mode, email }: { mode: "mobile" | "desktop"; email: s
   return (
     <div className="relative">
       <div className="flex min-h-14 items-center justify-between gap-3 px-4">
-        <Link href="/admin" className="min-w-0 font-display text-base font-semibold text-cocoa">
+        <Link href="/admin" className="inline-flex min-h-11 min-w-0 items-center font-display text-base font-semibold text-cocoa">
           Royal Bakery <span className="text-text-muted">/ {currentSection(pathname)}</span>
         </Link>
         <button

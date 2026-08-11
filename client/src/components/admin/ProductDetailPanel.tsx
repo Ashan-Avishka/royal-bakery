@@ -44,7 +44,7 @@ export function ProductDetailPanel({
         {categoryName && (
           <div>
             <dt className="text-text-muted">Category</dt>
-            <dd className="font-medium text-cocoa">{categoryName}</dd>
+            <dd className="break-words font-medium text-cocoa">{categoryName}</dd>
           </div>
         )}
         <div>
@@ -55,7 +55,7 @@ export function ProductDetailPanel({
 
       <Link
         href={`/admin/products/${product.id}`}
-        className="inline-flex items-center gap-2 rounded-full bg-caramel px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-caramel-hover"
+        className="inline-flex min-h-11 items-center gap-2 rounded-full bg-cocoa px-5 py-2.5 text-sm font-medium text-cream-alt transition-colors hover:bg-cocoa-dark"
       >
         Edit product
       </Link>

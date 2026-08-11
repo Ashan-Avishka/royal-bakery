@@ -39,4 +39,15 @@ describe("CustomerDetailPanel", () => {
     expect(screen.getByText("Unnamed user")).toBeVisible();
     expect(screen.getByText("You")).toBeVisible();
   });
+
+  it("wraps long customer names and contact values", () => {
+    const fullName = "RoyalBakeryAdministrator".repeat(12);
+    const address = "GalleRoadColombo".repeat(16);
+    render(
+      <CustomerDetailPanel customer={{ ...customer, fullName, address }} isSelf={false} />
+    );
+
+    expect(screen.getByText(fullName)).toHaveClass("break-words");
+    expect(screen.getByText(address)).toHaveClass("break-words");
+  });
 });

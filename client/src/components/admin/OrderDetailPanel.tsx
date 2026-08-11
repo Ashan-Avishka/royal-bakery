@@ -14,7 +14,7 @@ export function OrderDetailPanel({ order }: { order: Order }) {
       </div>
 
       <dl className="mb-6 grid grid-cols-1 gap-4 text-sm">
-        <div>
+        <div className="min-w-0">
           <dt className="text-text-muted">Placed on</dt>
           <dd className="break-words font-medium text-cocoa">
             {new Date(order.createdAt).toLocaleDateString("en-GB", {
@@ -28,7 +28,7 @@ export function OrderDetailPanel({ order }: { order: Order }) {
         </div>
         <div>
           <dt className="text-text-muted">Fulfillment</dt>
-          <dd className="font-medium text-cocoa">
+          <dd className="break-words font-medium text-cocoa">
             {order.deliveryAddress
               ? `Delivery — ${order.deliveryAddress}`
               : "Pickup"}

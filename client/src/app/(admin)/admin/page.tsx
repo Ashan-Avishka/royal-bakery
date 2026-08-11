@@ -25,7 +25,7 @@ export default async function AdminDashboardPage() {
             Sales KPIs use paid orders only.{" "}
             <Link
               href="/admin/reports"
-              className="font-medium text-caramel hover:text-caramel-hover"
+              className="inline-flex min-h-11 items-center font-medium text-caramel-hover hover:text-cocoa"
             >
               Full reports
             </Link>
@@ -58,7 +58,7 @@ export default async function AdminDashboardPage() {
         </div>
         <Link
           href="/admin/products?lowStock=1"
-          className="border-b border-border-warm pb-3 transition-colors hover:border-caramel"
+          className="block min-h-11 border-b border-border-warm pb-3 transition-colors hover:border-caramel"
         >
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Low stock
@@ -74,7 +74,7 @@ export default async function AdminDashboardPage() {
           <Link
             key={status}
             href={`/admin/orders?status=${status}`}
-            className="border-b border-border-warm pb-3 transition-colors hover:border-caramel"
+            className="block min-h-11 border-b border-border-warm pb-3 transition-colors hover:border-caramel"
           >
             <p className="text-xs uppercase tracking-wide text-text-muted">
               {status}
@@ -96,7 +96,7 @@ export default async function AdminDashboardPage() {
                 className="flex min-w-0 flex-col gap-1 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
                 <span className="break-words font-medium text-cocoa">{product.name}</span>
-                <span className="text-text-muted">
+                <span className="break-words text-text-muted">
                   {product.quantitySold} sold · {formatPrice(product.revenue)}
                 </span>
               </li>
@@ -109,7 +109,7 @@ export default async function AdminDashboardPage() {
         <h2 className="font-display text-xl text-cocoa">Recent orders</h2>
         <Link
           href="/admin/orders"
-          className="text-sm font-medium text-caramel hover:text-caramel-hover"
+          className="inline-flex min-h-11 items-center text-sm font-medium text-caramel-hover hover:text-cocoa"
         >
           View all
         </Link>

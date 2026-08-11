@@ -42,10 +42,28 @@ describe("ProductDetailPanel", () => {
       "href",
       "/admin/products/cake-1"
     );
+    expect(screen.getByRole("link", { name: "Edit product" })).toHaveClass(
+      "min-h-11",
+      "bg-cocoa"
+    );
   });
 
   it("flags unavailable products", () => {
     render(<ProductDetailPanel product={{ ...product, isAvailable: false }} />);
     expect(screen.getByText("Unavailable")).toBeVisible();
+  });
+
+  it("wraps long product and category names", () => {
+    const longName = "ChocolateCake".repeat(16);
+    const longCategory = "CelebrationCakes".repeat(12);
+    render(
+      <ProductDetailPanel
+        product={{ ...product, name: longName }}
+        categoryName={longCategory}
+      />
+    );
+
+    expect(screen.getByText(longName)).toHaveClass("break-words");
+    expect(screen.getByText(longCategory)).toHaveClass("break-words");
   });
 });

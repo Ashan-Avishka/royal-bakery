@@ -65,9 +65,10 @@ export default async function AdminOrdersPage({
                 <Link
                   key={filter.value}
                   href={href}
+                  aria-current={active ? "page" : undefined}
                   className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-caramel text-cream-alt"
+                      ? "bg-cocoa text-cream-alt"
                       : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
                   }`}
                 >
@@ -93,6 +94,7 @@ export default async function AdminOrdersPage({
                   <li key={order.id}>
                     <Link
                       href={rowHref}
+                      aria-current={isActive ? "page" : undefined}
                       className={`flex min-w-0 flex-col gap-3 py-5 transition-colors hover:bg-honey-light/30 sm:flex-row sm:items-center sm:justify-between ${
                         isActive ? "bg-honey-light/40" : ""
                       }`}

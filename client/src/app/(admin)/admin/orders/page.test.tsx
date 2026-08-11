@@ -112,4 +112,15 @@ describe("AdminOrdersPage", () => {
       "sm:flex-row"
     );
   });
+
+  it("exposes the active status and selected order beyond color", async () => {
+    render(
+      await AdminOrdersPage({
+        searchParams: Promise.resolve({ status: "pending", selected: "order-1" }),
+      })
+    );
+
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: /2026/ })).toHaveAttribute("aria-current", "page");
+  });
 });
