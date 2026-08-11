@@ -17,3 +17,17 @@ it("wraps long titles and stacks its action container on mobile", () => {
     "sm:w-auto"
   );
 });
+
+it("disables its action-arrow motion for reduced-motion users", () => {
+  render(
+    <PageHeader
+      title="Orders"
+      action={{ href: "/admin/orders", label: "Review order history" }}
+    />
+  );
+
+  expect(screen.getByRole("link", { name: "Review order history" }).querySelector("span")).toHaveClass(
+    "motion-reduce:transition-none",
+    "motion-reduce:group-hover:translate-x-0"
+  );
+});

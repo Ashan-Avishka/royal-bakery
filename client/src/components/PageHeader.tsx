@@ -45,7 +45,7 @@ export function PageHeader({
             {action.label}
             <span
               aria-hidden
-              className="transition-transform duration-300 group-hover:translate-x-1"
+              className="transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover:translate-x-0"
             >
             →
             </span>
