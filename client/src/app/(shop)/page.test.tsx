@@ -67,18 +67,21 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("leads with the Royal Bakery offer and the first available product image", async () => {
+  it("leads with the current Royal Bakery offer and its measured LCP image", async () => {
     render(await HomePage());
 
     expect(
-      screen.getByRole("heading", { level: 1, name: "Royal Bakery" })
+      screen.getByRole("heading", {
+        level: 1,
+        name: "Baked before sunrise. Ready when you are.",
+      })
     ).toBeInTheDocument();
     expect(
       screen.getByText(
-        "Cakes, pastries, and bread made for everyday cravings and meaningful celebrations in Colombo."
+        "Handcrafted cakes, pastries, and bread — ordered online, finished fresh for pickup or delivery in Harispaththuwa."
       )
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Shop the menu" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Explore the menu" })).toHaveAttribute(
       "href",
       "/products"
     );
@@ -87,48 +90,44 @@ describe("HomePage", () => {
       "/about"
     );
     expect(
-      screen.getByRole("img", { name: "Bakery favourite 2 from Royal Bakery" })
-    ).toHaveAttribute("src", products[1].imageUrl);
+      screen.getByRole("img", { name: "Fresh pastries and baked goods on a bakery counter" })
+    ).toHaveAttribute("data-priority", "true");
   });
 
-  it("uses accessible existing color tokens for small text and primary actions", async () => {
+  it("uses existing accessible color tokens for the current hero and section actions", async () => {
     render(await HomePage());
 
-    expect(screen.getByText("Colombo bakery")).toHaveClass("text-cocoa");
-    expect(screen.getByRole("link", { name: "Shop the menu" })).toHaveClass(
+    expect(screen.getByRole("heading", { level: 1 })).toHaveClass("text-cream");
+    expect(screen.getByRole("button", { name: "Explore the menu" })).toHaveClass(
       "bg-cocoa",
       "text-cream-alt",
       "hover:bg-cocoa-dark"
     );
-    expect(screen.getByRole("link", { name: "View the menu" })).toHaveClass(
-      "text-caramel-hover",
-      "hover:text-cocoa"
-    );
-    expect(screen.getByRole("link", { name: "Cakes" })).toHaveClass(
+    expect(screen.getByRole("link", { name: "View full menu" })).toHaveClass(
+      "text-caramel",
       "hover:text-caramel-hover"
     );
   });
 
-  it("composes category, value, story, and featured-product discovery in visual order", async () => {
+  it("composes category, featured-product, and story discovery in visual order", async () => {
     render(await HomePage());
 
-    const shopLink = screen.getByRole("link", { name: "Shop the menu" });
-    const categoryLink = screen.getByRole("link", { name: "Cakes" });
-    const firstProductLink = screen.getByRole("link", { name: /bakery favourite 1/i });
+    const shopLink = screen.getByRole("link", { name: "Explore the menu" });
+    const categoryLink = screen.getAllByRole("link", { name: /cakes/i })[0]!;
+    const firstProductLink = screen.getAllByRole("link", { name: /bakery favourite 1/i })[0]!;
 
-    expect(screen.getByRole("link", { name: "Cakes" })).toHaveAttribute(
+    expect(categoryLink).toHaveAttribute(
       "href",
       "/products?categoryId=cakes"
     );
-    expect(screen.getByText("Browse the menu online")).toBeInTheDocument();
-    expect(screen.getByText("See current availability")).toBeInTheDocument();
-    expect(screen.getByText("Order ahead")).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Shop by craving" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "Featured selections" })).toBeInTheDocument();
     expect(
       screen.getByRole("heading", {
-        name: "A bakery for the everyday and the memorable",
+        name: "Real butter. Real chocolate. No shortcuts.",
       })
     ).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: "Discover our story" })).toHaveAttribute(
+    expect(screen.getByRole("link", { name: "Read our story" })).toHaveAttribute(
       "href",
       "/about"
     );
@@ -136,7 +135,6 @@ describe("HomePage", () => {
     expect(categoryLink.compareDocumentPosition(firstProductLink)).toBe(
       Node.DOCUMENT_POSITION_FOLLOWING
     );
-    expect(screen.getAllByRole("link").at(-1)).toHaveAccessibleName("Shop all bakes");
   });
 
   it("keeps featured product images lazy unless one is measured as LCP", async () => {
@@ -147,29 +145,23 @@ describe("HomePage", () => {
     expect(featuredSection).not.toBeNull();
 
     const productImages = within(featuredSection as HTMLElement).getAllByRole("img");
-    expect(productImages).toHaveLength(4);
+    expect(productImages).toHaveLength(2);
     expect(productImages.every((image) => image.dataset.priority !== "true")).toBe(true);
+    expect(productImages.every((image) => image.getAttribute("sizes")?.includes("352px"))).toBe(
+      true
+    );
   });
 
-  it("keeps section rhythm and renders an intentional empty state without catalog data", async () => {
+  it("keeps discovery available and explains empty product rails without catalog data", async () => {
     catalogMocks.listCategories.mockResolvedValue([]);
     catalogMocks.listProducts.mockResolvedValue([]);
 
     render(await HomePage());
 
-    expect(
-      screen.getByRole("heading", { name: "Find your favourite" })
-    ).toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Cakes" })).not.toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "The menu is unavailable right now" })).toBeVisible();
-    expect(screen.getByRole("link", { name: "View the full menu" })).toHaveAttribute(
-      "href",
-      "/products"
+    expect(screen.getByRole("heading", { name: "Shop by craving" })).toBeInTheDocument();
+    expect(screen.getAllByText("No products are available right now — check back soon.")).toHaveLength(
+      3
     );
-    expect(
-      screen.queryByRole("heading", { name: "Choose something for today" })
-    ).not.toBeInTheDocument();
-    expect(screen.queryByRole("link", { name: "Shop all bakes" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("img")).not.toBeInTheDocument();
+    expect(screen.getByRole("img", { name: "Fresh pastries and baked goods on a bakery counter" })).toBeVisible();
   });
 });

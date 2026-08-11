@@ -31,7 +31,10 @@ const product = {
   updatedAt: "2026-08-06T00:00:00.000Z",
 };
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  window.localStorage.clear();
+});
 
 it("renders the product image, formatted price, and a full-card product link", () => {
   render(<ProductCard product={product} />);
@@ -39,23 +42,23 @@ it("renders the product image, formatted price, and a full-card product link", (
   expect(
     screen.getByRole("img", { name: "Chocolate Celebration Cake" })
   ).toHaveAttribute("src", product.imageUrl);
-  expect(screen.getByText("LKR 3,250")).toHaveClass("text-caramel-hover");
+  expect(screen.getByText("LKR 3,250")).toHaveClass("text-cocoa");
   expect(
-    screen.getByRole("link", { name: /chocolate celebration cake/i })
+    screen.getAllByRole("link", { name: /chocolate celebration cake/i })[0]
   ).toHaveAttribute("href", "/products/baked-001");
 });
 
-it("renders a Royal Bakery fallback when the product has no image", () => {
+it("renders a clear fallback when the product has no image", () => {
   render(<ProductCard product={{ ...product, imageUrl: null }} />);
 
-  expect(screen.getByText(/royal bakery/i)).toBeVisible();
+  expect(screen.getByText("Photo coming soon")).toBeVisible();
   expect(screen.queryByRole("img")).not.toBeInTheDocument();
 });
 
 it("shows an out-of-stock badge for unavailable inventory", () => {
   render(<ProductCard product={{ ...product, stockQuantity: 0 }} />);
 
-  expect(screen.getByText("Out of stock")).toBeVisible();
+  expect(screen.getByText("Sold out")).toBeVisible();
 });
 
 it("forwards priority and an accurate responsive size hint to the product image", () => {
@@ -77,4 +80,29 @@ it("keeps wishlist and purchase actions visible with touch-sized controls", () =
   );
   expect(screen.getByRole("button", { name: "Add to cart" })).toBeVisible();
   expect(screen.getByRole("link", { name: "Details" })).toBeVisible();
+});
+
+it("uses a caller-provided image size hint for wider product rails", () => {
+  render(
+    <ProductCard
+      product={product}
+      sizes="(min-width: 1024px) 352px, calc(100vw - 2rem)"
+    />
+  );
+
+  expect(screen.getByRole("img")).toHaveAttribute(
+    "sizes",
+    "(min-width: 1024px) 352px, calc(100vw - 2rem)"
+  );
+});
+
+it("resynchronizes wishlist state when the rendered product changes", () => {
+  window.localStorage.setItem("royal-bakery-wishlist", JSON.stringify(["baked-002"]));
+  const { rerender } = render(<ProductCard product={product} />);
+
+  expect(screen.getByRole("button", { name: "Add to wishlist" })).toBeVisible();
+
+  rerender(<ProductCard product={{ ...product, id: "baked-002" }} />);
+
+  expect(screen.getByRole("button", { name: "Remove from wishlist" })).toBeVisible();
 });

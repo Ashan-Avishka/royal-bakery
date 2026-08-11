@@ -43,13 +43,21 @@ export function AutoCarousel({
   const itemsPerView = useItemsPerView();
   const reduceMotion = useReducedMotion();
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [interactionPaused, setInteractionPaused] = useState(false);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
   const [itemWidth, setItemWidth] = useState(0);
   const viewportRef = useRef<HTMLDivElement>(null);
   const gap = 24;
 
   const maxIndex = Math.max(0, items.length - itemsPerView);
   const stepPx = itemWidth > 0 ? itemWidth + gap : 0;
+  const visibleIndex = Math.min(index, maxIndex);
+
+  useEffect(() => {
+    if (index <= maxIndex) return;
+    const id = window.setTimeout(() => setIndex(maxIndex), 0);
+    return () => window.clearTimeout(id);
+  }, [index, maxIndex]);
 
   useEffect(() => {
     const viewport = viewportRef.current;
@@ -88,33 +96,46 @@ export function AutoCarousel({
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      go(index - 1);
+      go(visibleIndex - 1);
     }
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      go(index + 1);
+      go(visibleIndex + 1);
     }
   };
 
   useEffect(() => {
-    if (paused || reduceMotion || items.length <= itemsPerView) return;
-    const id = window.setInterval(() => go(index + 1), intervalMs);
+    if (
+      interactionPaused ||
+      autoplayPaused ||
+      reduceMotion ||
+      items.length <= itemsPerView
+    )
+      return;
+    const id = window.setInterval(() => go(visibleIndex + 1), intervalMs);
     return () => window.clearInterval(id);
   }, [
     go,
-    index,
+    visibleIndex,
     intervalMs,
     items.length,
     itemsPerView,
-    paused,
+    interactionPaused,
+    autoplayPaused,
     reduceMotion,
   ]);
 
   return (
     <div
       className="relative"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setInteractionPaused(true)}
+      onMouseLeave={() => setInteractionPaused(false)}
+      onFocusCapture={() => setInteractionPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setInteractionPaused(false);
+        }
+      }}
     >
       {/* Top gap (header → cards) + clip + bottom gap (cards → dots) */}
       <div className="pt-2 sm:pt-4 md:-mt-20 md:-mb-10">
@@ -128,13 +149,13 @@ export function AutoCarousel({
           className="overflow-hidden py-10 outline-none focus-visible:ring-2 focus-visible:ring-caramel/40 sm:py-12"
         >
           <div
-            className="flex will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
+            className="flex will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none"
             style={{
               gap,
               width: itemWidth > 0 ? itemWidth * items.length + gap * (items.length - 1) : "100%",
               transform:
                 stepPx > 0
-                  ? `translateX(-${Math.min(index, maxIndex) * stepPx}px)`
+                  ? `translateX(-${visibleIndex * stepPx}px)`
                   : undefined,
             }}
           >
@@ -142,6 +163,8 @@ export function AutoCarousel({
               <div
                 key={i}
                 className="min-w-0 shrink-0 grow-0"
+                aria-hidden={i < visibleIndex || i >= visibleIndex + itemsPerView}
+                inert={i < visibleIndex || i >= visibleIndex + itemsPerView}
                 style={{
                   width: itemWidth || undefined,
                   flex: itemWidth ? `0 0 ${itemWidth}px` : `0 0 calc((100% - ${(itemsPerView - 1) * gap}px) / ${itemsPerView})`,
@@ -155,28 +178,10 @@ export function AutoCarousel({
       </div>
 
       {items.length > itemsPerView && (
-        <div className="mt-4 flex items-center justify-between gap-4 sm:mt-6">
-          <div className="flex gap-2">
-            {Array.from({ length: maxIndex + 1 }).map((_, i) => (
-              <button
-                key={i}
-                type="button"
-                aria-label={`Go to slide group ${i + 1}`}
-                aria-current={i === Math.min(index, maxIndex)}
-                onClick={() => setIndex(i)}
-                className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-caramel"
-              >
-                <span
-                  className={`h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none ${
-                    i === Math.min(index, maxIndex)
-                      ? "w-8 bg-caramel"
-                      : "w-1.5 bg-border-warm"
-                  }`}
-                />
-              </button>
-            ))}
-          </div>
-
+        <div className="mt-4 flex items-center justify-between gap-2 sm:mt-6">
+          <p className="min-w-12 text-center text-xs font-medium tabular-nums text-text-muted" aria-live="polite">
+            {visibleIndex + 1} / {maxIndex + 1}
+          </p>
           <div className="flex gap-2">
             <CarouselNav
               label="Previous"
@@ -185,9 +190,18 @@ export function AutoCarousel({
             />
             <CarouselNav
               label="Next"
-              onClick={() => go(index + 1)}
+              onClick={() => go(visibleIndex + 1)}
               direction="next"
             />
+            <button
+              type="button"
+              aria-label={autoplayPaused ? "Resume auto-advance" : "Pause auto-advance"}
+              aria-pressed={autoplayPaused}
+              onClick={() => setAutoplayPaused((paused) => !paused)}
+              className="flex h-11 min-w-11 items-center justify-center rounded-full border border-border-warm bg-cream-alt px-3 text-[11px] font-medium text-cocoa transition-colors hover:border-caramel hover:text-caramel motion-reduce:transition-none"
+            >
+              {autoplayPaused ? "Play" : "Pause"}
+            </button>
           </div>
         </div>
       )}

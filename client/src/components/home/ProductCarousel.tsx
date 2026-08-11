@@ -5,6 +5,9 @@ import { AutoCarousel } from "@/components/home/AutoCarousel";
 import { SectionHeader } from "@/components/home/SectionHeader";
 import type { Product } from "@/lib/catalog";
 
+const CAROUSEL_PRODUCT_IMAGE_SIZES =
+  "(min-width: 1280px) 352px, (min-width: 1024px) calc((100vw - 3rem) / 3), (min-width: 640px) calc((100vw - 3rem) / 2), calc(100vw - 2rem)";
+
 interface ProductCarouselProps {
   products: Product[];
   eyebrow: string;
@@ -58,7 +61,11 @@ export function ProductCarousel({
         ) : (
           <AutoCarousel ariaLabel={title}>
             {products.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                sizes={CAROUSEL_PRODUCT_IMAGE_SIZES}
+              />
             ))}
           </AutoCarousel>
         )}

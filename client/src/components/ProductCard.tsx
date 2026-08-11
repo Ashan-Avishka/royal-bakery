@@ -2,13 +2,16 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState, type MouseEvent } from "react";
+import { useSyncExternalStore, type MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
 import { addToCart } from "@/app/actions/cart";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, type Product } from "@/lib/catalog";
 
 const WISHLIST_KEY = "royal-bakery-wishlist";
+const WISHLIST_CHANGE_EVENT = "royal-bakery-wishlist-change";
+const DEFAULT_PRODUCT_IMAGE_SIZES =
+  "(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)";
 
 function readWishlist(): Set<string> {
   if (typeof window === "undefined") return new Set();
@@ -24,6 +27,16 @@ function readWishlist(): Set<string> {
 
 function writeWishlist(ids: Set<string>) {
   window.localStorage.setItem(WISHLIST_KEY, JSON.stringify([...ids]));
+  window.dispatchEvent(new Event(WISHLIST_CHANGE_EVENT));
+}
+
+function subscribeToWishlist(onChange: () => void) {
+  window.addEventListener("storage", onChange);
+  window.addEventListener(WISHLIST_CHANGE_EVENT, onChange);
+  return () => {
+    window.removeEventListener("storage", onChange);
+    window.removeEventListener(WISHLIST_CHANGE_EVENT, onChange);
+  };
 }
 
 function AddToCartButton({ outOfStock }: { outOfStock: boolean }) {
@@ -64,18 +77,18 @@ function AddToCartButton({ outOfStock }: { outOfStock: boolean }) {
 export function ProductCard({
   product,
   priority = false,
+  sizes = DEFAULT_PRODUCT_IMAGE_SIZES,
 }: {
   product: Product;
   priority?: boolean;
+  sizes?: string;
 }) {
   const outOfStock = product.stockQuantity <= 0 || !product.isAvailable;
-  const [loved, setLoved] = useState(() => readWishlist().has(product.id));
-
-  useEffect(() => {
-    const syncWishlist = () => setLoved(readWishlist().has(product.id));
-    window.addEventListener("storage", syncWishlist);
-    return () => window.removeEventListener("storage", syncWishlist);
-  }, [product.id]);
+  const loved = useSyncExternalStore(
+    subscribeToWishlist,
+    () => readWishlist().has(product.id),
+    () => false
+  );
 
   const toggleLove = (e: MouseEvent) => {
     e.preventDefault();
@@ -83,10 +96,8 @@ export function ProductCard({
     const next = readWishlist();
     if (next.has(product.id)) {
       next.delete(product.id);
-      setLoved(false);
     } else {
       next.add(product.id);
-      setLoved(true);
     }
     writeWishlist(next);
   };
@@ -115,7 +126,7 @@ export function ProductCard({
                 alt={product.name}
                 fill
                 priority={priority}
-                sizes="(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)"
+                sizes={sizes}
                 className="object-cover transition-transform duration-500 motion-reduce:transition-none"
               />
             ) : (

@@ -8,6 +8,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { useReducedMotion } from "framer-motion";
 
 interface CarouselProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ export function Carousel({
   const trackRef = useRef<HTMLDivElement>(null);
   const [canPrev, setCanPrev] = useState(false);
   const [canNext, setCanNext] = useState(true);
+  const reduceMotion = useReducedMotion();
 
   const updateArrows = useCallback(() => {
     const el = trackRef.current;
@@ -51,7 +53,7 @@ export function Carousel({
     const el = trackRef.current;
     if (!el) return;
     const amount = Math.max(el.clientWidth * 0.72, 260);
-    el.scrollBy({ left: direction * amount, behavior: "smooth" });
+    el.scrollBy({ left: direction * amount, behavior: reduceMotion ? "auto" : "smooth" });
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -74,7 +76,7 @@ export function Carousel({
         aria-roledescription="carousel"
         tabIndex={0}
         onKeyDown={handleKeyDown}
-        className="scrollbar-hide -mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-3 outline-none focus-visible:ring-2 focus-visible:ring-caramel/30 sm:gap-6"
+        className="scrollbar-hide -mx-1 flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth px-1 pb-3 outline-none focus-visible:ring-2 focus-visible:ring-caramel/30 motion-reduce:scroll-auto sm:gap-6"
       >
         {Array.isArray(children) ? (
           children.map((child, i) => (
