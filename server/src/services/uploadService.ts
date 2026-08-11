@@ -7,9 +7,17 @@ function sanitizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9._-]/g, "_");
 }
 
+function extractStoragePath(publicUrl: string): string | null {
+  const marker = `/${BUCKET}/`;
+  const idx = publicUrl.indexOf(marker);
+  if (idx === -1) return null;
+  return publicUrl.slice(idx + marker.length);
+}
+
 export async function uploadProductImage(
   productId: string,
-  file: { buffer: Buffer; mimetype: string; originalname: string }
+  file: { buffer: Buffer; mimetype: string; originalname: string },
+  previousImageUrl?: string | null
 ): Promise<string> {
   const path = `${productId}/${Date.now()}-${sanitizeFileName(file.originalname)}`;
 
@@ -20,6 +28,20 @@ export async function uploadProductImage(
     throw new AppError(500, "Failed to upload product image", { cause: error });
   }
 
+  if (previousImageUrl) {
+    await deleteProductImage(previousImageUrl);
+  }
+
   const { data } = getSupabaseAdmin().storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
+}
+
+export async function deleteProductImage(imageUrl: string): Promise<void> {
+  const path = extractStoragePath(imageUrl);
+  if (!path) return;
+
+  const { error } = await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
+  if (error) {
+    console.error("Failed to delete product image from storage", error);
+  }
 }
