@@ -5,9 +5,26 @@ vi.mock("../lib/supabase.js", () => ({
   getSupabaseAdmin: vi.fn(),
 }));
 vi.mock("../lib/jwt.js", () => ({ verifySupabaseToken: vi.fn() }));
+vi.mock("../services/catalogService.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../services/catalogService.js")>();
+  return {
+    ...actual,
+    setProductImage: vi.fn(actual.setProductImage),
+    clearProductImage: vi.fn(actual.clearProductImage),
+  };
+});
+vi.mock("../services/uploadService.js", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../services/uploadService.js")>();
+  return {
+    ...actual,
+    deleteProductImage: vi.fn(actual.deleteProductImage),
+  };
+});
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { verifySupabaseToken } from "../lib/jwt.js";
+import { setProductImage, clearProductImage } from "../services/catalogService.js";
+import { deleteProductImage } from "../services/uploadService.js";
 import { createFakeSupabaseClient, createFakeJwtVerifier } from "../test/fakeSupabase.js";
 import { createApp } from "../app.js";
 
@@ -196,6 +213,43 @@ describe("admin products", () => {
 
     expect(res.status).toBe(200);
     expect(res.body.product.imageUrl).toBeNull();
+  });
+
+  it("does not delete the previous stored image when the DB write for the new one fails", async () => {
+    const app = createApp();
+    await request(app)
+      .post(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token")
+      .attach("image", Buffer.from("first-bytes"), "first.png");
+
+    vi.mocked(deleteProductImage).mockClear();
+    vi.mocked(setProductImage).mockRejectedValueOnce(new Error("db unavailable"));
+
+    const res = await request(app)
+      .post(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token")
+      .attach("image", Buffer.from("second-bytes"), "second.png");
+
+    expect(res.status).toBe(500);
+    expect(deleteProductImage).not.toHaveBeenCalled();
+  });
+
+  it("does not delete the stored image when the DB clear fails on remove", async () => {
+    const app = createApp();
+    await request(app)
+      .post(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token")
+      .attach("image", Buffer.from("first-bytes"), "first.png");
+
+    vi.mocked(deleteProductImage).mockClear();
+    vi.mocked(clearProductImage).mockRejectedValueOnce(new Error("db unavailable"));
+
+    const res = await request(app)
+      .delete(`/api/admin/products/${PRODUCT_ID}/image`)
+      .set("Authorization", "Bearer admin-token");
+
+    expect(res.status).toBe(500);
+    expect(deleteProductImage).not.toHaveBeenCalled();
   });
 
   it("returns 400 removing an image from a product that has none", async () => {

@@ -188,16 +188,18 @@ adminCatalogRouter.post(
         next(new AppError(404, "Product not found"));
         return;
       }
-      const imageUrl = await uploadProductImage(
-        paramsParsed.data.id,
-        {
-          buffer: req.file.buffer,
-          mimetype: req.file.mimetype,
-          originalname: req.file.originalname,
-        },
-        existing.imageUrl
-      );
+      const imageUrl = await uploadProductImage(paramsParsed.data.id, {
+        buffer: req.file.buffer,
+        mimetype: req.file.mimetype,
+        originalname: req.file.originalname,
+      });
+      // Write the new imageUrl to the DB before deleting the old storage
+      // object: if the DB write fails, the row still points at the (still
+      // live) old image instead of a dead link to a deleted file.
       const product = await setProductImage(paramsParsed.data.id, imageUrl);
+      if (existing.imageUrl) {
+        await deleteProductImage(existing.imageUrl);
+      }
       res.json({ product });
     } catch (err) {
       next(err);
@@ -224,8 +226,11 @@ adminCatalogRouter.delete(
         next(new AppError(400, "Product has no image to remove"));
         return;
       }
-      await deleteProductImage(existing.imageUrl);
+      // Clear the DB before deleting the storage object: if the DB clear
+      // fails, the row still points at a file that's still there instead
+      // of a dead link.
       const product = await clearProductImage(paramsParsed.data.id);
+      await deleteProductImage(existing.imageUrl);
       res.json({ product });
     } catch (err) {
       next(err);

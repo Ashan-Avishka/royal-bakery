@@ -158,12 +158,13 @@ export async function deleteProduct(productId: string): Promise<void> {
   redirect("/admin/products");
 }
 
-export async function removeProductImage(productId: string): Promise<void> {
+export async function removeProductImage(productId: string): Promise<{ error: string | null }> {
   const session = await requireAdminSession();
   try {
     await removeAdminProductImage(session.accessToken, productId);
   } catch (err) {
-    throw err instanceof ApiError ? err : new Error("Failed to remove image.");
+    return { error: err instanceof ApiError ? err.message : "Failed to remove image." };
   }
   revalidateProducts(productId);
+  return { error: null };
 }

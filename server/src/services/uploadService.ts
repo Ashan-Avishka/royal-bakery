@@ -16,8 +16,7 @@ function extractStoragePath(publicUrl: string): string | null {
 
 export async function uploadProductImage(
   productId: string,
-  file: { buffer: Buffer; mimetype: string; originalname: string },
-  previousImageUrl?: string | null
+  file: { buffer: Buffer; mimetype: string; originalname: string }
 ): Promise<string> {
   const path = `${productId}/${Date.now()}-${sanitizeFileName(file.originalname)}`;
 
@@ -28,20 +27,23 @@ export async function uploadProductImage(
     throw new AppError(500, "Failed to upload product image", { cause: error });
   }
 
-  if (previousImageUrl) {
-    await deleteProductImage(previousImageUrl);
-  }
-
   const { data } = getSupabaseAdmin().storage.from(BUCKET).getPublicUrl(path);
   return data.publicUrl;
 }
 
+// Storage-delete failures must never fail the triggering request: catch both
+// a `{ error }` return AND a thrown exception (@supabase/storage-js throws
+// for anything that isn't a StorageError, e.g. a network exception).
 export async function deleteProductImage(imageUrl: string): Promise<void> {
   const path = extractStoragePath(imageUrl);
   if (!path) return;
 
-  const { error } = await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
-  if (error) {
-    console.error("Failed to delete product image from storage", error);
+  try {
+    const { error } = await getSupabaseAdmin().storage.from(BUCKET).remove([path]);
+    if (error) {
+      console.error("Failed to delete product image from storage", error);
+    }
+  } catch (err) {
+    console.error("Failed to delete product image from storage", err);
   }
 }

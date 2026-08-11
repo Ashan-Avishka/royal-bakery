@@ -62,44 +62,34 @@ describe("deleteProductImage", () => {
 
     expect(remove).not.toHaveBeenCalled();
   });
-});
 
-describe("uploadProductImage cleanup", () => {
-  it("deletes the previous image after a successful upload", async () => {
-    const remove = vi.fn().mockResolvedValue({ data: null, error: null });
-    const fakeClient = createFakeSupabaseClient({ usersByToken: {}, profiles: [] });
+  it("logs and does not throw when storage.remove returns an error", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const remove = vi.fn().mockResolvedValue({ data: null, error: { message: "boom" } });
     vi.mocked(getSupabaseAdmin).mockReturnValue({
-      ...fakeClient,
-      storage: {
-        from: (bucket: string) => ({ ...fakeClient.storage.from(bucket), remove }),
-      },
+      storage: { from: () => ({ remove }) },
     } as any);
 
-    await uploadProductImage(
-      PRODUCT_ID,
-      { buffer: Buffer.from("x"), mimetype: "image/png", originalname: "new.png" },
-      `https://fake-storage.test/product-images/${PRODUCT_ID}/old.png`
-    );
+    await expect(
+      deleteProductImage(`https://fake-storage.test/product-images/${PRODUCT_ID}/167-photo.png`)
+    ).resolves.toBeUndefined();
+    expect(consoleErrorSpy).toHaveBeenCalled();
 
-    expect(remove).toHaveBeenCalledWith([`${PRODUCT_ID}/old.png`]);
+    consoleErrorSpy.mockRestore();
   });
 
-  it("does not attempt cleanup when there is no previous image", async () => {
-    const remove = vi.fn();
-    const fakeClient = createFakeSupabaseClient({ usersByToken: {}, profiles: [] });
+  it("logs and does not throw when storage.remove itself throws", async () => {
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    const remove = vi.fn().mockRejectedValue(new Error("network exception"));
     vi.mocked(getSupabaseAdmin).mockReturnValue({
-      ...fakeClient,
-      storage: {
-        from: (bucket: string) => ({ ...fakeClient.storage.from(bucket), remove }),
-      },
+      storage: { from: () => ({ remove }) },
     } as any);
 
-    await uploadProductImage(PRODUCT_ID, {
-      buffer: Buffer.from("x"),
-      mimetype: "image/png",
-      originalname: "new.png",
-    });
+    await expect(
+      deleteProductImage(`https://fake-storage.test/product-images/${PRODUCT_ID}/167-photo.png`)
+    ).resolves.toBeUndefined();
+    expect(consoleErrorSpy).toHaveBeenCalled();
 
-    expect(remove).not.toHaveBeenCalled();
+    consoleErrorSpy.mockRestore();
   });
 });

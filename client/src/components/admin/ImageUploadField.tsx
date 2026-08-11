@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { removeProductImage } from "@/app/actions/admin/products";
 import { Button } from "@/components/ui/Button";
 
@@ -11,6 +11,26 @@ function validateFile(file: File): string | null {
   if (!file.type.startsWith("image/")) return "Only image files are allowed.";
   if (file.size > MAX_FILE_BYTES) return "Image must be 5MB or smaller.";
   return null;
+}
+
+// Clears a file input so nothing invalid/stale can be submitted. `.value =
+// ""` is the standards-compliant way to empty a file input's FileList, but
+// some testing harnesses shadow `.files` with a plain writable property
+// that decouples it from `.value` -- so we also reassign `.files` directly
+// (using an empty DataTransfer's FileList where available) as a belt-and-
+// braces measure.
+function clearFileInput(input: HTMLInputElement | null) {
+  if (!input) return;
+  input.value = "";
+  try {
+    input.files =
+      typeof DataTransfer !== "undefined"
+        ? new DataTransfer().files
+        : ([] as unknown as FileList);
+  } catch {
+    // Native, non-shadowed `.files` setters in some environments reject
+    // this; `.value = ""` above already cleared it there.
+  }
 }
 
 export function ImageUploadField({
@@ -31,14 +51,48 @@ export function ImageUploadField({
   const [imageRemoved, setImageRemoved] = useState(false);
   const [removeError, setRemoveError] = useState<string | null>(null);
   const [removePending, startRemove] = useTransition();
+  const [prevInitialImageUrl, setPrevInitialImageUrl] = useState(initialImageUrl);
+
+  // When the parent re-renders with a fresh `initialImageUrl` (e.g. after a
+  // successful save triggers revalidation), any locally-staged file is now
+  // stale: the server already has the new image, so clear staged state so a
+  // later, unrelated save doesn't silently re-submit and re-upload the same
+  // file again. Adjusted during render (React's recommended pattern for
+  // resetting state in response to a prop change) rather than in an effect,
+  // so it doesn't trigger an extra commit.
+  if (initialImageUrl !== prevInitialImageUrl) {
+    setPrevInitialImageUrl(initialImageUrl);
+    setPreviewUrl((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return null;
+    });
+    setFileName(null);
+    setValidationError(null);
+  }
 
   const hasExistingImage = Boolean(initialImageUrl) && !imageRemoved;
   const displayUrl = previewUrl ?? (hasExistingImage ? initialImageUrl : null);
 
+  // The hidden input's `.files` is external DOM state, not React state, so
+  // clearing it belongs in an effect: it stays in sync with the staged-file
+  // reset above whenever `initialImageUrl` changes.
+  useEffect(() => {
+    clearFileInput(inputRef.current);
+  }, [initialImageUrl]);
+
+  // Single source of truth for "does this file get staged or rejected."
+  // On rejection, clear the hidden input (and any stale preview) so an
+  // invalid file can never be what actually gets submitted.
   function stageFile(file: File) {
     const message = validateFile(file);
     if (message) {
       setValidationError(message);
+      setPreviewUrl((prev) => {
+        if (prev) URL.revokeObjectURL(prev);
+        return null;
+      });
+      setFileName(null);
+      clearFileInput(inputRef.current);
       return;
     }
     setValidationError(null);
@@ -52,11 +106,6 @@ export function ImageUploadField({
 
   function handleDrop(file: File | undefined) {
     if (!file || !inputRef.current) return;
-    const message = validateFile(file);
-    if (message) {
-      setValidationError(message);
-      return;
-    }
     const transfer = new DataTransfer();
     transfer.items.add(file);
     inputRef.current.files = transfer.files;
@@ -67,11 +116,11 @@ export function ImageUploadField({
     if (!productId) return;
     setRemoveError(null);
     startRemove(async () => {
-      try {
-        await removeProductImage(productId);
+      const result = await removeProductImage(productId);
+      if (result.error) {
+        setRemoveError(result.error);
+      } else {
         setImageRemoved(true);
-      } catch (err) {
-        setRemoveError(err instanceof Error ? err.message : "Failed to remove image.");
       }
     });
   }

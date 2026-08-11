@@ -75,8 +75,30 @@ describe("ImageUploadField", () => {
     expect(screen.getByRole("alert")).toHaveTextContent("Image must be 5MB or smaller.");
   });
 
+  it("un-stages a rejected file: clears the hidden input and reverts the stale preview", () => {
+    render(<ImageUploadField initialImageUrl={null} />);
+    const input = screen.getByLabelText("Product image") as HTMLInputElement;
+
+    // Stage a valid file first.
+    fireEvent.change(input, { target: { files: [makeImageFile("good.png")] } });
+    expect(screen.getByText("good.png")).toBeVisible();
+    expect(input.files?.[0]?.name).toBe("good.png");
+
+    // Then pick an invalid file.
+    const badFile = new File(["hello"], "notes.txt", { type: "text/plain" });
+    fireEvent.change(input, { target: { files: [badFile] } });
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Only image files are allowed.");
+    // The hidden input must no longer hold the rejected (or the stale valid) file.
+    expect(input.files?.length ?? 0).toBe(0);
+    // The preview must not still show the stale valid file.
+    expect(screen.queryByText("good.png")).not.toBeInTheDocument();
+    expect(screen.queryByAltText("good.png")).not.toBeInTheDocument();
+    expect(screen.getByText("Drag an image here, or click to browse")).toBeVisible();
+  });
+
   it("removes the existing image and hides the remove button on success", async () => {
-    mocks.removeProductImage.mockResolvedValue(undefined);
+    mocks.removeProductImage.mockResolvedValue({ error: null });
     render(
       <ImageUploadField productId="product-1" initialImageUrl="https://images.example.com/cake.jpg" />
     );
@@ -93,7 +115,7 @@ describe("ImageUploadField", () => {
   });
 
   it("shows an inline error when removing the image fails", async () => {
-    mocks.removeProductImage.mockRejectedValue(new Error("Failed to remove image."));
+    mocks.removeProductImage.mockResolvedValue({ error: "Failed to remove image." });
     render(
       <ImageUploadField productId="product-1" initialImageUrl="https://images.example.com/cake.jpg" />
     );
@@ -102,6 +124,33 @@ describe("ImageUploadField", () => {
 
     const alert = await screen.findByRole("alert");
     expect(alert).toHaveTextContent("Failed to remove image.");
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "Remove image" })).toBeVisible();
+    });
+  });
+
+  it("clears staged-file state when initialImageUrl changes after a successful save", () => {
+    const { rerender } = render(
+      <ImageUploadField productId="product-1" initialImageUrl="https://images.example.com/old.jpg" />
+    );
+    const input = screen.getByLabelText("Replace image") as HTMLInputElement;
+
+    fireEvent.change(input, { target: { files: [makeImageFile("new.png")] } });
+    expect(screen.getByText("new.png")).toBeVisible();
+    expect(input.files?.length).toBe(1);
+
+    // Simulate the parent Server Component re-rendering with the product's
+    // fresh imageUrl after revalidation.
+    rerender(
+      <ImageUploadField productId="product-1" initialImageUrl="https://images.example.com/new.jpg" />
+    );
+
+    expect(screen.queryByText("new.png")).not.toBeInTheDocument();
+    expect(input.files?.length ?? 0).toBe(0);
+    expect(screen.getByAltText("Product image")).toHaveAttribute(
+      "src",
+      "https://images.example.com/new.jpg"
+    );
     expect(screen.getByRole("button", { name: "Remove image" })).toBeVisible();
   });
 });
