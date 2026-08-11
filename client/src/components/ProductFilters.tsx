@@ -5,38 +5,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useReducer, useRef } from "react";
 import type { Category } from "@/lib/catalog";
 
-interface SearchState {
-  activeSearch: string;
-  draft: string;
-  submittedSearches: string[];
+type SearchAction = { value: string };
+
+interface SubmittedNavigation {
+  id: number;
+  search: string;
+  categoryId?: string;
+  url: string;
 }
 
-type SearchAction =
-  | { type: "draft"; value: string }
-  | { type: "submitted"; value: string }
-  | { type: "sync"; value: string };
-
-function searchReducer(state: SearchState, action: SearchAction): SearchState {
-  if (action.type === "draft") {
-    return { ...state, draft: action.value };
-  }
-
-  if (action.type === "submitted") {
-    return { ...state, submittedSearches: [...state.submittedSearches, action.value] };
-  }
-
-  if (action.value === state.activeSearch) return state;
-
-  const acknowledgementIndex = state.submittedSearches.indexOf(action.value);
-  if (acknowledgementIndex !== -1) {
-    return {
-      ...state,
-      activeSearch: action.value,
-      submittedSearches: state.submittedSearches.filter((_, index) => index !== acknowledgementIndex),
-    };
-  }
-
-  return { activeSearch: action.value, draft: action.value, submittedSearches: [] };
+function searchReducer(_: string, action: SearchAction) {
+  return action.value;
 }
 
 export function ProductFilters({
@@ -55,28 +34,65 @@ export function ProductFilters({
   const searchParams = useSearchParams();
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latestCategoryRef = useRef(activeCategoryId);
-  const [searchState, dispatchSearch] = useReducer(searchReducer, activeSearch ?? "", (value) => ({
-    activeSearch: value,
-    draft: value,
-    submittedSearches: [],
-  }));
+  const submittedNavigationsRef = useRef<SubmittedNavigation[]>([]);
+  const nextNavigationIdRef = useRef(0);
+  const previousRouteRef = useRef({
+    search: activeSearch ?? "",
+    categoryId: activeCategoryId,
+  });
+  const [searchValue, dispatchSearch] = useReducer(searchReducer, activeSearch ?? "");
 
   useEffect(() => {
-    latestCategoryRef.current = activeCategoryId;
-  }, [activeCategoryId]);
+    const route = { search: activeSearch ?? "", categoryId: activeCategoryId };
+    const previousRoute = previousRouteRef.current;
+    if (
+      route.search === previousRoute.search &&
+      route.categoryId === previousRoute.categoryId
+    ) {
+      return;
+    }
 
-  useEffect(() => {
-    dispatchSearch({ type: "sync", value: activeSearch ?? "" });
-  }, [activeSearch]);
+    previousRouteRef.current = route;
+    latestCategoryRef.current = route.categoryId;
 
-  function updateParams(next: Record<string, string | undefined>) {
+    const acknowledged = submittedNavigationsRef.current.find(
+      (navigation) =>
+        navigation.search === route.search && navigation.categoryId === route.categoryId
+    );
+    const latestSubmission = submittedNavigationsRef.current.at(-1);
+
+    if (acknowledged) {
+      if (latestSubmission && acknowledged.id < latestSubmission.id) {
+        router.push(latestSubmission.url);
+      }
+      return;
+    }
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+      debounceRef.current = null;
+    }
+    submittedNavigationsRef.current = [];
+    dispatchSearch({ value: route.search });
+  }, [activeCategoryId, activeSearch, router]);
+
+  function buildNavigation(next: Record<string, string | undefined>) {
     const params = new URLSearchParams(searchParams.toString());
     Object.entries(next).forEach(([key, value]) => {
       if (value) params.set(key, value);
       else params.delete(key);
     });
     const query = params.toString();
-    router.push(query ? `${pathname}?${query}` : pathname);
+
+    return {
+      url: query ? `${pathname}?${query}` : pathname,
+      search: params.get("search") ?? "",
+      categoryId: params.get("categoryId") ?? undefined,
+    };
+  }
+
+  function updateParams(next: Record<string, string | undefined>) {
+    router.push(buildNavigation(next).url);
   }
 
   function selectCategory(categoryId?: string) {
@@ -84,19 +100,23 @@ export function ProductFilters({
     latestCategoryRef.current = categoryId;
     updateParams({
       categoryId,
-      search: searchState.draft || undefined,
+      search: searchValue || undefined,
     });
   }
 
   function handleSearchChange(value: string) {
-    dispatchSearch({ type: "draft", value });
+    dispatchSearch({ value });
     if (debounceRef.current) clearTimeout(debounceRef.current);
     debounceRef.current = setTimeout(() => {
-      dispatchSearch({ type: "submitted", value });
-      updateParams({
+      const navigation = buildNavigation({
         categoryId: latestCategoryRef.current,
         search: value || undefined,
       });
+      submittedNavigationsRef.current.push({
+        ...navigation,
+        id: ++nextNavigationIdRef.current,
+      });
+      router.push(navigation.url);
     }, 350);
   }
 
@@ -146,7 +166,7 @@ export function ProductFilters({
           <input
             id="product-search"
             type="search"
-            value={searchState.draft}
+            value={searchValue}
             placeholder="Search the menu..."
             onChange={(event) => handleSearchChange(event.target.value)}
             className="min-h-11 w-full rounded-full border border-border-warm bg-cream-alt px-4 py-2.5 text-base text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 sm:w-72 sm:text-sm"
