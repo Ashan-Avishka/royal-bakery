@@ -7,6 +7,12 @@ vi.mock("next/navigation", () => ({
   usePathname: () => pathname,
 }));
 
+vi.mock("@/components/BrandLogo", () => ({
+  BrandLogo: ({ priority }: { priority?: boolean }) => (
+    <span role="img" aria-label="Royal Bakery" data-priority={String(priority)} />
+  ),
+}));
+
 import { SiteNav } from "./SiteNav";
 
 afterEach(() => {
@@ -15,6 +21,27 @@ afterEach(() => {
 });
 
 describe("SiteNav", () => {
+  it("keeps the compact navigation control visible against the home hero", () => {
+    render(<SiteNav isSignedIn={false} cartItemCount={0} />);
+
+    expect(screen.getByRole("button", { name: "Open navigation" })).toHaveClass(
+      "text-cream",
+      "hover:text-honey",
+      "focus-visible:text-honey",
+      "focus-visible:ring-honey",
+      "focus-visible:ring-offset-cocoa"
+    );
+  });
+
+  it("does not priority-load the persistent header logo", () => {
+    render(<SiteNav isSignedIn={false} cartItemCount={0} />);
+
+    expect(screen.getByRole("img", { name: "Royal Bakery" })).toHaveAttribute(
+      "data-priority",
+      "undefined"
+    );
+  });
+
   it("opens and closes the mobile menu with equivalent navigation", async () => {
     render(<SiteNav isSignedIn={false} cartItemCount={0} />);
 
@@ -35,14 +62,23 @@ describe("SiteNav", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 
-  it("closes the mobile menu when Escape is pressed", () => {
+  it("closes the mobile menu and returns focus to its trigger when Escape is pressed", async () => {
     render(<SiteNav isSignedIn={false} cartItemCount={0} />);
 
     const trigger = screen.getByRole("button", { name: "Open navigation" });
     fireEvent.click(trigger);
+    const menuLink = screen.getByRole("navigation", { name: "Mobile navigation" }).querySelector(
+      "a"
+    );
+    menuLink?.focus();
+    expect(menuLink).toHaveFocus();
+
     fireEvent.keyDown(window, { key: "Escape" });
 
-    expect(trigger).toHaveAttribute("aria-expanded", "false");
+    await waitFor(() => {
+      expect(trigger).toHaveAttribute("aria-expanded", "false");
+      expect(trigger).toHaveFocus();
+    });
   });
 
   it("closes the mobile menu when the pathname changes", async () => {

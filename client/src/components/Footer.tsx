@@ -17,7 +17,7 @@ export function Footer() {
           <Link
             href="/"
             aria-label="Royal Bakery home"
-            className="inline-flex min-h-11 items-center"
+            className="inline-flex min-h-11 min-w-11 items-center px-3"
           >
             <BrandLogo size="md" href={null} />
           </Link>
@@ -36,7 +36,7 @@ export function Footer() {
               <li key={link.href}>
                 <Link
                   href={link.href}
-                  className="inline-flex min-h-11 items-center text-[14px] text-cocoa/80 transition-colors duration-300 hover:text-caramel-hover"
+                  className="inline-flex min-h-11 min-w-11 items-center px-3 text-[14px] text-cocoa/80 transition-colors duration-300 hover:text-caramel-hover"
                 >
                   {link.label}
                 </Link>
@@ -58,7 +58,7 @@ export function Footer() {
             ))}
             <a
               href={`mailto:${SITE_CONTACT.email}`}
-              className="mt-3 inline-flex min-h-11 items-center text-cocoa/80 transition-colors hover:text-caramel-hover"
+              className="mt-3 inline-flex min-h-11 min-w-11 items-center px-3 text-cocoa/80 transition-colors hover:text-caramel-hover"
             >
               {SITE_CONTACT.email}
             </a>

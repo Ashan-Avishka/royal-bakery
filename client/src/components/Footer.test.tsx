@@ -10,6 +10,6 @@ it("keeps footer link hover text on the accessible dark caramel token", () => {
     "hover:text-caramel-hover"
   );
   for (const link of links) {
-    expect(link).toHaveClass("inline-flex", "min-h-11", "items-center");
+    expect(link).toHaveClass("inline-flex", "min-h-11", "min-w-11", "items-center", "px-3");
   }
 });

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { Menu, ShoppingBag, X } from "lucide-react";
-import { type CSSProperties, useEffect, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/app/actions/auth";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -27,6 +27,7 @@ export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavP
   const pathname = usePathname();
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const mobileMenuTriggerRef = useRef<HTMLButtonElement>(null);
   const reducedMotion = useReducedMotion();
   const mobileMenuOffset = reducedMotion ? 0 : -8;
 
@@ -42,7 +43,10 @@ export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavP
   useEffect(() => {
     if (!mobileMenuOpen) return;
     const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setMobileMenuOpen(false);
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        mobileMenuTriggerRef.current?.focus();
+      }
     };
     window.addEventListener("keydown", closeOnEscape);
     return () => window.removeEventListener("keydown", closeOnEscape);
@@ -63,6 +67,11 @@ export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavP
   }`;
   const mobileLinkClassName =
     "inline-flex min-h-11 items-center rounded-lg px-3 text-[13px] font-medium tracking-[0.04em] text-cocoa transition-colors duration-300 hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2";
+  const mobileMenuTriggerClassName = `touch-target inline-flex items-center justify-center rounded-lg transition-colors focus-visible:outline-none focus-visible:ring-2 md:hidden ${
+    overHero
+      ? "text-cream hover:text-honey focus-visible:text-honey focus-visible:ring-honey focus-visible:ring-offset-cocoa"
+      : "text-cocoa hover:text-caramel-hover focus-visible:text-caramel-hover focus-visible:ring-caramel focus-visible:ring-offset-cream-alt"
+  }`;
 
   return (
     <header
@@ -82,7 +91,7 @@ export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavP
               : "text-cocoa hover:text-caramel"
           }`}
         >
-          <BrandLogo size="sm" href={null} priority />
+          <BrandLogo size="sm" href={null} />
           <span className="font-display text-lg font-medium tracking-[0.04em] sm:text-xl">
             Royal Bakery
           </span>
@@ -180,8 +189,9 @@ export function SiteNav({ isSignedIn, isAdmin = false, cartItemCount }: SiteNavP
             </div>
           )}
           <button
+            ref={mobileMenuTriggerRef}
             type="button"
-            className="touch-target inline-flex items-center justify-center rounded-lg md:hidden"
+            className={mobileMenuTriggerClassName}
             aria-controls="site-mobile-navigation"
             aria-expanded={mobileMenuOpen}
             aria-label={mobileMenuOpen ? "Close navigation" : "Open navigation"}
