@@ -16,7 +16,6 @@ server/dist/
 *.log
 *.tsbuildinfo
 next-env.d.ts
-task-7-report.md
 
 # Claude Code agent state (worktrees, local session data)
 .claude/

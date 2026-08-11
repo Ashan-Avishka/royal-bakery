@@ -2,70 +2,106 @@
 
 Date: 2026-08-11
 
-## Environment and method
+## Status: BLOCKED
 
-- API started from the built server and `GET /api/health` returned `200` with
-  `{"status":"ok"}`.
-- The production client was built successfully and started on port 3001. Port
-  3000 was already owned by an unrelated application, so it was not used for
-  this verification.
-- `GET /` from the Royal Bakery production client returned `500`. The available
-  environment has no `NEXT_PUBLIC_SUPABASE_URL` or
-  `NEXT_PUBLIC_SUPABASE_ANON_KEY`; the shared header creates a server Supabase
-  client, so the storefront cannot render without those configured values.
-- `GET /api/products` returned `500` because the server has no configured
-  `SUPABASE_URL` or `SUPABASE_SERVICE_ROLE_KEY`. No credentials, catalog rows,
-  customer session, or admin session were invented.
-- Browser interaction was unavailable: the Browser runtime returned no
-  available browser bindings after its documented connection troubleshooting.
-  Consequently, rendered viewport checks were not substituted with source
-  review or HTTP requests.
+This task is blocked, not complete. The Browser runtime's documented discovery
+and troubleshooting flow produced no available bindings. No browser fallback,
+source-only substitute, or inferred viewport result was used.
 
-## Route availability
+The API and production client were built and started as task-owned background
+processes. The unrelated listener already occupying port 3000 was not used.
+The Royal Bakery production client ran on port 3001 and the API on port 4000.
+Those task-owned processes have now been stopped; port 3000 was not touched.
 
-The following HTTP route checks were made against the client before rendering
-verification. Routes requiring authentication redirected to login as expected;
-public/customer status checks against the correct production client are blocked
-by the missing public Supabase configuration described above.
+## Exact HTTP observations
 
-| Route family | Paths covered | Result |
-| --- | --- | --- |
-| Public storefront | `/`, `/products`, `/products/<id>`, `/about` | Production root is blocked by missing public Supabase config; catalog endpoint is also blocked by missing server Supabase config. |
-| Authentication | `/login`, `/signup` | Route family identified; rendered interaction blocked because no Browser binding is available. |
-| Customer commerce | `/cart`, `/checkout`, `/account`, `/orders`, `/orders/<id>` | Blocked: no customer credentials or test data were configured. |
-| Admin dashboard and catalog | `/admin`, product list/new/detail, category list/new/detail | HTTP redirect-to-login observed for unauthenticated admin paths; admin content blocked without an admin session. |
-| Admin operations | order list/detail, customers list/detail, reports | HTTP redirect-to-login observed for unauthenticated admin paths; admin content blocked without an admin session. |
+`GET /api/health` returned `200` with `{"status":"ok"}`. The following
+requests were made against the Royal Bakery production client on port 3001.
+The `<id>` requests used `00000000-0000-0000-0000-000000000000`, which was
+only a syntactically valid probe and not representative route data.
 
-## Viewport matrix
+| Sampled path | Exact observed HTTP status | Rendered route result |
+| --- | ---: | --- |
+| `/` | 500 | Not observed in a browser. |
+| `/products` | 500 | Not observed in a browser. |
+| `/products/<id>` | 500 | No representative product ID or product data existed. |
+| `/about` | 500 | Not observed in a browser. |
+| `/login` | 200 | Not observed in a browser. |
+| `/signup` | 200 | Not observed in a browser. |
+| `/cart` | 500 | No customer session or empty/populated cart data existed. |
+| `/checkout` | 500 | No customer session or empty/populated cart data existed. |
+| `/account` | 500 | No customer session existed. |
+| `/orders` | 500 | No customer session or order data existed. |
+| `/orders/<id>` | 500 | No representative order ID, session, or order data existed. |
+| `/admin` | 500 | No admin session existed. |
+| `/admin/products` | 500 | No admin session or catalog data existed. |
+| `/admin/products?selected=<id>` | Not sampled | No representative product ID, admin session, or catalog data existed. |
+| `/admin/products/new` | 500 | No admin session existed. |
+| `/admin/products/<id>` | 500 | No representative product ID, admin session, or catalog data existed. |
+| `/admin/categories` | 500 | No admin session or category data existed. |
+| `/admin/categories/new` | 500 | No admin session existed. |
+| `/admin/categories/<id>` | 500 | No representative category ID, admin session, or category data existed. |
+| `/admin/orders` | 500 | No admin session or order data existed. |
+| `/admin/orders?selected=<id>` | Not sampled | No representative order ID, admin session, or order data existed. |
+| `/admin/orders/<id>` | 500 | No representative order ID, admin session, or order data existed. |
+| `/admin/customers` | 500 | No admin session or customer data existed. |
+| `/admin/customers?selected=<id>` | Not sampled | No representative customer ID, admin session, or customer data existed. |
+| `/admin/reports` | 500 | No admin session or report data existed. |
 
-`Blocked` means no browser binding was available to set the viewport or inspect
-the rendered document. It is deliberately not a passing result.
+`GET /api/products` on port 4000 returned `500`. The available environment had
+no configured public Supabase client values or server Supabase service values;
+no credentials or data were invented. The observed `500` statuses above are
+not treated as successful route checks or authentication redirects.
 
-| Viewport width | Public/auth rendering | Customer rendering | Admin rendering | Document overflow (`scrollWidth` vs `clientWidth`) | Menus, wrapping, images, focus/touch, reduced motion |
-| ---: | --- | --- | --- | --- | --- |
-| 320 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
-| 375 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
-| 430 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
-| 768 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
-| 1024 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
-| 1440 | Blocked | Blocked | Blocked | **Blocked — not observed** | Blocked — not observed |
+## Required route and viewport matrix
 
-No claim of “no unintended horizontal overflow” is made at any width: it was
-not observable without a browser. Likewise, no visual defect was established,
-so no UI source change or regression test was added in this task.
+Every cell is explicitly `BLOCKED`: without a Browser binding, the viewport
+could not be set and `scrollWidth`, `clientWidth`, menu operation, wrapping,
+image state, focus order, touch target geometry, and reduced-motion behavior
+could not be observed. No claim of no-horizontal-overflow is made at any width.
 
-## Automated verification
+| Required path pattern | 320 | 375 | 430 | 768 | 1024 | 1440 |
+| --- | --- | --- | --- | --- | --- |
+| `/` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/products` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/products/<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/about` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/login` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/signup` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/cart` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/checkout` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/account` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/orders` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/orders/<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/products` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/products?selected=<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/products/new` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/products/<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/categories` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/categories/new` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/categories/<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/orders` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/orders?selected=<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/orders/<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/customers` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/customers?selected=<id>` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
+| `/admin/reports` | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED | BLOCKED |
 
-| Gate | Result |
+## Automated gate evidence
+
+| Gate | Evidence |
 | --- | --- |
 | `client: npm.cmd test` | Passed: 48 files, 152 tests. |
 | `client: npm.cmd run lint` | Passed. |
 | `client: npm.cmd run build` | Passed after permitting the build to fetch its configured Google Fonts. |
-| `server: npm.cmd test` | Passed: 25 files, 184 tests. (The initial sandboxed attempt could not resolve Vitest's config; the unchanged read-only command passed with approved access.) |
+| `server: npm.cmd test` | Passed: 25 files, 184 tests. The initial sandboxed invocation could not resolve Vitest's config; the unchanged read-only command passed with approved access. |
 | `server: npm.cmd run build` | Passed. |
 
-## Rerun requirements
+## Requirements to unblock
 
-To complete the blocked browser matrix, provide an available in-app browser
-binding plus configured public Supabase client values, server Supabase service
-values, and non-invented customer/admin test sessions with representative data.
+An available Browser binding is required before any live viewport work can be
+performed. To cover data-dependent and authenticated paths, use actual
+configured Supabase public/server values plus non-invented representative
+product/order/category IDs, customer/admin sessions, and empty/populated test
+states.
