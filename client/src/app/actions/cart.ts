@@ -34,7 +34,7 @@ export async function addToCart(formData: FormData) {
 
   revalidatePath("/cart");
   revalidatePath(`/products/${productId}`);
-  redirect("/cart");
+  refresh();
 }
 
 export async function updateCartItemQuantity(formData: FormData) {
