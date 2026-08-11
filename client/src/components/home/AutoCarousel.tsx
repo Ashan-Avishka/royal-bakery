@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  type KeyboardEvent,
   type ReactNode,
   useCallback,
   useEffect,
@@ -51,10 +52,6 @@ export function AutoCarousel({
   const stepPx = itemWidth > 0 ? itemWidth + gap : 0;
 
   useEffect(() => {
-    setIndex((i) => Math.min(i, maxIndex));
-  }, [maxIndex]);
-
-  useEffect(() => {
     const viewport = viewportRef.current;
     if (!viewport) return;
 
@@ -66,6 +63,10 @@ export function AutoCarousel({
     };
 
     measure();
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", measure);
+      return () => window.removeEventListener("resize", measure);
+    }
     const ro = new ResizeObserver(measure);
     ro.observe(viewport);
     return () => ro.disconnect();
@@ -83,6 +84,17 @@ export function AutoCarousel({
     },
     [maxIndex]
   );
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      go(index - 1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      go(index + 1);
+    }
+  };
 
   useEffect(() => {
     if (paused || reduceMotion || items.length <= itemsPerView) return;
@@ -108,18 +120,22 @@ export function AutoCarousel({
       <div className="pt-2 sm:pt-4 md:-mt-20 md:-mb-10">
         <div
           ref={viewportRef}
-          className="overflow-hidden py-10 sm:py-12"
+          role="region"
+          aria-label={`${ariaLabel} carousel. Use the left and right arrow keys to browse product groups.`}
           aria-roledescription="carousel"
+          tabIndex={0}
+          onKeyDown={handleKeyDown}
+          className="overflow-hidden py-10 outline-none focus-visible:ring-2 focus-visible:ring-caramel/40 sm:py-12"
         >
           <div
-            role="region"
-            aria-label={ariaLabel}
             className="flex will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.22,1,0.36,1)]"
             style={{
               gap,
               width: itemWidth > 0 ? itemWidth * items.length + gap * (items.length - 1) : "100%",
               transform:
-                stepPx > 0 ? `translateX(-${index * stepPx}px)` : undefined,
+                stepPx > 0
+                  ? `translateX(-${Math.min(index, maxIndex) * stepPx}px)`
+                  : undefined,
             }}
           >
             {items.map((child, i) => (
@@ -146,14 +162,18 @@ export function AutoCarousel({
                 key={i}
                 type="button"
                 aria-label={`Go to slide group ${i + 1}`}
-                aria-current={i === index}
+                aria-current={i === Math.min(index, maxIndex)}
                 onClick={() => setIndex(i)}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === index
-                    ? "w-8 bg-caramel"
-                    : "w-1.5 bg-border-warm hover:bg-caramel/40"
-                }`}
-              />
+                className="flex h-11 w-11 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-caramel"
+              >
+                <span
+                  className={`h-1.5 rounded-full transition-all duration-300 motion-reduce:transition-none ${
+                    i === Math.min(index, maxIndex)
+                      ? "w-8 bg-caramel"
+                      : "w-1.5 bg-border-warm"
+                  }`}
+                />
+              </button>
             ))}
           </div>
 
@@ -189,7 +209,7 @@ function CarouselNav({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-border-warm bg-cream-alt text-cocoa transition-all duration-300 hover:border-caramel hover:text-caramel"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-border-warm bg-cream-alt text-cocoa transition-colors duration-300 hover:border-caramel hover:text-caramel motion-reduce:transition-none"
     >
       <svg
         width="16"

@@ -139,19 +139,16 @@ describe("HomePage", () => {
     expect(screen.getAllByRole("link").at(-1)).toHaveAccessibleName("Shop all bakes");
   });
 
-  it("prioritizes only the first row of featured product images", async () => {
+  it("keeps featured product images lazy unless one is measured as LCP", async () => {
     render(await HomePage());
 
-    const featuredHeading = screen.getByRole("heading", { name: "Featured from the bakery" });
+    const featuredHeading = screen.getByRole("heading", { name: "Featured selections" });
     const featuredSection = featuredHeading.closest("section");
     expect(featuredSection).not.toBeNull();
 
     const productImages = within(featuredSection as HTMLElement).getAllByRole("img");
     expect(productImages).toHaveLength(4);
-    expect(productImages.slice(0, 3).every((image) => image.dataset.priority === "true")).toBe(
-      true
-    );
-    expect(productImages[3]).not.toHaveAttribute("data-priority");
+    expect(productImages.every((image) => image.dataset.priority !== "true")).toBe(true);
   });
 
   it("keeps section rhythm and renders an intentional empty state without catalog data", async () => {

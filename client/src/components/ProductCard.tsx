@@ -4,12 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState, type MouseEvent } from "react";
 import { useFormStatus } from "react-dom";
-import { motion, useReducedMotion } from "framer-motion";
 import { addToCart } from "@/app/actions/cart";
 import { Badge } from "@/components/ui/Badge";
 import { formatPrice, type Product } from "@/lib/catalog";
 
-const ease = [0.22, 1, 0.36, 1] as const;
 const WISHLIST_KEY = "royal-bakery-wishlist";
 
 function readWishlist(): Set<string> {
@@ -37,7 +35,7 @@ function AddToCartButton({ outOfStock }: { outOfStock: boolean }) {
       disabled={outOfStock || pending}
       title={outOfStock ? "Out of stock" : "Add to cart"}
       aria-label={outOfStock ? "Out of stock" : "Add to cart"}
-      className={`inline-flex h-9 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-semibold tracking-[0.08em] transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-45 ${
+      className={`inline-flex min-h-11 items-center gap-1.5 rounded-full px-3.5 text-[11px] font-semibold tracking-[0.08em] transition-colors duration-300 motion-reduce:transition-none disabled:cursor-not-allowed disabled:opacity-45 ${
         outOfStock
           ? "bg-border-warm text-text-muted"
           : "bg-cocoa text-cream-alt hover:bg-caramel"
@@ -63,14 +61,20 @@ function AddToCartButton({ outOfStock }: { outOfStock: boolean }) {
   );
 }
 
-export function ProductCard({ product }: { product: Product }) {
+export function ProductCard({
+  product,
+  priority = false,
+}: {
+  product: Product;
+  priority?: boolean;
+}) {
   const outOfStock = product.stockQuantity <= 0 || !product.isAvailable;
-  const reduceMotion = useReducedMotion();
-  const [hovered, setHovered] = useState(false);
-  const [loved, setLoved] = useState(false);
+  const [loved, setLoved] = useState(() => readWishlist().has(product.id));
 
   useEffect(() => {
-    setLoved(readWishlist().has(product.id));
+    const syncWishlist = () => setLoved(readWishlist().has(product.id));
+    window.addEventListener("storage", syncWishlist);
+    return () => window.removeEventListener("storage", syncWishlist);
   }, [product.id]);
 
   const toggleLove = (e: MouseEvent) => {
@@ -87,37 +91,18 @@ export function ProductCard({ product }: { product: Product }) {
     writeWishlist(next);
   };
 
-  const heartActive = loved || hovered;
   const description =
     product.description?.trim() ||
     "Fresh from the oven, made in small batches.";
 
   return (
-    <motion.article
-      className="group relative h-full"
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      animate={
-        reduceMotion
-          ? undefined
-          : {
-              y: hovered ? -6 : 0,
-            }
-      }
-      transition={{ duration: 0.45, ease }}
-    >
+    <article className="product-card group relative h-full">
       <div
-        className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-br from-honey/40 via-caramel/10 to-transparent opacity-0 blur-xl transition-opacity duration-500 group-hover:opacity-100"
+        className="pointer-events-none absolute inset-0 rounded-[2rem] bg-gradient-to-br from-honey/40 via-caramel/10 to-transparent opacity-0 blur-xl"
         aria-hidden
       />
 
-      <div
-        className={`relative flex h-full flex-col overflow-hidden rounded-[1.35rem] bg-cream-alt transition-[box-shadow,ring-color] duration-500 ${
-          hovered
-            ? "shadow-[0_28px_50px_-24px_rgba(58,26,19,0.45)] ring-1 ring-caramel/35"
-            : "shadow-[0_12px_32px_-20px_rgba(58,26,19,0.28)] ring-1 ring-border-warm/80"
-        }`}
-      >
+      <div className="relative flex h-full flex-col overflow-hidden rounded-[1.35rem] bg-cream-alt shadow-[0_12px_32px_-20px_rgba(58,26,19,0.28)] ring-1 ring-border-warm/80">
         <div className="relative aspect-square overflow-hidden">
           <Link
             href={`/products/${product.id}`}
@@ -125,25 +110,14 @@ export function ProductCard({ product }: { product: Product }) {
             aria-label={`View ${product.name}`}
           >
             {product.imageUrl ? (
-              <motion.div
-                className="absolute inset-0"
-                animate={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        scale: hovered ? 1.08 : 1,
-                      }
-                }
-                transition={{ duration: 0.8, ease }}
-              >
-                <Image
-                  src={product.imageUrl}
-                  alt={product.name}
-                  fill
-                  sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 90vw"
-                  className="object-cover"
-                />
-              </motion.div>
+              <Image
+                src={product.imageUrl}
+                alt={product.name}
+                fill
+                priority={priority}
+                sizes="(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)"
+                className="object-cover transition-transform duration-500 motion-reduce:transition-none"
+              />
             ) : (
               <div className="flex h-full items-center justify-center bg-gradient-to-br from-honey-light via-cream to-honey/40 px-4 text-center">
                 <span className="font-display text-sm tracking-wide text-text-muted">
@@ -153,57 +127,30 @@ export function ProductCard({ product }: { product: Product }) {
             )}
           </Link>
 
-          <motion.div
+          <div
             className="pointer-events-none absolute inset-0 bg-gradient-to-t from-cocoa-dark/50 via-transparent to-cocoa-dark/10"
             aria-hidden
-            animate={{ opacity: hovered ? 0.9 : 0.45 }}
-            transition={{ duration: 0.4, ease }}
           />
 
-          {!reduceMotion && (
-            <motion.div
-              className="pointer-events-none absolute inset-y-0 left-0 w-1/2 bg-gradient-to-r from-transparent via-cream/20 to-transparent"
-              aria-hidden
-              initial={{ x: "-120%", opacity: 0 }}
-              animate={
-                hovered
-                  ? { x: "220%", opacity: [0, 1, 0] }
-                  : { x: "-120%", opacity: 0 }
-              }
-              transition={{ duration: 0.85, ease }}
-            />
-          )}
-
           <div className="absolute right-3 top-3 z-10 flex items-center gap-2">
-            <motion.span
-              className="pointer-events-none font-display text-[11px] italic text-cream drop-shadow"
-              initial={false}
-              animate={{
-                opacity: hovered ? 1 : 0,
-                x: hovered ? 0 : 6,
-              }}
-              transition={{ duration: 0.3, ease }}
-            >
-              You love this!
-            </motion.span>
             <button
               type="button"
               onClick={toggleLove}
               aria-label={loved ? "Remove from wishlist" : "Add to wishlist"}
               aria-pressed={loved}
-              className="flex h-9 w-9 items-center justify-center rounded-full bg-cream-alt/95 text-text-muted shadow-sm backdrop-blur-sm transition-colors duration-300"
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-cream-alt/95 text-text-muted shadow-sm backdrop-blur-sm transition-colors duration-300 motion-reduce:transition-none"
             >
               <svg
                 width="16"
                 height="16"
                 viewBox="0 0 24 24"
-                fill={heartActive ? "currentColor" : "none"}
+                fill={loved ? "currentColor" : "none"}
                 stroke="currentColor"
                 strokeWidth="1.7"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 className={`transition-colors duration-300 ${
-                  heartActive ? "text-red-500" : "text-text-muted"
+                  loved ? "text-red-500" : "text-text-muted"
                 }`}
                 aria-hidden
               >
@@ -232,9 +179,7 @@ export function ProductCard({ product }: { product: Product }) {
             className="outline-none focus-visible:underline focus-visible:decoration-caramel"
           >
             <h3
-              className={`font-display text-lg font-semibold leading-snug transition-colors duration-300 ${
-                hovered ? "text-caramel" : "text-cocoa"
-              }`}
+              className="font-display text-lg font-semibold leading-snug text-cocoa"
             >
               {product.name}
             </h3>
@@ -259,6 +204,6 @@ export function ProductCard({ product }: { product: Product }) {
           </div>
         </div>
       </div>
-    </motion.article>
+    </article>
   );
 }

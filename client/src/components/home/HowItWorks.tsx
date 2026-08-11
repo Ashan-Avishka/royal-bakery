@@ -23,14 +23,14 @@ export function HowItWorks() {
   return (
     <section className="relative overflow-hidden border-y border-border-warm/70 bg-gradient-to-b from-honey-light/25 to-cream">
       <div
-        className="pointer-events-none absolute left-[8%] top-16 h-40 w-40 rounded-full bg-honey/40 blur-3xl float-slow"
+        className="ambient-blur pointer-events-none absolute left-[8%] top-16 h-40 w-40 rounded-full bg-honey/40 blur-3xl float-slow"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute right-[12%] bottom-10 h-52 w-52 rounded-full bg-caramel/15 blur-3xl float-slower"
+        className="ambient-blur pointer-events-none absolute right-[12%] bottom-10 h-52 w-52 rounded-full bg-caramel/15 blur-3xl float-slower"
         aria-hidden
       />
-      <div className="relative mx-auto max-w-6xl px-6 py-20 sm:py-24">
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <SectionHeader
           eyebrow="The experience"
           title="From oven to you"

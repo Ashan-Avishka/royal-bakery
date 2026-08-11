@@ -58,8 +58,23 @@ it("shows an out-of-stock badge for unavailable inventory", () => {
   expect(screen.getByText("Out of stock")).toBeVisible();
 });
 
-it("forwards priority to the product image", () => {
+it("forwards priority and an accurate responsive size hint to the product image", () => {
   render(<ProductCard product={product} priority />);
 
   expect(screen.getByRole("img")).toHaveAttribute("data-priority", "true");
+  expect(screen.getByRole("img")).toHaveAttribute(
+    "sizes",
+    "(min-width: 1280px) 264px, (min-width: 1024px) 30vw, (min-width: 640px) 45vw, calc(100vw - 2rem)"
+  );
+});
+
+it("keeps wishlist and purchase actions visible with touch-sized controls", () => {
+  render(<ProductCard product={product} />);
+
+  expect(screen.getByRole("button", { name: "Add to wishlist" })).toHaveClass(
+    "h-11",
+    "w-11"
+  );
+  expect(screen.getByRole("button", { name: "Add to cart" })).toBeVisible();
+  expect(screen.getByRole("link", { name: "Details" })).toBeVisible();
 });

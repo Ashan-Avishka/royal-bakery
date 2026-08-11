@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 export function AboutTeaser() {
   return (
     <section className="bg-cream-alt">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-6 py-20 sm:py-24 lg:grid-cols-12 lg:gap-16">
+      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:gap-12 sm:px-6 sm:py-24 lg:grid-cols-12 lg:gap-16">
         <div className="relative overflow-hidden lg:col-span-6">
           <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
             <Image

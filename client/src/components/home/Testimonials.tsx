@@ -43,20 +43,20 @@ export function Testimonials() {
   return (
     <section className="relative overflow-hidden py-20 sm:py-24">
       <div
-        className="pointer-events-none absolute -left-10 top-24 h-56 w-56 rounded-full bg-honey/35 blur-3xl float-slow"
+        className="ambient-blur pointer-events-none absolute -left-10 top-24 h-56 w-56 rounded-full bg-honey/35 blur-3xl float-slow"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-8 bottom-8 h-64 w-64 rounded-full bg-caramel/10 blur-3xl float-slower"
+        className="ambient-blur pointer-events-none absolute -right-8 bottom-8 h-64 w-64 rounded-full bg-caramel/10 blur-3xl float-slower"
         aria-hidden
       />
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
       <SectionHeader
         eyebrow="Kind words"
         title="Loved around Harispaththuwa"
       />
 
-      <div className="relative overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-gradient-to-br from-cream-alt via-cream to-honey-light/30 px-6 py-14 shadow-[0_24px_60px_-36px_rgba(58,26,19,0.35)] sm:px-14 sm:py-20">
+      <div className="elevated-surface relative overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-gradient-to-br from-cream-alt via-cream to-honey-light/30 px-6 py-14 shadow-[0_24px_60px_-36px_rgba(58,26,19,0.35)] sm:px-14 sm:py-20">
         <div className="mx-auto max-w-3xl text-center">
           <p
             className="font-display text-5xl italic leading-none text-honey sm:text-6xl"

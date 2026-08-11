@@ -62,7 +62,7 @@ export function TrustBar() {
         aria-hidden
       />
 
-      <div className="relative mx-auto grid max-w-6xl grid-cols-2 gap-px sm:grid-cols-4">
+      <div className="relative mx-auto grid max-w-6xl grid-cols-1 gap-px min-[420px]:grid-cols-2 sm:grid-cols-4">
         {pillars.map((pillar) => (
           <div
             key={pillar.title}

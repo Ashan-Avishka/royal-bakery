@@ -30,7 +30,7 @@ export function PromoBanner() {
           <Link
             key={promo.title}
             href={promo.href}
-            className="group relative isolate min-h-[360px] overflow-hidden border-b border-cocoa/40 sm:min-h-[420px] lg:border-b-0 lg:border-r lg:last:border-r-0 lg:border-cocoa/40"
+            className="group relative isolate min-h-[300px] overflow-hidden border-b border-cocoa/40 sm:min-h-[420px] lg:border-b-0 lg:border-r lg:last:border-r-0 lg:border-cocoa/40"
           >
             <Image
               src={promo.image}
@@ -44,7 +44,7 @@ export function PromoBanner() {
               aria-hidden
             />
             <div
-              className={`relative z-10 flex h-full flex-col justify-end p-8 sm:p-11 ${
+              className={`relative z-10 flex h-full flex-col justify-end p-4 sm:p-11 ${
                 index === 0
                   ? "lg:pl-[max(2.75rem,calc((100vw-72rem)/2+1.5rem))]"
                   : ""

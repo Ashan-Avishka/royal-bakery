@@ -39,12 +39,12 @@ export function ProductCarousel({
           className="pointer-events-none absolute inset-0 overflow-hidden"
           aria-hidden
         >
-          <div className="absolute -left-20 top-20 h-64 w-64 rounded-full bg-caramel/10 blur-3xl" />
-          <div className="absolute -right-16 bottom-10 h-72 w-72 rounded-full bg-honey/40 blur-3xl" />
+          <div className="ambient-blur absolute -left-20 top-20 h-64 w-64 rounded-full bg-caramel/10 blur-3xl" />
+          <div className="ambient-blur absolute -right-16 bottom-10 h-72 w-72 rounded-full bg-honey/40 blur-3xl" />
         </div>
       )}
 
-      <div className="relative mx-auto max-w-6xl px-6 py-20 sm:py-24">
+      <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
         <SectionHeader
           eyebrow={eyebrow}
           title={title}

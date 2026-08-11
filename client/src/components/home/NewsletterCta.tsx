@@ -12,7 +12,7 @@ export function NewsletterCta() {
         }}
         aria-hidden
       />
-      <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-6 py-20 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
+      <div className="relative mx-auto flex max-w-6xl flex-col items-start gap-8 px-4 py-16 sm:px-6 sm:py-24 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-xl">
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-8 bg-honey/50" aria-hidden />

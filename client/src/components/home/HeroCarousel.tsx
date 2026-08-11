@@ -2,7 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { type ReactNode, useCallback, useEffect, useState } from "react";
+import {
+  type KeyboardEvent,
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BrandLogo } from "@/components/BrandLogo";
 import { Button } from "@/components/ui/Button";
@@ -38,6 +44,17 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
     [slides.length]
   );
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goTo(index - 1);
+    }
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goTo(index + 1);
+    }
+  };
+
   useEffect(() => {
     if (paused || reduceMotion || slides.length <= 1) return;
     const id = window.setInterval(() => goTo(index + 1), 7000);
@@ -49,10 +66,12 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
   return (
     <section
       className={`relative isolate overflow-hidden bg-cocoa-dark ${
-        compact ? "h-full min-h-0" : "min-h-[min(88vh,820px)]"
+        compact ? "h-full min-h-0" : "min-h-[min(78svh,680px)]"
       }`}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onKeyDown={handleKeyDown}
+      tabIndex={0}
       aria-roledescription="carousel"
       aria-label="Featured promotions"
     >
@@ -101,19 +120,19 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
 
       {/* Floating atmosphere */}
       <div
-        className="pointer-events-none absolute -left-16 top-24 h-56 w-56 rounded-full bg-caramel/25 blur-3xl"
+        className="ambient-blur pointer-events-none absolute -left-16 top-24 h-56 w-56 rounded-full bg-caramel/25 blur-3xl"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-honey/20 blur-3xl"
+        className="ambient-blur pointer-events-none absolute -right-10 bottom-10 h-48 w-48 rounded-full bg-honey/20 blur-3xl"
         aria-hidden
       />
 
       <div
-        className={`relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-6 ${
+        className={`relative z-10 mx-auto flex h-full max-w-6xl flex-col justify-end px-4 sm:px-6 ${
           compact
             ? "pb-8 pt-24 sm:justify-center sm:pb-10 sm:pt-20"
-            : "min-h-[min(88vh,820px)] pb-14 pt-28 sm:justify-center sm:pb-20 sm:pt-24"
+            : "min-h-[min(78svh,680px)] pb-12 pt-24 sm:justify-center sm:pb-16 sm:pt-24"
         }`}
       >
         <AnimatePresence mode="wait" initial={false}>
@@ -175,7 +194,7 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
                   aria-selected={i === index}
                   aria-label={`Go to slide ${i + 1}`}
                   onClick={() => goTo(i)}
-                  className="group relative h-8 w-10"
+                  className="group relative h-11 w-11"
                 >
                   <span className="absolute bottom-0 left-0 h-px w-full bg-cream/20 transition-colors duration-300 group-hover:bg-cream/40" />
                   {i === index && (
@@ -235,7 +254,7 @@ function HeroNavButton({
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-10 w-10 items-center justify-center rounded-full border border-cream/20 text-cream/80 transition-all duration-300 hover:border-honey/60 hover:text-honey"
+      className="flex h-11 w-11 items-center justify-center rounded-full border border-cream/20 text-cream/80 transition-colors duration-300 hover:border-honey/60 hover:text-honey motion-reduce:transition-none"
     >
       <svg
         width="16"

@@ -120,15 +120,15 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
   return (
     <section className="relative overflow-hidden py-20 sm:py-24">
       <div
-        className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-honey/30 blur-3xl float-slow"
+        className="ambient-blur pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-honey/30 blur-3xl float-slow"
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-caramel/15 blur-3xl float-slower"
+        className="ambient-blur pointer-events-none absolute -right-20 bottom-0 h-80 w-80 rounded-full bg-caramel/15 blur-3xl float-slower"
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-6xl px-6">
+      <div className="relative mx-auto max-w-6xl px-4 sm:px-6">
         <SectionHeader
           eyebrow="Collections"
           title="Shop by craving"
@@ -189,7 +189,7 @@ export function CategoryShowcase({ categories }: CategoryShowcaseProps) {
                 <Link
                   key={category.key}
                   href={category.href}
-                  className={`group relative flex min-h-[150px] flex-1 items-center gap-4 overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/90 p-4 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(58,26,19,0.4)] sm:p-5 ${
+                  className={`elevated-surface group relative flex min-h-[150px] flex-1 items-center gap-4 overflow-hidden rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/90 p-4 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(58,26,19,0.4)] motion-reduce:transition-none sm:p-5 ${
                     flip ? "flex-row-reverse text-right" : "flex-row"
                   }`}
                 >
