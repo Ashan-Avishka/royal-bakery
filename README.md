@@ -30,6 +30,40 @@ cd client; npm run dev
 
 Health check: `Invoke-RestMethod http://localhost:4000/api/health` → `{ status: ok }`
 
+## Product image import
+
+The product image importer reads the source images already tracked in
+`System/assets/products` and uses a separate ignored configuration file for each
+target. Create `server/.env.local` for local Supabase and
+`server/.env.hosted.local` for the hosted Supabase project. Each file contains:
+
+```dotenv
+SUPABASE_URL=http://127.0.0.1:54321
+SUPABASE_SERVICE_ROLE_KEY=the-service-role-key-for-this-target
+```
+
+Put the real hosted URL and service-role key only in `server/.env.hosted.local`;
+do not add them to this repository or its documentation.
+
+Run a dry-run first. It validates the 31 source mappings and target catalog rows
+without uploading files or updating product URLs:
+
+```powershell
+cd server
+npm run images:dry-run -- --target local
+```
+
+To make the explicit, write-enabled import, use:
+
+```powershell
+npm run images:import -- --target local
+```
+
+Use `--target hosted` for the hosted configuration, or `--target all` to run the
+two targets independently. Add `--verify` to either command to require every
+mapped product URL to end with `/<product-id>/catalog.webp`, return HTTP 200,
+and serve `image/webp`. Each selected target prints its own summary report.
+
 ## Test PayHere payments
 
 PayHere's server-to-server payment notification needs a public HTTPS endpoint while the API is running locally.

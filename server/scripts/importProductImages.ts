@@ -1,7 +1,7 @@
-import "dotenv/config";
+import dotenv from "dotenv";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { createClient } from "@supabase/supabase-js";
 import sharp from "sharp";
 import {
@@ -13,6 +13,27 @@ import {
 interface CatalogProduct {
   id: string;
   name: string;
+}
+
+interface CatalogProductWithImageUrl extends CatalogProduct {
+  imageUrl: string | null;
+}
+
+export type ImageImportTarget = "local" | "hosted" | "all";
+
+export interface ImageImportArguments {
+  target: ImageImportTarget;
+  execute: boolean;
+  verify: boolean;
+}
+
+export interface TargetEnvironmentFile {
+  name: Exclude<ImageImportTarget, "all">;
+  fileName: ".env.local" | ".env.hosted.local";
+}
+
+interface TargetImportDependencies extends ImportDependencies {
+  listProductsForVerification(): Promise<readonly CatalogProductWithImageUrl[]>;
 }
 
 export interface ImportDependencies {
@@ -120,13 +141,7 @@ export async function importProductImages(
   return report;
 }
 
-function createImportDependencies(): ImportDependencies {
-  const url = process.env.SUPABASE_URL;
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !key) {
-    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
-  }
-
+function createImportDependencies(url: string, key: string): TargetImportDependencies {
   const supabase = createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -140,6 +155,17 @@ function createImportDependencies(): ImportDependencies {
         throw error;
       }
       return data;
+    },
+    async listProductsForVerification() {
+      const { data, error } = await supabase.from("products").select("id, name, image_url");
+      if (error) {
+        throw error;
+      }
+      return data.map((product) => ({
+        id: product.id,
+        name: product.name,
+        imageUrl: product.image_url,
+      }));
     },
     async upload(objectPath, webpBuffer, contentType) {
       const { error } = await supabase.storage.from("product-images").upload(objectPath, webpBuffer, {
@@ -163,33 +189,147 @@ function createImportDependencies(): ImportDependencies {
   };
 }
 
+export function parseArguments(arguments_: readonly string[]): ImageImportArguments {
+  let target: ImageImportTarget | undefined;
+  let execute = false;
+  let verify = false;
+
+  for (let index = 0; index < arguments_.length; index += 1) {
+    const argument = arguments_[index];
+    if (argument === "--target") {
+      if (target !== undefined || index + 1 >= arguments_.length) {
+        throw new Error("Target must be local, hosted, or all");
+      }
+      const targetValue = arguments_[index + 1];
+      if (targetValue !== "local" && targetValue !== "hosted" && targetValue !== "all") {
+        throw new Error("Target must be local, hosted, or all");
+      }
+      target = targetValue;
+      index += 1;
+    } else if (argument === "--execute" && !execute) {
+      execute = true;
+    } else if (argument === "--verify" && !verify) {
+      verify = true;
+    } else {
+      throw new Error("Usage: --target local|hosted|all [--execute] [--verify]");
+    }
+  }
+
+  if (target === undefined) {
+    throw new Error("Target must be local, hosted, or all");
+  }
+
+  return { target, execute, verify };
+}
+
+export function targetEnvironmentFiles(target: ImageImportTarget): readonly TargetEnvironmentFile[] {
+  if (target === "local") {
+    return [{ name: "local", fileName: ".env.local" }];
+  }
+  if (target === "hosted") {
+    return [{ name: "hosted", fileName: ".env.hosted.local" }];
+  }
+  return [
+    { name: "local", fileName: ".env.local" },
+    { name: "hosted", fileName: ".env.hosted.local" },
+  ];
+}
+
+export async function verifyProductImageUrls(
+  products: readonly CatalogProductWithImageUrl[],
+  mappings: readonly ProductImageMapping[] = PRODUCT_IMAGE_MANIFEST
+): Promise<void> {
+  const productsByName = new Map<string, CatalogProductWithImageUrl[]>();
+  for (const product of products) {
+    const normalizedName = normalizeProductName(product.name);
+    const matchingProducts = productsByName.get(normalizedName) ?? [];
+    matchingProducts.push(product);
+    productsByName.set(normalizedName, matchingProducts);
+  }
+
+  await Promise.all(mappings.map(async (mapping) => {
+    const matches = productsByName.get(normalizeProductName(mapping.productName)) ?? [];
+    if (matches.length === 0) {
+      throw new Error(`No catalog product found for "${mapping.productName}"`);
+    }
+    if (matches.length !== 1) {
+      throw new Error(
+        `Expected exactly one catalog product for "${mapping.productName}", found ${matches.length}`
+      );
+    }
+
+    const product = matches[0];
+    const expectedPath = `/${product.id}/catalog.webp`;
+    if (!product.imageUrl?.endsWith(expectedPath)) {
+      throw new Error(`Product "${product.name}" image URL must end in "${expectedPath}"`);
+    }
+
+    const response = await fetch(product.imageUrl);
+    if (response.status !== 200) {
+      throw new Error(`Product "${product.name}" image URL returned HTTP ${response.status}`);
+    }
+    if (!response.headers.get("content-type")?.includes("image/webp")) {
+      throw new Error(`Product "${product.name}" image URL did not return image/webp`);
+    }
+  }));
+}
+
+function clearTargetEnvironment(): void {
+  delete process.env.SUPABASE_URL;
+  delete process.env.SUPABASE_SERVICE_ROLE_KEY;
+}
+
+function createTargetImportDependencies(environmentFile: TargetEnvironmentFile): TargetImportDependencies {
+  clearTargetEnvironment();
+  const configuration = dotenv.config({
+    path: path.resolve(scriptDirectory, "..", environmentFile.fileName),
+    override: true,
+  });
+  const url = process.env.SUPABASE_URL;
+  const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  clearTargetEnvironment();
+
+  if (configuration.error) {
+    throw new Error(`Unable to load environment file "${environmentFile.fileName}"`);
+  }
+  if (!url || !key) {
+    throw new Error("SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY are required");
+  }
+  return createImportDependencies(url, key);
+}
+
+const scriptDirectory = path.dirname(fileURLToPath(import.meta.url));
+const sourceDirectory = path.resolve(scriptDirectory, "../../System/assets/products");
+
 const isMain =
   process.argv[1] !== undefined &&
   import.meta.url === pathToFileURL(process.argv[1]).href;
 
 if (isMain) {
-  const sourceDirectory = process.argv[2];
-  if (!sourceDirectory) {
-    console.error("Usage: tsx scripts/importProductImages.ts <source-directory> [--execute]");
-    process.exitCode = 1;
-  } else {
-    importProductImages(
-      {
-        sourceDirectory,
-        execute: process.argv.includes("--execute"),
-        environmentName: process.env.NODE_ENV ?? "local",
-      },
-      createImportDependencies()
-    )
-      .then((report) => {
-        console.log(JSON.stringify(report, null, 2));
-        if (report.failures.length > 0) {
-          process.exitCode = 1;
-        }
-      })
-      .catch((error: unknown) => {
-        console.error(errorMessage(error));
+  const run = async () => {
+    const arguments_ = parseArguments(process.argv.slice(2));
+    for (const environmentFile of targetEnvironmentFiles(arguments_.target)) {
+      const dependencies = createTargetImportDependencies(environmentFile);
+      const report = await importProductImages(
+        {
+          sourceDirectory,
+          execute: arguments_.execute,
+          environmentName: environmentFile.name,
+        },
+        dependencies
+      );
+      if (arguments_.verify) {
+        await verifyProductImageUrls(await dependencies.listProductsForVerification());
+      }
+      console.log(JSON.stringify(report, null, 2));
+      if (report.failures.length > 0) {
         process.exitCode = 1;
-      });
-  }
+      }
+    }
+  };
+
+  run().catch((error: unknown) => {
+    console.error(errorMessage(error));
+    process.exitCode = 1;
+  });
 }

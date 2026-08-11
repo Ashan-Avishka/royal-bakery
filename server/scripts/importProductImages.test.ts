@@ -1,5 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
-import { importProductImages, type ImportDependencies } from "./importProductImages.js";
+import {
+  importProductImages,
+  parseArguments,
+  targetEnvironmentFiles,
+  verifyProductImageUrls,
+  type ImportDependencies,
+} from "./importProductImages.js";
 
 function dependencies(): ImportDependencies {
   return {
@@ -80,5 +86,63 @@ describe("importProductImages", () => {
     ).rejects.toThrow('Expected exactly one catalog product for "Butter Cake", found 2');
     expect(deps.readSource).not.toHaveBeenCalled();
     expect(deps.upload).not.toHaveBeenCalled();
+  });
+});
+
+describe("image import CLI", () => {
+  it("defaults to dry-run and requires a valid target", () => {
+    expect(parseArguments(["--target", "all"])).toEqual({ target: "all", execute: false, verify: false });
+    expect(parseArguments(["--target", "hosted", "--verify"])).toEqual({ target: "hosted", execute: false, verify: true });
+    expect(() => parseArguments(["--target", "production"])).toThrow("Target must be local, hosted, or all");
+  });
+
+  it("maps all to independent ignored environment files", () => {
+    expect(targetEnvironmentFiles("all")).toEqual([
+      { name: "local", fileName: ".env.local" },
+      { name: "hosted", fileName: ".env.hosted.local" },
+    ]);
+  });
+});
+
+describe("verifyProductImageUrls", () => {
+  it("accepts stable WebP URLs that return HTTP 200", async () => {
+    const fetchMock = vi.fn().mockResolvedValue(new Response("webp", {
+      status: 200,
+      headers: { "content-type": "image/webp" },
+    }));
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(verifyProductImageUrls([
+      { id: "product-1", name: "Butter Cake", imageUrl: "https://example.test/product-1/catalog.webp" },
+    ], [{ fileName: "butter_cake.png", productName: "Butter Cake" }])).resolves.toBeUndefined();
+
+    expect(fetchMock).toHaveBeenCalledWith("https://example.test/product-1/catalog.webp");
+    vi.unstubAllGlobals();
+  });
+
+  it("rejects a WebP URL that does not return HTTP 200", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, {
+      status: 404,
+      headers: { "content-type": "image/webp" },
+    })));
+
+    await expect(verifyProductImageUrls([
+      { id: "product-1", name: "Butter Cake", imageUrl: "https://example.test/product-1/catalog.webp" },
+    ], [{ fileName: "butter_cake.png", productName: "Butter Cake" }])).rejects.toThrow("returned HTTP 404");
+
+    vi.unstubAllGlobals();
+  });
+
+  it("rejects a successful URL that does not serve WebP", async () => {
+    vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response("image", {
+      status: 200,
+      headers: { "content-type": "image/png" },
+    })));
+
+    await expect(verifyProductImageUrls([
+      { id: "product-1", name: "Butter Cake", imageUrl: "https://example.test/product-1/catalog.webp" },
+    ], [{ fileName: "butter_cake.png", productName: "Butter Cake" }])).rejects.toThrow("did not return image/webp");
+
+    vi.unstubAllGlobals();
   });
 });
