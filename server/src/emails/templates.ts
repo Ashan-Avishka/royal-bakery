@@ -27,6 +27,15 @@ function formatLKR(amount: number): string {
   return `LKR ${amount.toLocaleString("en-US")}`;
 }
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
 function orderShortId(orderId: string): string {
   return orderId.slice(0, 8);
 }
@@ -59,7 +68,7 @@ function renderItemsHtml(items: OrderEmailItem[]): string {
   const rows = items
     .map(
       (item) =>
-        `<tr><td style="padding:4px 0;">${item.quantity} &times; ${item.name}</td><td style="padding:4px 0;text-align:right;">${formatLKR(item.subtotal)}</td></tr>`
+        `<tr><td style="padding:4px 0;">${item.quantity} &times; ${escapeHtml(item.name)}</td><td style="padding:4px 0;text-align:right;">${formatLKR(item.subtotal)}</td></tr>`
     )
     .join("");
   return `<table style="width:100%;border-collapse:collapse;margin:12px 0;">${rows}</table>`;
@@ -75,7 +84,7 @@ export function buildOrderConfirmationEmail(order: OrderEmailData): EmailContent
     <p>Thanks for your order! We've received order <strong>#${orderShortId(order.id)}</strong> and we're getting it ready.</p>
     ${renderItemsHtml(order.items)}
     <p><strong>Total: ${formatLKR(order.totalAmount)}</strong></p>
-    ${order.deliveryAddress ? `<p>Delivering to: ${order.deliveryAddress}</p>` : ""}
+    ${order.deliveryAddress ? `<p>Delivering to: ${escapeHtml(order.deliveryAddress)}</p>` : ""}
   `;
   const bodyText = `Thanks for your order! We've received order #${orderShortId(order.id)} and we're getting it ready.\n\n${renderItemsText(order.items)}\n\nTotal: ${formatLKR(order.totalAmount)}${order.deliveryAddress ? `\nDelivering to: ${order.deliveryAddress}` : ""}`;
 
@@ -141,10 +150,10 @@ export function buildPaymentStatusChangeEmail(
 export function buildAdminNewOrderEmail(order: OrderEmailData, customerEmail: string): EmailContent {
   const title = "New order received";
   const bodyHtml = `
-    <p>New order <strong>#${orderShortId(order.id)}</strong> from ${customerEmail}.</p>
+    <p>New order <strong>#${orderShortId(order.id)}</strong> from ${escapeHtml(customerEmail)}.</p>
     ${renderItemsHtml(order.items)}
     <p><strong>Total: ${formatLKR(order.totalAmount)}</strong></p>
-    ${order.deliveryAddress ? `<p>Delivery address: ${order.deliveryAddress}</p>` : ""}
+    ${order.deliveryAddress ? `<p>Delivery address: ${escapeHtml(order.deliveryAddress)}</p>` : ""}
   `;
   const bodyText = `New order #${orderShortId(order.id)} from ${customerEmail}.\n\n${renderItemsText(order.items)}\n\nTotal: ${formatLKR(order.totalAmount)}${order.deliveryAddress ? `\nDelivery address: ${order.deliveryAddress}` : ""}`;
 
@@ -157,7 +166,7 @@ export function buildAdminNewOrderEmail(order: OrderEmailData, customerEmail: st
 
 export function buildAdminLowStockEmail(products: { name: string; stockQuantity: number }[]): EmailContent {
   const title = "Low stock alert";
-  const rowsHtml = products.map((p) => `<li>${p.name} &mdash; ${p.stockQuantity} left</li>`).join("");
+  const rowsHtml = products.map((p) => `<li>${escapeHtml(p.name)} &mdash; ${p.stockQuantity} left</li>`).join("");
   const rowsText = products.map((p) => `  ${p.name} - ${p.stockQuantity} left`).join("\n");
 
   const bodyHtml = `

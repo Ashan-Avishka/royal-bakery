@@ -23,6 +23,28 @@ describe("buildOrderConfirmationEmail", () => {
     expect(email.text).toContain("Croissant");
     expect(email.text).toContain("LKR 760");
   });
+
+  it("escapes html markup in delivery address", () => {
+    const maliciousOrder = {
+      ...ORDER,
+      deliveryAddress: "<script>alert('xss')</script>",
+    };
+    const email = buildOrderConfirmationEmail(maliciousOrder);
+    expect(email.html).toContain("&lt;script&gt;");
+    expect(email.html).not.toContain("<script>");
+    expect(email.text).toContain("<script>");
+  });
+
+  it("escapes html markup in item names", () => {
+    const maliciousOrder = {
+      ...ORDER,
+      items: [{ name: '<img src=x onerror="alert(1)">', quantity: 2, unitPrice: 380, subtotal: 760 }],
+    };
+    const email = buildOrderConfirmationEmail(maliciousOrder);
+    expect(email.html).toContain("&lt;img");
+    expect(email.html).not.toContain('<img src=x');
+    expect(email.text).toContain('<img src=x');
+  });
 });
 
 describe("buildOrderStatusChangeEmail", () => {
@@ -49,6 +71,24 @@ describe("buildAdminNewOrderEmail", () => {
     expect(email.html).toContain("customer@example.com");
     expect(email.html).toContain("Croissant");
   });
+
+  it("escapes html markup in customer email", () => {
+    const email = buildAdminNewOrderEmail(ORDER, "<img src=x onerror=alert(1)>");
+    expect(email.html).toContain("&lt;img");
+    expect(email.html).not.toContain("<img src=x");
+    expect(email.text).toContain("<img src=x");
+  });
+
+  it("escapes html markup in delivery address", () => {
+    const maliciousOrder = {
+      ...ORDER,
+      deliveryAddress: "<script>alert('xss')</script>",
+    };
+    const email = buildAdminNewOrderEmail(maliciousOrder, "customer@example.com");
+    expect(email.html).toContain("&lt;script&gt;");
+    expect(email.html).not.toContain("<script>");
+    expect(email.text).toContain("<script>");
+  });
 });
 
 describe("buildAdminLowStockEmail", () => {
@@ -66,5 +106,14 @@ describe("buildAdminLowStockEmail", () => {
   it("uses singular phrasing for a single product", () => {
     const email = buildAdminLowStockEmail([{ name: "Croissant", stockQuantity: 3 }]);
     expect(email.html).toContain("has dropped");
+  });
+
+  it("escapes html markup in product names in html", () => {
+    const email = buildAdminLowStockEmail([
+      { name: "<script>alert('xss')</script>", stockQuantity: 3 },
+    ]);
+    expect(email.html).toContain("&lt;script&gt;");
+    expect(email.html).not.toContain("<script>");
+    expect(email.text).toContain("<script>");
   });
 });
