@@ -1,11 +1,11 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import {
   createElement,
   type ComponentProps,
   type HTMLAttributes,
   type ReactNode,
 } from "react";
-import { expect, it, vi } from "vitest";
+import { afterEach, expect, it, vi } from "vitest";
 import { HeroCarousel, type HeroSlide } from "./HeroCarousel";
 
 vi.mock("next/image", () => ({
@@ -33,10 +33,36 @@ const slides: HeroSlide[] = [
   { id: "second", brand: "Royal Bakery", headline: "Second", support: "Two", ctaLabel: "Shop", ctaHref: "/products", imageSrc: "/two.jpg", imageAlt: "Second hero" },
 ];
 
+afterEach(() => {
+  cleanup();
+  vi.useRealTimers();
+});
+
 it("only preloads the first hero slide", () => {
   render(<HeroCarousel slides={slides} />);
 
   expect(screen.getByRole("img", { name: "First hero" })).toHaveAttribute("data-priority", "true");
   fireEvent.click(screen.getByRole("tab", { name: "Go to slide 2" }));
   expect(screen.getByRole("img", { name: "Second hero" })).not.toHaveAttribute("data-priority");
+});
+
+it("pauses autoplay while focus stays in the hero and exposes a touch-sized pause control", () => {
+  vi.useFakeTimers();
+  render(<HeroCarousel slides={slides} />);
+  const hero = screen.getByRole("region", { name: "Featured promotions" });
+  const secondTab = screen.getByRole("tab", { name: "Go to slide 2" });
+
+  fireEvent.focus(hero);
+  fireEvent.blur(hero, { relatedTarget: secondTab });
+  fireEvent.focus(secondTab);
+  act(() => vi.advanceTimersByTime(7000));
+
+  expect(screen.getByRole("img", { name: "First hero" })).toBeVisible();
+  expect(screen.getByRole("button", { name: "Pause auto-advance" })).toHaveClass(
+    "h-11",
+    "w-11"
+  );
+
+  fireEvent.click(screen.getByRole("button", { name: "Pause auto-advance" }));
+  expect(screen.getByRole("button", { name: "Resume auto-advance" })).toBeVisible();
 });

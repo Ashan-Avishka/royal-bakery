@@ -67,8 +67,27 @@ describe("AutoCarousel", () => {
     fireEvent(window, new Event("resize"));
 
     expect(screen.getByText("8 / 8")).toBeVisible();
+    fireEvent.click(screen.getByRole("button", { name: "Previous" }));
+    expect(screen.getByText("7 / 8")).toBeVisible();
     fireEvent.click(next);
-    expect(screen.getByText("1 / 8")).toBeVisible();
+    expect(screen.getByText("8 / 8")).toBeVisible();
+  });
+
+  it("keeps automatic slide changes silent and announces paused or user-driven navigation", () => {
+    vi.useFakeTimers();
+    renderCarousel(3);
+    const counter = screen.getByText("1 / 3");
+
+    expect(counter).toHaveAttribute("aria-live", "off");
+
+    act(() => vi.advanceTimersByTime(4200));
+    expect(screen.getByText("2 / 3")).toHaveAttribute("aria-live", "off");
+
+    fireEvent.click(screen.getByRole("button", { name: "Pause auto-advance" }));
+    expect(counter).toHaveAttribute("aria-live", "polite");
+
+    fireEvent.click(screen.getByRole("button", { name: "Next" }));
+    expect(screen.getByText("3 / 3")).toHaveAttribute("aria-live", "polite");
   });
 
   it("pauses automatic advancement on focus and through its pause control", () => {

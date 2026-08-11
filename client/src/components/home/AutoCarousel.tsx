@@ -45,6 +45,7 @@ export function AutoCarousel({
   const [index, setIndex] = useState(0);
   const [interactionPaused, setInteractionPaused] = useState(false);
   const [autoplayPaused, setAutoplayPaused] = useState(false);
+  const [announceChanges, setAnnounceChanges] = useState(false);
   const [itemWidth, setItemWidth] = useState(0);
   const viewportRef = useRef<HTMLDivElement>(null);
   const gap = 24;
@@ -81,7 +82,8 @@ export function AutoCarousel({
   }, [items.length, itemsPerView, gap]);
 
   const go = useCallback(
-    (next: number) => {
+    (next: number, announce = false) => {
+      setAnnounceChanges(announce);
       if (maxIndex === 0) {
         setIndex(0);
         return;
@@ -96,11 +98,11 @@ export function AutoCarousel({
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "ArrowLeft") {
       event.preventDefault();
-      go(visibleIndex - 1);
+      go(visibleIndex - 1, true);
     }
     if (event.key === "ArrowRight") {
       event.preventDefault();
-      go(visibleIndex + 1);
+      go(visibleIndex + 1, true);
     }
   };
 
@@ -179,25 +181,31 @@ export function AutoCarousel({
 
       {items.length > itemsPerView && (
         <div className="mt-4 flex items-center justify-between gap-2 sm:mt-6">
-          <p className="min-w-12 text-center text-xs font-medium tabular-nums text-text-muted" aria-live="polite">
+          <p
+            className="min-w-12 text-center text-xs font-medium tabular-nums text-text-muted"
+            aria-live={announceChanges ? "polite" : "off"}
+          >
             {visibleIndex + 1} / {maxIndex + 1}
           </p>
           <div className="flex gap-2">
             <CarouselNav
               label="Previous"
-              onClick={() => go(index - 1)}
+              onClick={() => go(visibleIndex - 1, true)}
               direction="prev"
             />
             <CarouselNav
               label="Next"
-              onClick={() => go(visibleIndex + 1)}
+              onClick={() => go(visibleIndex + 1, true)}
               direction="next"
             />
             <button
               type="button"
               aria-label={autoplayPaused ? "Resume auto-advance" : "Pause auto-advance"}
               aria-pressed={autoplayPaused}
-              onClick={() => setAutoplayPaused((paused) => !paused)}
+              onClick={() => {
+                setAutoplayPaused((paused) => !paused);
+                setAnnounceChanges(!autoplayPaused);
+              }}
               className="flex h-11 min-w-11 items-center justify-center rounded-full border border-border-warm bg-cream-alt px-3 text-[11px] font-medium text-cocoa transition-colors hover:border-caramel hover:text-caramel motion-reduce:transition-none"
             >
               {autoplayPaused ? "Play" : "Pause"}

@@ -33,8 +33,11 @@ const ease = [0.22, 1, 0.36, 1] as const;
 
 export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
   const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
+  const [pointerPaused, setPointerPaused] = useState(false);
+  const [focusPaused, setFocusPaused] = useState(false);
+  const [autoplayPaused, setAutoplayPaused] = useState(false);
   const reduceMotion = useReducedMotion();
+  const paused = pointerPaused || focusPaused || autoplayPaused;
   const slide = slides[index];
 
   const goTo = useCallback(
@@ -68,8 +71,14 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
       className={`relative isolate overflow-hidden bg-cocoa-dark ${
         compact ? "h-full min-h-0" : "min-h-[min(78svh,680px)]"
       }`}
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseEnter={() => setPointerPaused(true)}
+      onMouseLeave={() => setPointerPaused(false)}
+      onFocusCapture={() => setFocusPaused(true)}
+      onBlurCapture={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setFocusPaused(false);
+        }
+      }}
       onKeyDown={handleKeyDown}
       tabIndex={0}
       aria-roledescription="carousel"
@@ -219,19 +228,31 @@ export function HeroCarousel({ slides, compact = false }: HeroCarouselProps) {
                 </button>
               ))}
             </div>
-            <div className="ml-auto hidden gap-2 sm:flex">
+            <div className="ml-auto flex gap-2">
               <HeroNavButton
-                label="Previous slide"
-                onClick={() => goTo(index - 1)}
+                label={autoplayPaused ? "Resume auto-advance" : "Pause auto-advance"}
+                onClick={() => setAutoplayPaused((value) => !value)}
               >
-                <path d="M15 18l-6-6 6-6" />
+                {autoplayPaused ? (
+                  <path d="M8 5v14l11-7z" />
+                ) : (
+                  <path d="M8 5v14M16 5v14" />
+                )}
               </HeroNavButton>
-              <HeroNavButton
-                label="Next slide"
-                onClick={() => goTo(index + 1)}
-              >
-                <path d="M9 18l6-6-6-6" />
-              </HeroNavButton>
+              <div className="hidden gap-2 sm:flex">
+                <HeroNavButton
+                  label="Previous slide"
+                  onClick={() => goTo(index - 1)}
+                >
+                  <path d="M15 18l-6-6 6-6" />
+                </HeroNavButton>
+                <HeroNavButton
+                  label="Next slide"
+                  onClick={() => goTo(index + 1)}
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </HeroNavButton>
+              </div>
             </div>
           </div>
         )}

@@ -147,9 +147,14 @@ describe("HomePage", () => {
     const productImages = within(featuredSection as HTMLElement).getAllByRole("img");
     expect(productImages).toHaveLength(2);
     expect(productImages.every((image) => image.dataset.priority !== "true")).toBe(true);
-    expect(productImages.every((image) => image.getAttribute("sizes")?.includes("352px"))).toBe(
-      true
-    );
+    expect(
+      productImages.every(
+        (image) =>
+          image
+            .getAttribute("sizes")
+            ?.includes("(min-width: 1024px) calc((100vw - 6rem) / 3)")
+      )
+    ).toBe(true);
   });
 
   it("keeps discovery available and explains empty product rails without catalog data", async () => {
