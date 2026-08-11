@@ -206,7 +206,7 @@ export function AutoCarousel({
                 setAutoplayPaused((paused) => !paused);
                 setAnnounceChanges(!autoplayPaused);
               }}
-              className="flex h-11 min-w-11 items-center justify-center rounded-full border border-border-warm bg-cream-alt px-3 text-[11px] font-medium text-cocoa transition-colors hover:border-caramel hover:text-caramel motion-reduce:transition-none"
+              className="flex h-11 min-w-11 items-center justify-center rounded-full border border-border-warm bg-cream-alt px-3 text-[11px] font-medium text-cocoa transition-colors hover:border-caramel hover:text-caramel-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-caramel focus-visible:ring-offset-2 focus-visible:ring-offset-cream-alt motion-reduce:transition-none"
             >
               {autoplayPaused ? "Play" : "Pause"}
             </button>

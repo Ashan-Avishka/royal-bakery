@@ -44,6 +44,18 @@ describe("AutoCarousel", () => {
     expect(screen.getByRole("button", { name: "Next" })).toHaveClass("h-11", "w-11");
   });
 
+  it("keeps the pause control's text and focus treatment accessible", () => {
+    renderCarousel(3);
+
+    expect(screen.getByRole("button", { name: "Pause auto-advance" })).toHaveClass(
+      "text-cocoa",
+      "hover:text-caramel-hover",
+      "focus-visible:ring-2",
+      "focus-visible:ring-caramel",
+      "focus-visible:ring-offset-cream-alt"
+    );
+  });
+
   it("hides offscreen cards from assistive technology as the rail advances", () => {
     renderCarousel(3);
 
