@@ -173,7 +173,7 @@ export async function updateProduct(
     categoryId?: string | null;
     stockQuantity?: number;
     isAvailable?: boolean;
-    imageUrl?: string;
+    imageUrl?: string | null;
   }
 ): Promise<Product> {
   const update: Record<string, unknown> = { updated_at: new Date().toISOString() };
@@ -200,6 +200,10 @@ export async function updateProduct(
 
 export async function setProductImage(id: string, imageUrl: string): Promise<Product> {
   return updateProduct(id, { imageUrl });
+}
+
+export async function clearProductImage(id: string): Promise<Product> {
+  return updateProduct(id, { imageUrl: null });
 }
 
 export async function deleteProduct(id: string): Promise<void> {

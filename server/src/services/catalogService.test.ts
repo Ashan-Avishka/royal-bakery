@@ -7,6 +7,7 @@ vi.mock("../lib/supabase.js", () => ({
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
 import {
+  clearProductImage,
   createCategory,
   createProduct,
   deleteCategory,
@@ -162,6 +163,12 @@ describe("createProduct / updateProduct / setProductImage / deleteProduct", () =
   it("sets the product image", async () => {
     const product = await setProductImage(PROD_A, "https://example.test/img.png");
     expect(product.imageUrl).toBe("https://example.test/img.png");
+  });
+
+  it("clears the product image", async () => {
+    await setProductImage(PROD_A, "https://example.test/img.png");
+    const product = await clearProductImage(PROD_A);
+    expect(product.imageUrl).toBeNull();
   });
 
   it("deletes an existing product", async () => {
