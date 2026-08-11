@@ -6,7 +6,7 @@ import { SectionHeader } from "@/components/home/SectionHeader";
 import type { Product } from "@/lib/catalog";
 
 const CAROUSEL_PRODUCT_IMAGE_SIZES =
-  "(min-width: 1280px) 352px, (min-width: 1024px) calc((100vw - 6rem) / 3), (min-width: 640px) calc((100vw - 4.5rem) / 2), calc(100vw - 2rem)";
+  "(min-width: 1280px) 258px, (min-width: 1024px) calc((100vw - 7.5rem) / 4), (min-width: 640px) calc((100vw - 4.5rem) / 2), calc(100vw - 2rem)";
 
 interface ProductCarouselProps {
   products: Product[];

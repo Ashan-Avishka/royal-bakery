@@ -73,7 +73,7 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: "Discover the Royal Bakery menu.",
+        name: "Discover the Royal Bakery menu online.",
       })
     ).toBeInTheDocument();
     expect(
@@ -147,14 +147,14 @@ describe("HomePage", () => {
     const productImages = within(featuredSection as HTMLElement)
       .getAllByRole("img")
       .filter((image) => image.tagName === "IMG");
-    expect(productImages).toHaveLength(2);
+    expect(productImages).toHaveLength(3);
     expect(productImages.every((image) => image.dataset.preload !== "true")).toBe(true);
     expect(
       productImages.every(
         (image) =>
           image
             .getAttribute("sizes")
-            ?.includes("(min-width: 1024px) calc((100vw - 6rem) / 3)")
+            ?.includes("(min-width: 1024px) calc((100vw - 7.5rem) / 4)")
       )
     ).toBe(true);
   });

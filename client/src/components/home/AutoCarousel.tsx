@@ -22,7 +22,7 @@ function useItemsPerView() {
   useEffect(() => {
     const update = () => {
       const w = window.innerWidth;
-      if (w >= 1024) setCount(3);
+      if (w >= 1024) setCount(4);
       else if (w >= 640) setCount(2);
       else setCount(1);
     };

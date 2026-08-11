@@ -78,11 +78,11 @@ describe("AutoCarousel", () => {
     Object.defineProperty(window, "innerWidth", { configurable: true, value: 1024 });
     fireEvent(window, new Event("resize"));
 
-    expect(screen.getByText("8 / 8")).toBeVisible();
+    expect(screen.getByText("7 / 7")).toBeVisible();
     fireEvent.click(screen.getByRole("button", { name: "Previous" }));
-    expect(screen.getByText("7 / 8")).toBeVisible();
+    expect(screen.getByText("6 / 7")).toBeVisible();
     fireEvent.click(next);
-    expect(screen.getByText("8 / 8")).toBeVisible();
+    expect(screen.getByText("7 / 7")).toBeVisible();
   });
 
   it("keeps automatic slide changes silent and announces paused or user-driven navigation", () => {
