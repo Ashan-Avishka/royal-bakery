@@ -68,7 +68,7 @@ export default async function AdminOrdersPage({
                   aria-current={active ? "page" : undefined}
                   className={`inline-flex min-h-11 items-center rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-cocoa text-cream-alt"
+                      ? "border-b-2 border-cream-alt bg-cocoa font-semibold text-cream-alt"
                       : "bg-honey-light/50 text-cocoa hover:bg-honey-light"
                   }`}
                 >

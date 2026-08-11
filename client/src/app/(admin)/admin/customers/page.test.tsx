@@ -98,6 +98,11 @@ describe("AdminCustomersPage", () => {
       "aria-current",
       "page"
     );
+    expect(screen.getByRole("link", { name: "Customers" })).toHaveClass(
+      "font-semibold",
+      "border-b-2",
+      "border-cream-alt"
+    );
     expect(screen.getByRole("link", { name: /Jane Doe/ })).toHaveAttribute(
       "aria-current",
       "page"

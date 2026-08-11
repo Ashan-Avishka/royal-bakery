@@ -121,6 +121,11 @@ describe("AdminOrdersPage", () => {
     );
 
     expect(screen.getByRole("link", { name: "Pending" })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: "Pending" })).toHaveClass(
+      "font-semibold",
+      "border-b-2",
+      "border-cream-alt"
+    );
     expect(screen.getByRole("link", { name: /2026/ })).toHaveAttribute("aria-current", "page");
   });
 });

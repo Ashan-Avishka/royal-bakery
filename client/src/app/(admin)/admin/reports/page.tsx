@@ -103,7 +103,7 @@ export default async function AdminReportsPage({
           <p className="text-xs uppercase tracking-wide text-text-muted">
             Top category
           </p>
-          <p className="mt-1 font-display text-2xl text-cocoa">
+          <p className="mt-1 min-w-0 break-words font-display text-2xl text-cocoa">
             {analytics.topCategory ?? "—"}
           </p>
         </div>
