@@ -39,7 +39,7 @@ export default function LoginPage() {
         <span className="h-px flex-1 bg-border-warm/70" aria-hidden />
       </div>
 
-      <form action={formAction} className="flex flex-col gap-4">
+      <form action={formAction} className="flex min-w-0 flex-col gap-4">
         <Input
           label="Email"
           name="email"

@@ -6,7 +6,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-cream px-6 py-12">
+    <div className="safe-x relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-cream py-12">
       <div
         className="pointer-events-none absolute -left-24 top-10 h-72 w-72 rounded-full bg-honey/35 blur-3xl"
         aria-hidden
@@ -20,7 +20,7 @@ export default function AuthLayout({
         <BrandLogo size="lg" priority />
       </div>
 
-      <div className="relative w-full max-w-md rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/95 p-8 shadow-[0_24px_50px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm sm:p-10">
+      <div className="surface-pad relative w-full max-w-md rounded-[1.5rem] border border-border-warm/80 bg-cream-alt/95 shadow-[0_24px_50px_-28px_rgba(58,26,19,0.35)] backdrop-blur-sm sm:p-10">
         {children}
       </div>
     </div>

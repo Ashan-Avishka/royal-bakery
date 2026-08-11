@@ -11,9 +11,9 @@ import { buildQuery } from "@/lib/queryString";
 import { createClient } from "@/lib/supabase/server";
 
 const PANEL_CLASSNAME =
-  "rounded-[1.5rem] border border-border-warm/80 bg-cream-alt p-6 shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)] sm:p-8";
+  "surface-pad rounded-[1.5rem] border border-border-warm/80 bg-cream-alt shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]";
 const PLACEHOLDER_CLASSNAME =
-  "hidden rounded-[1.5rem] border border-dashed border-border-warm/80 bg-cream-alt/50 p-6 text-center text-sm text-text-muted lg:block";
+  "surface-pad hidden rounded-[1.5rem] border border-dashed border-border-warm/80 bg-cream-alt/50 text-center text-sm text-text-muted lg:block";
 
 export default async function OrdersPage({
   searchParams,
@@ -46,7 +46,7 @@ export default async function OrdersPage({
         aria-hidden
       />
 
-      <div className="relative mx-auto max-w-6xl px-6 py-16 sm:py-20">
+      <div className="page-container page-section relative min-w-0">
         <PageHeader
           eyebrow="Order history"
           title="Your orders"
@@ -55,7 +55,7 @@ export default async function OrdersPage({
         />
 
         {orders.length === 0 ? (
-          <div className="rounded-[1.5rem] border border-border-warm/80 bg-cream-alt px-6 py-14 text-center shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]">
+          <div className="surface-pad rounded-[1.5rem] border border-border-warm/80 bg-cream-alt py-14 text-center shadow-[0_16px_40px_-28px_rgba(58,26,19,0.3)]">
             <p className="font-display text-xl text-cocoa">No orders yet</p>
             <p className="mt-2 text-sm text-text-muted">
               When you place an order, it will show up here.
@@ -78,14 +78,14 @@ export default async function OrdersPage({
                     <Link
                       key={order.id}
                       href={rowHref}
-                      className={`flex items-center justify-between rounded-[1.35rem] border border-border-warm/80 bg-cream-alt p-5 shadow-[0_12px_32px_-24px_rgba(58,26,19,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-24px_rgba(58,26,19,0.35)] sm:p-6 ${
+                      className={`surface-pad flex min-w-0 flex-col items-start justify-between gap-4 rounded-[1.35rem] border border-border-warm/80 bg-cream-alt shadow-[0_12px_32px_-24px_rgba(58,26,19,0.28)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_40px_-24px_rgba(58,26,19,0.35)] sm:flex-row sm:items-center ${
                         isActive
                           ? "-translate-y-0.5 shadow-[0_20px_40px_-24px_rgba(58,26,19,0.35)]"
                           : ""
                       }`}
                     >
-                      <div>
-                        <p className="font-display text-lg font-medium text-cocoa">
+                      <div className="min-w-0 break-words">
+                        <p className="break-words font-display text-lg font-medium text-cocoa">
                           Order placed{" "}
                           {new Date(order.createdAt).toLocaleDateString("en-GB", {
                             day: "numeric",
@@ -98,7 +98,7 @@ export default async function OrdersPage({
                           {formatPrice(order.totalAmount)}
                         </p>
                       </div>
-                      <div className="flex flex-col items-end gap-2">
+                      <div className="flex w-full flex-row flex-wrap items-center gap-2 sm:w-auto sm:flex-col sm:items-end">
                         <OrderStatusBadge status={order.status} />
                         <PaymentStatusBadge status={order.paymentStatus} />
                       </div>
@@ -108,7 +108,7 @@ export default async function OrdersPage({
               </div>
             </div>
 
-            <aside className={`w-full shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
+            <aside className={`w-full min-w-0 shrink-0 lg:w-96 ${selected ? "" : "hidden lg:block"}`}>
               {selected ? (
                 <DetailPanel
                   title="Order details"

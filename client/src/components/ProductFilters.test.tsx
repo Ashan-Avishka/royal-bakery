@@ -166,3 +166,18 @@ it("provides a reset control when filters are active", () => {
     "hover:text-caramel-hover"
   );
 });
+
+it("uses full-width, touch-friendly controls before the small breakpoint", () => {
+  render(<ProductFilters categories={categories} resultCount={2} />);
+
+  expect(screen.getByRole("button", { name: "All" })).toHaveClass(
+    "w-full",
+    "min-h-11",
+    "sm:w-auto"
+  );
+  expect(screen.getByRole("searchbox", { name: /search products/i })).toHaveClass(
+    "w-full",
+    "text-base",
+    "sm:text-sm"
+  );
+});

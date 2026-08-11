@@ -86,3 +86,20 @@ it("renders a supplied mutation error as a row-local alert", () => {
   expect(alert).toHaveTextContent("Only four cakes remain.");
   expect(alert.closest("article")).not.toBeNull();
 });
+
+it("stacks cart controls beneath a wrapping product identity on narrow screens", () => {
+  const { container } = render(<CartItemRow item={item} />);
+
+  expect(container.querySelector("article")).toHaveClass(
+    "grid-cols-[5rem_minmax(0,1fr)]",
+    "sm:grid-cols-[5rem_minmax(0,1fr)_auto]"
+  );
+  expect(screen.getByRole("link", { name: "Chocolate Celebration Cake" })).toHaveClass(
+    "min-w-0",
+    "break-words"
+  );
+  expect(screen.getByRole("spinbutton", { name: /quantity for chocolate/i })).toHaveClass(
+    "text-base",
+    "sm:text-sm"
+  );
+});

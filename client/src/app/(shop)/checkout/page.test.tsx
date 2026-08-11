@@ -91,5 +91,8 @@ describe("CheckoutPage", () => {
     expect(screen.getByRole("heading", { level: 1, name: "Checkout" })).toBeVisible();
     expect(editCart).toHaveAttribute("href", "/cart");
     expect(form.compareDocumentPosition(editCart)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(form.compareDocumentPosition(screen.getByRole("heading", { name: "Order summary" }))).toBe(
+      Node.DOCUMENT_POSITION_FOLLOWING
+    );
   });
 });

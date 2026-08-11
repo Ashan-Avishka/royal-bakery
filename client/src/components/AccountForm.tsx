@@ -20,7 +20,7 @@ export function AccountForm({ profile }: { profile: Profile }) {
   });
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex min-w-0 flex-col gap-4">
       <div>
         <p className="text-sm font-medium text-cocoa">Email</p>
         <p className="text-sm text-text-muted">{profile.email}</p>
@@ -48,7 +48,7 @@ export function AccountForm({ profile }: { profile: Profile }) {
         <p className="text-sm text-emerald-700">Profile updated.</p>
       )}
 
-      <Button type="submit" disabled={pending} className="mt-2 w-fit">
+      <Button type="submit" disabled={pending} className="mt-2 w-full sm:w-fit">
         {pending ? "Saving…" : "Save changes"}
       </Button>
     </form>

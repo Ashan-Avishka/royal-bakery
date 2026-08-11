@@ -84,7 +84,9 @@ describe("ProductsPage", () => {
     expect(screen.getByText("2 products")).toBeVisible();
     expect(screen.getByRole("searchbox", { name: "Search products" }).closest("section"))
       .toHaveClass("lg:sticky", "bg-cream");
-    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(2);
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })).toHaveLength(4);
+    expect(screen.getAllByRole("link", { name: /celebration cake/i })[0]
+      ?.closest(".grid")).toHaveClass("grid-cols-1", "sm:grid-cols-2");
   });
 
   it("offers a clear recovery path when active filters have no matches", async () => {
