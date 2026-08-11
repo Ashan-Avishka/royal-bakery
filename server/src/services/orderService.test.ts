@@ -1,8 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("../lib/supabase.js", () => ({
   getSupabaseAdmin: vi.fn(),
 }));
+
+const notificationMocks = vi.hoisted(() => ({
+  sendOrderConfirmationEmail: vi.fn(),
+  sendAdminNewOrderEmail: vi.fn(),
+  sendAdminLowStockEmail: vi.fn(),
+}));
+vi.mock("./notificationService.js", () => notificationMocks);
 
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
@@ -20,10 +27,24 @@ const OTHER_USER_ID = "99999999-9999-9999-9999-999999999999";
 const ORDER_A = "22222222-2222-2222-2222-222222222222";
 const ORDER_B = "33333333-3333-3333-3333-333333333333";
 const PRODUCT_A = "44444444-4444-4444-4444-444444444444";
+const CUSTOMER_EMAIL = "customer@example.com";
 
-function seed(rpc: Record<string, (params: Record<string, unknown>) => any> = {}) {
+afterEach(() => {
+  vi.clearAllMocks();
+});
+
+function seed(
+  rpc: Record<string, (params: Record<string, unknown>) => any> = {},
+  options: { stockQuantity?: number } = {}
+) {
   return createFakeSupabaseClient({
-    usersByToken: {},
+    usersByToken: {
+      "customer-token": {
+        id: USER_ID,
+        email: CUSTOMER_EMAIL,
+        app_metadata: { role: "customer" },
+      },
+    },
     profiles: [],
     products: [
       {
@@ -33,7 +54,7 @@ function seed(rpc: Record<string, (params: Record<string, unknown>) => any> = {}
         description: null,
         price: "380.00",
         image_url: null,
-        stock_quantity: 5,
+        stock_quantity: options.stockQuantity ?? 20,
         is_available: true,
         created_at: "t",
         updated_at: "t",
@@ -162,6 +183,110 @@ describe("createOrderFromCart", () => {
     );
 
     await expect(createOrderFromCart(USER_ID)).rejects.toMatchObject({ status: 409 });
+  });
+
+  it("sends order confirmation and admin new-order emails after creating an order", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(
+      seed({
+        create_order_from_cart: () => ({ data: ORDER_A, error: null }),
+      }) as any
+    );
+
+    const order = await createOrderFromCart(USER_ID, "123 Galle Road");
+
+    expect(notificationMocks.sendOrderConfirmationEmail).toHaveBeenCalledWith(order, CUSTOMER_EMAIL);
+    expect(notificationMocks.sendAdminNewOrderEmail).toHaveBeenCalledWith(order, CUSTOMER_EMAIL);
+  });
+
+  it("does not throw when the user has no email on record", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(
+      createFakeSupabaseClient({
+        usersByToken: {},
+        profiles: [],
+        products: [
+          {
+            id: PRODUCT_A,
+            category_id: null,
+            name: "Croissant",
+            description: null,
+            price: "380.00",
+            image_url: null,
+            stock_quantity: 5,
+            is_available: true,
+            created_at: "t",
+            updated_at: "t",
+          },
+        ],
+        orders: [
+          {
+            id: ORDER_A,
+            user_id: USER_ID,
+            status: "pending",
+            payment_status: "unpaid",
+            total_amount: "760.00",
+            delivery_address: null,
+            created_at: "t",
+            updated_at: "t",
+          },
+        ],
+        orderItems: [
+          {
+            id: "oi1",
+            order_id: ORDER_A,
+            product_id: PRODUCT_A,
+            quantity: 2,
+            unit_price: "380.00",
+            subtotal: "760.00",
+          },
+        ],
+        rpc: { create_order_from_cart: () => ({ data: ORDER_A, error: null }) },
+      }) as any
+    );
+
+    const order = await createOrderFromCart(USER_ID);
+    expect(order.id).toBe(ORDER_A);
+    expect(notificationMocks.sendOrderConfirmationEmail).not.toHaveBeenCalled();
+  });
+
+  it("sends a low-stock alert when an order pushes a product's stock at or below the threshold", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(
+      seed(
+        { create_order_from_cart: () => ({ data: ORDER_A, error: null }) },
+        { stockQuantity: 4 }
+      ) as any
+    );
+
+    await createOrderFromCart(USER_ID, "123 Galle Road");
+
+    expect(notificationMocks.sendAdminLowStockEmail).toHaveBeenCalledWith([
+      { name: "Croissant", stockQuantity: 4 },
+    ]);
+  });
+
+  it("does not send a low-stock alert when the product was already low before this order", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(
+      seed(
+        { create_order_from_cart: () => ({ data: ORDER_A, error: null }) },
+        { stockQuantity: 2 }
+      ) as any
+    );
+
+    await createOrderFromCart(USER_ID, "123 Galle Road");
+
+    expect(notificationMocks.sendAdminLowStockEmail).not.toHaveBeenCalled();
+  });
+
+  it("does not send a low-stock alert when stock stays above the threshold", async () => {
+    vi.mocked(getSupabaseAdmin).mockReturnValue(
+      seed(
+        { create_order_from_cart: () => ({ data: ORDER_A, error: null }) },
+        { stockQuantity: 10 }
+      ) as any
+    );
+
+    await createOrderFromCart(USER_ID, "123 Galle Road");
+
+    expect(notificationMocks.sendAdminLowStockEmail).not.toHaveBeenCalled();
   });
 });
 

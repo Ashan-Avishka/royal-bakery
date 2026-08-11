@@ -8,7 +8,7 @@ import type {
 } from "../types/analytics.js";
 import type { OrderStatus, OrderSummary, PaymentStatus } from "../types/order.js";
 
-const LOW_STOCK_THRESHOLD = 5;
+export const LOW_STOCK_THRESHOLD = 5;
 
 interface OrderRow {
   id: string;
