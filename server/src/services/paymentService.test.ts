@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 vi.mock("../lib/supabase.js", () => ({ getSupabaseAdmin: vi.fn() }));
 vi.mock("../config/env.js", () => ({
@@ -11,6 +11,11 @@ vi.mock("../config/env.js", () => ({
   },
 }));
 
+const notificationMocks = vi.hoisted(() => ({
+  sendPaymentStatusChangeEmail: vi.fn(),
+}));
+vi.mock("./notificationService.js", () => notificationMocks);
+
 import crypto from "node:crypto";
 import { getSupabaseAdmin } from "../lib/supabase.js";
 import { createFakeSupabaseClient } from "../test/fakeSupabase.js";
@@ -19,6 +24,11 @@ import { initiatePayment, processPaymentNotification } from "./paymentService.js
 const USER_ID = "11111111-1111-1111-1111-111111111111";
 const OTHER_USER_ID = "99999999-9999-9999-9999-999999999999";
 const ORDER_ID = "22222222-2222-2222-2222-222222222222";
+const CUSTOMER_EMAIL = "customer@royalbakery-test.example";
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 function md5Upper(input: string): string {
   return crypto.createHash("md5").update(input, "utf8").digest("hex").toUpperCase();
@@ -34,7 +44,13 @@ function seed(
   overrides: { profileComplete?: boolean; orderStatus?: string; paymentStatus?: string } = {}
 ) {
   return createFakeSupabaseClient({
-    usersByToken: {},
+    usersByToken: {
+      "customer-token": {
+        id: USER_ID,
+        email: CUSTOMER_EMAIL,
+        app_metadata: { role: "customer" },
+      },
+    },
     profiles: [
       {
         id: USER_ID,
@@ -190,5 +206,45 @@ describe("processPaymentNotification", () => {
 
     const { data: order } = await client.from("orders").select("*").eq("id", ORDER_ID).maybeSingle();
     expect((order as any).payment_status).toBe("unpaid");
+  });
+
+  it("sends a payment-status-change email when the payment status changes", async () => {
+    const client = seed();
+    vi.mocked(getSupabaseAdmin).mockReturnValue(client as any);
+    await initiatePayment({ userId: USER_ID, email: "jane@example.com", orderId: ORDER_ID });
+
+    await processPaymentNotification({
+      merchant_id: "test_merchant",
+      order_id: ORDER_ID,
+      payment_id: "payhere-payment-4",
+      payhere_amount: "760.00",
+      payhere_currency: "LKR",
+      status_code: "2",
+      md5sig: expectedSig(ORDER_ID, "760.00", "LKR", "2"),
+    });
+
+    expect(notificationMocks.sendPaymentStatusChangeEmail).toHaveBeenCalledWith(
+      { id: ORDER_ID, totalAmount: 760 },
+      CUSTOMER_EMAIL,
+      "unpaid",
+      "paid"
+    );
+  });
+
+  it("does not send a duplicate email when the payment status does not change", async () => {
+    const client = seed({ paymentStatus: "paid" });
+    vi.mocked(getSupabaseAdmin).mockReturnValue(client as any);
+
+    await processPaymentNotification({
+      merchant_id: "test_merchant",
+      order_id: ORDER_ID,
+      payment_id: "payhere-payment-5",
+      payhere_amount: "760.00",
+      payhere_currency: "LKR",
+      status_code: "2",
+      md5sig: expectedSig(ORDER_ID, "760.00", "LKR", "2"),
+    });
+
+    expect(notificationMocks.sendPaymentStatusChangeEmail).not.toHaveBeenCalled();
   });
 });

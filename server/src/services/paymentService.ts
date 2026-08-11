@@ -2,7 +2,9 @@ import crypto from "node:crypto";
 import { env } from "../config/env.js";
 import { AppError } from "../errors.js";
 import { getSupabaseAdmin } from "../lib/supabase.js";
+import { sendPaymentStatusChangeEmail } from "./notificationService.js";
 import type { PaymentInitiation, WebhookPayload } from "../types/payment.js";
+import type { PaymentStatus } from "../types/order.js";
 import { getOrderForUser } from "./orderService.js";
 import { getProfileById } from "./profileService.js";
 
@@ -100,10 +102,24 @@ export async function processPaymentNotification(payload: WebhookPayload): Promi
   const statusCode = Number(payload.status_code);
   const paymentStatus =
     statusCode === 2 ? "completed" : statusCode === -2 || statusCode === -3 ? "failed" : "pending";
-  const orderPaymentStatus =
+  const orderPaymentStatus: PaymentStatus =
     statusCode === 2 ? "paid" : statusCode === -2 || statusCode === -3 ? "failed" : "unpaid";
 
   const admin = getSupabaseAdmin();
+
+  const { data: existingOrderRow, error: existingOrderError } = await admin
+    .from("orders")
+    .select("*")
+    .eq("id", payload.order_id)
+    .maybeSingle();
+  if (existingOrderError) {
+    throw new AppError(500, "Failed to load order for payment notification", {
+      cause: existingOrderError,
+    });
+  }
+  const previousPaymentStatus = (existingOrderRow as { payment_status: PaymentStatus } | null)
+    ?.payment_status;
+
   const { error: paymentError } = await admin
     .from("payments")
     .update({
@@ -123,5 +139,36 @@ export async function processPaymentNotification(payload: WebhookPayload): Promi
     .eq("id", payload.order_id);
   if (orderError) {
     throw new AppError(500, "Failed to update order payment status", { cause: orderError });
+  }
+
+  if (existingOrderRow && previousPaymentStatus !== orderPaymentStatus) {
+    await notifyPaymentStatusChanged(
+      existingOrderRow as { id: string; user_id: string; total_amount: string },
+      previousPaymentStatus as PaymentStatus,
+      orderPaymentStatus
+    );
+  }
+}
+
+async function notifyPaymentStatusChanged(
+  orderRow: { id: string; user_id: string; total_amount: string },
+  previousPaymentStatus: PaymentStatus,
+  newPaymentStatus: PaymentStatus
+): Promise<void> {
+  try {
+    const { data: userData } = await getSupabaseAdmin().auth.admin.getUserById(orderRow.user_id);
+    const customerEmail = userData?.user?.email;
+    if (!customerEmail) {
+      console.warn(`No email found for user ${orderRow.user_id}; skipping payment-status notification`);
+      return;
+    }
+    void sendPaymentStatusChangeEmail(
+      { id: orderRow.id, totalAmount: Number(orderRow.total_amount) },
+      customerEmail,
+      previousPaymentStatus,
+      newPaymentStatus
+    );
+  } catch (err) {
+    console.error("Failed to send payment-status-change notification", err);
   }
 }
