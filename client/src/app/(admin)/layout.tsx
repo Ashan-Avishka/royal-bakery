@@ -15,7 +15,7 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-cream lg:flex">
       <aside className="hidden w-56 shrink-0 border-r border-border-warm bg-cream-alt lg:block">
-        <div className="sticky top-0 flex min-h-screen flex-col p-4">
+        <div className="sticky top-0 flex h-screen flex-col p-4">
           <AdminNav mode="desktop" email={adminEmail} />
         </div>
       </aside>

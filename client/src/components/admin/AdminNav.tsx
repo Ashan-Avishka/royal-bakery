@@ -1,5 +1,6 @@
 "use client";
 
+import { LogOut } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -71,6 +72,7 @@ function AccountActions({ email, closeMenu }: { email: string; closeMenu?: () =>
       </Link>
       <form action={signOut}>
         <Button type="submit" variant="ghost" className="w-full justify-start px-0">
+          <LogOut aria-hidden="true" size={16} />
           Sign out
         </Button>
       </form>
