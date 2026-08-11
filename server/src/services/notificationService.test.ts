@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 const mailMocks = vi.hoisted(() => ({
   sendMailMock: vi.fn(),
@@ -10,6 +10,7 @@ const envMock = vi.hoisted(() => ({
 }));
 vi.mock("../config/env.js", () => envMock);
 
+import * as templates from "../emails/templates.js";
 import {
   sendAdminLowStockEmail,
   sendAdminNewOrderEmail,
@@ -80,6 +81,60 @@ describe("sendAdminLowStockEmail", () => {
   it("skips sending when no admin address is configured", async () => {
     envMock.env.ADMIN_NOTIFICATION_EMAIL = "";
     await sendAdminLowStockEmail([{ name: "Croissant", stockQuantity: 3 }]);
+    expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
+  });
+});
+
+describe("notification failures never propagate (rejections are swallowed)", () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  it("sendOrderConfirmationEmail resolves even if the template builder throws", async () => {
+    vi.spyOn(templates, "buildOrderConfirmationEmail").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    await expect(sendOrderConfirmationEmail(ORDER, "customer@example.com")).resolves.toBeUndefined();
+    expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
+  });
+
+  it("sendOrderStatusChangeEmail resolves even if the template builder throws", async () => {
+    vi.spyOn(templates, "buildOrderStatusChangeEmail").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    await expect(
+      sendOrderStatusChangeEmail(ORDER, "customer@example.com", "pending", "processing")
+    ).resolves.toBeUndefined();
+    expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
+  });
+
+  it("sendPaymentStatusChangeEmail resolves even if the template builder throws", async () => {
+    vi.spyOn(templates, "buildPaymentStatusChangeEmail").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    await expect(
+      sendPaymentStatusChangeEmail(ORDER, "customer@example.com", "unpaid", "paid")
+    ).resolves.toBeUndefined();
+    expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
+  });
+
+  it("sendAdminNewOrderEmail resolves even if the template builder throws", async () => {
+    vi.spyOn(templates, "buildAdminNewOrderEmail").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    await expect(
+      sendAdminNewOrderEmail(ORDER, "customer@example.com")
+    ).resolves.toBeUndefined();
+    expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
+  });
+
+  it("sendAdminLowStockEmail resolves even if the template builder throws", async () => {
+    vi.spyOn(templates, "buildAdminLowStockEmail").mockImplementation(() => {
+      throw new Error("boom");
+    });
+    await expect(
+      sendAdminLowStockEmail([{ name: "Croissant", stockQuantity: 3 }])
+    ).resolves.toBeUndefined();
     expect(mailMocks.sendMailMock).not.toHaveBeenCalled();
   });
 });

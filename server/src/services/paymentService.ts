@@ -107,16 +107,18 @@ export async function processPaymentNotification(payload: WebhookPayload): Promi
 
   const admin = getSupabaseAdmin();
 
-  const { data: existingOrderRow, error: existingOrderError } = await admin
+  const { data: existingOrderRowData, error: existingOrderError } = await admin
     .from("orders")
     .select("*")
     .eq("id", payload.order_id)
     .maybeSingle();
   if (existingOrderError) {
-    throw new AppError(500, "Failed to load order for payment notification", {
-      cause: existingOrderError,
-    });
+    console.error(
+      "Failed to load order for payment notification; skipping status-change email",
+      existingOrderError
+    );
   }
+  const existingOrderRow = existingOrderError ? null : existingOrderRowData;
   const previousPaymentStatus = (existingOrderRow as { payment_status: PaymentStatus } | null)
     ?.payment_status;
 

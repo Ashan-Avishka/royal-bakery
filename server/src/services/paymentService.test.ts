@@ -247,4 +247,64 @@ describe("processPaymentNotification", () => {
 
     expect(notificationMocks.sendPaymentStatusChangeEmail).not.toHaveBeenCalled();
   });
+
+  it("still completes the payment/order writes when the preliminary order read for the notification fails", async () => {
+    const client = seed();
+    vi.mocked(getSupabaseAdmin).mockReturnValue(client as any);
+    await initiatePayment({ userId: USER_ID, email: "jane@example.com", orderId: ORDER_ID });
+
+    // Simulate a transient read error on the preliminary "orders" select that exists
+    // purely to capture the previous status for the notification email. Only the
+    // `select` path on the "orders" table is intercepted here — `update` calls
+    // (the real payment writes) go through the fake client completely untouched.
+    const originalFrom = client.from.bind(client);
+    let interceptSelect = true;
+    client.from = ((tableName: string) => {
+      const table = originalFrom(tableName);
+      if (tableName !== "orders" || !interceptSelect) return table;
+      return {
+        ...table,
+        select: (columns?: string) => {
+          const builder: any = table.select(columns);
+          const originalThen = builder.then.bind(builder);
+          builder.then = (onFulfilled: any, onRejected: any) =>
+            originalThen(() => onFulfilled({ data: null, error: { message: "boom" } }), onRejected);
+          return builder;
+        },
+      };
+    }) as any;
+
+    const consoleErrorSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    await expect(
+      processPaymentNotification({
+        merchant_id: "test_merchant",
+        order_id: ORDER_ID,
+        payment_id: "payhere-payment-6",
+        payhere_amount: "760.00",
+        payhere_currency: "LKR",
+        status_code: "2",
+        md5sig: expectedSig(ORDER_ID, "760.00", "LKR", "2"),
+      })
+    ).resolves.toBeUndefined();
+
+    // Stop intercepting so assertions below observe the real, unmodified rows.
+    interceptSelect = false;
+
+    const { data: payment } = await client
+      .from("payments")
+      .select("*")
+      .eq("order_id", ORDER_ID)
+      .maybeSingle();
+    expect((payment as any).status).toBe("completed");
+    expect((payment as any).transaction_id).toBe("payhere-payment-6");
+
+    const { data: order } = await client.from("orders").select("*").eq("id", ORDER_ID).maybeSingle();
+    expect((order as any).payment_status).toBe("paid");
+
+    // The notification is skipped because the previous status could not be observed.
+    expect(notificationMocks.sendPaymentStatusChangeEmail).not.toHaveBeenCalled();
+
+    consoleErrorSpy.mockRestore();
+  });
 });

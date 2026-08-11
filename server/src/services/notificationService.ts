@@ -14,8 +14,12 @@ export async function sendOrderConfirmationEmail(
   order: OrderEmailData,
   customerEmail: string
 ): Promise<void> {
-  const { subject, html, text } = buildOrderConfirmationEmail(order);
-  await sendMail({ to: customerEmail, subject, html, text });
+  try {
+    const { subject, html, text } = buildOrderConfirmationEmail(order);
+    await sendMail({ to: customerEmail, subject, html, text });
+  } catch (err) {
+    console.error("Failed to send order-confirmation email", err);
+  }
 }
 
 export async function sendOrderStatusChangeEmail(
@@ -24,8 +28,12 @@ export async function sendOrderStatusChangeEmail(
   previousStatus: OrderStatus,
   newStatus: OrderStatus
 ): Promise<void> {
-  const { subject, html, text } = buildOrderStatusChangeEmail(order, previousStatus, newStatus);
-  await sendMail({ to: customerEmail, subject, html, text });
+  try {
+    const { subject, html, text } = buildOrderStatusChangeEmail(order, previousStatus, newStatus);
+    await sendMail({ to: customerEmail, subject, html, text });
+  } catch (err) {
+    console.error("Failed to send order-status-change email", err);
+  }
 }
 
 export async function sendPaymentStatusChangeEmail(
@@ -34,34 +42,46 @@ export async function sendPaymentStatusChangeEmail(
   previousPaymentStatus: PaymentStatus,
   newPaymentStatus: PaymentStatus
 ): Promise<void> {
-  const { subject, html, text } = buildPaymentStatusChangeEmail(
-    order,
-    previousPaymentStatus,
-    newPaymentStatus
-  );
-  await sendMail({ to: customerEmail, subject, html, text });
+  try {
+    const { subject, html, text } = buildPaymentStatusChangeEmail(
+      order,
+      previousPaymentStatus,
+      newPaymentStatus
+    );
+    await sendMail({ to: customerEmail, subject, html, text });
+  } catch (err) {
+    console.error("Failed to send payment-status-change email", err);
+  }
 }
 
 export async function sendAdminNewOrderEmail(
   order: OrderEmailData,
   customerEmail: string
 ): Promise<void> {
-  if (!env.ADMIN_NOTIFICATION_EMAIL) {
-    console.warn("ADMIN_NOTIFICATION_EMAIL is not set; skipping new-order admin email");
-    return;
+  try {
+    if (!env.ADMIN_NOTIFICATION_EMAIL) {
+      console.warn("ADMIN_NOTIFICATION_EMAIL is not set; skipping new-order admin email");
+      return;
+    }
+    const { subject, html, text } = buildAdminNewOrderEmail(order, customerEmail);
+    await sendMail({ to: env.ADMIN_NOTIFICATION_EMAIL, subject, html, text });
+  } catch (err) {
+    console.error("Failed to send admin new-order email", err);
   }
-  const { subject, html, text } = buildAdminNewOrderEmail(order, customerEmail);
-  await sendMail({ to: env.ADMIN_NOTIFICATION_EMAIL, subject, html, text });
 }
 
 export async function sendAdminLowStockEmail(
   products: { name: string; stockQuantity: number }[]
 ): Promise<void> {
-  if (products.length === 0) return;
-  if (!env.ADMIN_NOTIFICATION_EMAIL) {
-    console.warn("ADMIN_NOTIFICATION_EMAIL is not set; skipping low-stock admin email");
-    return;
+  try {
+    if (products.length === 0) return;
+    if (!env.ADMIN_NOTIFICATION_EMAIL) {
+      console.warn("ADMIN_NOTIFICATION_EMAIL is not set; skipping low-stock admin email");
+      return;
+    }
+    const { subject, html, text } = buildAdminLowStockEmail(products);
+    await sendMail({ to: env.ADMIN_NOTIFICATION_EMAIL, subject, html, text });
+  } catch (err) {
+    console.error("Failed to send admin low-stock email", err);
   }
-  const { subject, html, text } = buildAdminLowStockEmail(products);
-  await sendMail({ to: env.ADMIN_NOTIFICATION_EMAIL, subject, html, text });
 }
