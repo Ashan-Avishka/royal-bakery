@@ -8,7 +8,7 @@ export function AboutTeaser() {
         <div className="relative overflow-hidden lg:col-span-6">
           <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]">
             <Image
-              src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1400&q=80"
+              src="/images/craft.jpeg"
               alt="Baker working dough in a warm bakery kitchen"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
