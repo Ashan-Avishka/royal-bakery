@@ -6,7 +6,7 @@ export function AboutTeaser() {
     <section className="bg-cream-alt">
       <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-16 sm:gap-12 sm:px-6 sm:py-24 lg:grid-cols-12 lg:gap-16">
         <div className="relative overflow-hidden lg:col-span-6">
-          <div className="relative aspect-[4/5] overflow-hidden rounded-sm">
+          <div className="relative aspect-[4/5] overflow-hidden rounded-[1.5rem]">
             <Image
               src="https://images.unsplash.com/photo-1517433670267-08bbd4be890f?auto=format&fit=crop&w=1400&q=80"
               alt="Baker working dough in a warm bakery kitchen"
@@ -19,10 +19,12 @@ export function AboutTeaser() {
               aria-hidden
             />
           </div>
-          <div
-            className="pointer-events-none absolute bottom-3 right-3 hidden h-28 w-28 border border-border-warm sm:block"
-            aria-hidden
-          />
+          <div className="absolute bottom-3 right-3 hidden h-28 w-28 flex-col items-center justify-center rounded-[1.5rem] border border-border-warm bg-cream-alt/95 backdrop-blur-sm sm:flex">
+            <p className="font-display text-2xl font-medium text-cocoa">500+</p>
+            <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-text-muted">
+              Orders
+            </p>
+          </div>
         </div>
 
         <div className="lg:col-span-6 lg:pl-4">
