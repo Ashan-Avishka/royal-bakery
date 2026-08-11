@@ -193,11 +193,15 @@ it("resyncs cleared query props so a later search cannot restore stale filters",
 
   navigationState.query = "";
   rerender(<ProductFilters categories={categories} resultCount={2} />);
-  fireEvent.change(screen.getByRole("searchbox", { name: /search products/i }), {
+  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+  expect(searchbox).toHaveValue("");
+
+  fireEvent.change(searchbox, {
     target: { value: "vanilla" },
   });
   vi.advanceTimersByTime(350);
 
+  expect(push).toHaveBeenCalledTimes(1);
   expect(push).toHaveBeenCalledWith("/products?search=vanilla");
 });
 

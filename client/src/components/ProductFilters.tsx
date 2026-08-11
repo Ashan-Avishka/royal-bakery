@@ -2,8 +2,32 @@
 
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { Category } from "@/lib/catalog";
+
+function SearchInput({
+  activeSearch,
+  onSearchChange,
+}: {
+  activeSearch?: string;
+  onSearchChange: (value: string) => void;
+}) {
+  const [value, setValue] = useState(activeSearch ?? "");
+
+  return (
+    <input
+      id="product-search"
+      type="search"
+      value={value}
+      placeholder="Search the menu..."
+      onChange={(event) => {
+        setValue(event.target.value);
+        onSearchChange(event.target.value);
+      }}
+      className="min-h-11 w-full rounded-full border border-border-warm bg-cream-alt px-4 py-2.5 text-base text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 sm:w-72 sm:text-sm"
+    />
+  );
+}
 
 export function ProductFilters({
   categories,
@@ -24,7 +48,8 @@ export function ProductFilters({
   const latestCategoryRef = useRef(activeCategoryId);
 
   useEffect(() => {
-    latestSearchRef.current = activeSearch ?? "";
+    const nextSearch = activeSearch ?? "";
+    latestSearchRef.current = nextSearch;
     latestCategoryRef.current = activeCategoryId;
   }, [activeCategoryId, activeSearch]);
 
@@ -101,13 +126,10 @@ export function ProductFilters({
           <label className="sr-only" htmlFor="product-search">
             Search products
           </label>
-          <input
-            id="product-search"
-            type="search"
-            defaultValue={activeSearch}
-            placeholder="Search the menu..."
-            onChange={(event) => handleSearchChange(event.target.value)}
-            className="min-h-11 w-full rounded-full border border-border-warm bg-cream-alt px-4 py-2.5 text-base text-cocoa placeholder:text-text-muted transition-colors focus:border-caramel focus:outline-none focus:ring-2 focus:ring-caramel/30 sm:w-72 sm:text-sm"
+          <SearchInput
+            key={activeSearch ?? ""}
+            activeSearch={activeSearch}
+            onSearchChange={handleSearchChange}
           />
           {filtersActive && (
             <Link

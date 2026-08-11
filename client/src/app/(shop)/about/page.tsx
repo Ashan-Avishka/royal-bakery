@@ -18,7 +18,7 @@ export default function AboutPage() {
           <p className="mt-3 text-[15px] leading-relaxed text-text-muted sm:text-base">Royal Bakery brings its menu online so customers can browse products, check what is currently listed, and plan an order around the occasion.</p>
           <h2 className="mt-7 font-display text-2xl text-cocoa">The bakery counter, online</h2>
           <ul className="mt-4 grid gap-3 text-sm text-text-muted"><li>Browse the menu online</li><li>See current availability</li><li>Order ahead</li></ul>
-          <p className="mt-6 break-words text-sm leading-relaxed text-text-muted">Visit us at {SITE_CONTACT.address} in Medawala, Harispaththuwa, or write to <a href={`mailto:${SITE_CONTACT.email}`} className="text-caramel-hover transition-colors hover:text-cocoa">{SITE_CONTACT.email}</a>.</p>
+          <p className="mt-6 break-words text-sm leading-relaxed text-text-muted">Visit us at {SITE_CONTACT.address}, or write to <a href={`mailto:${SITE_CONTACT.email}`} className="text-caramel-hover transition-colors hover:text-cocoa">{SITE_CONTACT.email}</a>.</p>
           <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center"><Link href="/products" className="inline-flex min-h-11 w-full items-center justify-center rounded-full bg-cocoa px-7 py-3 text-[13px] font-medium tracking-[0.06em] text-cream-alt transition-colors hover:bg-cocoa-dark sm:w-auto">Browse the menu</Link><Link href="/" className="inline-flex min-h-11 items-center text-[13px] tracking-[0.06em] text-cocoa transition-colors hover:text-caramel-hover">Back to home</Link></div>
         </div>
       </div>

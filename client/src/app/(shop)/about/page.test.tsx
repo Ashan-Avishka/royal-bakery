@@ -40,6 +40,9 @@ describe("AboutPage", () => {
     expect(screen.getByText("Browse the menu online")).toBeInTheDocument();
     expect(screen.getByText("See current availability")).toBeInTheDocument();
     expect(screen.getByText("Order ahead")).toBeInTheDocument();
+    expect(screen.getByText(/Visit us at/)).toHaveTextContent(
+      "Visit us at Dorenegama Rd, Medawala, Harispaththuwa, or write to"
+    );
     expect(
       screen.queryByText(
         /spent years|small batches|real butter|real chocolate|no (artificial )?shortcuts|before sunrise|fresh each morning|as fresh as/i
