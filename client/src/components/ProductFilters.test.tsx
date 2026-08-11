@@ -205,6 +205,50 @@ it("resyncs cleared query props so a later search cannot restore stale filters",
   expect(push).toHaveBeenCalledWith("/products?search=vanilla");
 });
 
+it("keeps the same focused textbox and selection when the debounced search is acknowledged", () => {
+  vi.useFakeTimers();
+  const { rerender } = render(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
+  );
+  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+
+  searchbox.focus();
+  fireEvent.change(searchbox, { target: { value: "vanilla" } });
+  searchbox.setSelectionRange(2, 5);
+  vi.advanceTimersByTime(350);
+
+  navigationState.query = "categoryId=cakes&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
+  );
+
+  const acknowledgedSearchbox = screen.getByRole("searchbox", { name: /search products/i });
+  expect(acknowledgedSearchbox).toBe(searchbox);
+  expect(acknowledgedSearchbox).toHaveFocus();
+  expect(acknowledgedSearchbox).toHaveValue("vanilla");
+  expect(acknowledgedSearchbox.selectionStart).toBe(2);
+  expect(acknowledgedSearchbox.selectionEnd).toBe(5);
+});
+
+it("does not overwrite newer draft text when an older submitted query is acknowledged", () => {
+  vi.useFakeTimers();
+  const { rerender } = render(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="chocolate" resultCount={1} />
+  );
+  const searchbox = screen.getByRole("searchbox", { name: /search products/i });
+
+  fireEvent.change(searchbox, { target: { value: "vanilla" } });
+  vi.advanceTimersByTime(350);
+  fireEvent.change(searchbox, { target: { value: "vanilla bean" } });
+
+  navigationState.query = "categoryId=cakes&search=vanilla";
+  rerender(
+    <ProductFilters categories={categories} activeCategoryId="cakes" activeSearch="vanilla" resultCount={1} />
+  );
+
+  expect(screen.getByRole("searchbox", { name: /search products/i })).toHaveValue("vanilla bean");
+});
+
 it("keeps every category control touch-sized on narrow screens", () => {
   render(<ProductFilters categories={categories} resultCount={2} />);
 
